@@ -20,11 +20,11 @@ public class WeatherController {
     @GetMapping
     private static ResponseEntity getWeather() throws Exception{
         try {
-            WeatherStatements.getWeather();
+            return ResponseEntity.status(HttpStatus.OK).body(WeatherStatements.getWeather());
         } catch (Exception e) {
+            e.printStackTrace();
             throw new IllegalArgumentException(e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 
