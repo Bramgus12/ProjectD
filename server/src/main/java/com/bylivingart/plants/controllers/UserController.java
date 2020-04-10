@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
 
-@Api(value = "Address controller")
+@Api(value = "User controller")
 @RestController
 @RequestMapping("/api/users")
 public class UserController {

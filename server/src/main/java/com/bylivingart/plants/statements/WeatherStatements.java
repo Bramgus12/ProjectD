@@ -1,6 +1,7 @@
 package com.bylivingart.plants.statements;
 
 import com.bylivingart.plants.buienradar.BuienradarnlType;
+import com.bylivingart.plants.buienradar.WeerstationType;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -12,6 +13,8 @@ import org.apache.http.util.EntityUtils;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WeatherStatements {
 
@@ -30,8 +33,20 @@ public class WeatherStatements {
             jaxbContext = JAXBContext.newInstance(BuienradarnlType.class);
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
-            BuienradarnlType buienradarnlType = (BuienradarnlType) jaxbUnmarshaller.unmarshal(new StringReader(result));
-            return buienradarnlType;
+            return (BuienradarnlType) jaxbUnmarshaller.unmarshal(new StringReader(result));
         }
+    }
+
+    public static ArrayList<WeerstationType> getWeerStationByRegio(String regio) throws Exception{
+       BuienradarnlType buienradarnlType = getWeather();
+       List<WeerstationType> Weerstations = buienradarnlType.getWeergegevens().getActueelWeer().getWeerstations().getWeerstation();
+       ArrayList<WeerstationType> SearchedWeerStation = new ArrayList<>();
+
+        for (WeerstationType weerstationType : Weerstations) {
+            if (weerstationType.getStationnaam().getRegio().contains(regio)){
+                SearchedWeerStation.add(weerstationType);
+            }
+        }
+        return SearchedWeerStation;
     }
 }
