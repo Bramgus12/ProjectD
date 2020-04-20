@@ -1,24 +1,25 @@
 package com.bylivingart.plants.dataclasses;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 public class Error401 {
-    private Date date = new Date();
+    private Timestamp timestamp;
     private int status;
     private String error;
     private String message;
     private String path;
 
     public Error401(int status, String error, String message, String path){
-        date.getTime();
+        this.timestamp = new Timestamp(new Date().getTime());
         this.status = status;
         this.error = error;
         this.message = message;
         this.path = path;
     }
 
-    public Date getDate() {
-        return date;
+    public Timestamp getTimestamp() {
+        return timestamp;
     }
 
     public int getStatus() {
@@ -37,8 +38,8 @@ public class Error401 {
         return path;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
     }
 
     public void setError(String error) {

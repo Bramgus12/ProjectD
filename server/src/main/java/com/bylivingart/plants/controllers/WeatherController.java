@@ -3,6 +3,7 @@ package com.bylivingart.plants.controllers;
 import com.bylivingart.plants.PlantsApplication;
 import com.bylivingart.plants.buienradar.BuienradarnlType;
 import com.bylivingart.plants.buienradar.WeerstationType;
+import com.bylivingart.plants.dataclasses.User;
 import com.bylivingart.plants.statements.UserStatements;
 import com.bylivingart.plants.statements.WeatherStatements;
 import io.swagger.annotations.*;
@@ -21,8 +22,9 @@ public class WeatherController {
     @ApiOperation(value = "Get the full weather object")
     @ApiResponses(@ApiResponse(code=200, message="Successfully gotten the weather", response = BuienradarnlType.class))
     @GetMapping
-    private static ResponseEntity getWeather() throws IllegalArgumentException{
+    private ResponseEntity getWeather() throws IllegalArgumentException{
         try {
+            WeatherStatements.storeWeatherData();
             return ResponseEntity.status(HttpStatus.OK).body(WeatherStatements.getWeather());
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
@@ -30,16 +32,20 @@ public class WeatherController {
     }
 
     @ApiOperation("Get the weather for a region.")
-    @ApiResponses(@ApiResponse(code=200, message = "Successfully gotten weather of the region.", response = WeerstationType.class, responseContainer = "List"))
+    @ApiResponses( value = {
+            @ApiResponse(code=200, message = "Successfully gotten weather of the region.", response = WeerstationType.class, responseContainer = "List"),
+            @ApiResponse(code=400, message = "Failed to get the weather of the region")
+    })
     @GetMapping("/{regio}")
-    private static ResponseEntity getWeatherByRegio(@ApiParam(value = "The region you want the weather off", required = true) @PathVariable String regio, @RequestBody WeerstationType weerstationType) throws IllegalArgumentException{
+    private ResponseEntity getWeatherByRegio(
+            @ApiParam(value = "The region you want the weather of", required = true) @PathVariable String regio
+    ) throws IllegalArgumentException {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(WeatherStatements.getWeerStationByRegio(regio));
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
         }
     }
-
 
     @ExceptionHandler
     void handleIllegalArgumentException(IllegalArgumentException e, HttpServletResponse response) throws IOException {

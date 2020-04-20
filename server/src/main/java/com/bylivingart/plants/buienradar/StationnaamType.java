@@ -42,6 +42,16 @@ public class StationnaamType {
     protected String value;
     @XmlAttribute(name = "regio")
     protected String regio;
+    @XmlAttribute
+    protected int id;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     /**
      * Gets the value of the value property.

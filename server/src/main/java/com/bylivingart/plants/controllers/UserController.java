@@ -47,7 +47,7 @@ public class UserController {
     }
 
     // Update a certain object
-    @ApiOperation(value = "Update an Address object")
+    @ApiOperation(value = "Update an User object")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully updated the User object", response = User.class),
             @ApiResponse(code = 400, message = "Bad request"),
