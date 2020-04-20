@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 
 import '../MenuNavigation.dart';
 
-class Camera extends StatelessWidget {
+class PlantList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: MenuNavigation(),
+      bottomNavigationBar: BottomNavigation(),
       appBar: AppBar(
-        title: Text("Camera", style: TextStyle(fontFamily: 'Libre Baskerville')),
+        title: Text("Plant list", style: TextStyle(fontFamily: 'Libre Baskerville')),
         centerTitle: true,
       ),
       body: Center(
@@ -16,7 +17,7 @@ class Camera extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              'Camera',
+              'Plant list',
             ),
           ],
         ),
