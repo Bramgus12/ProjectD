@@ -38,9 +38,9 @@ public class UserController {
             @ApiResponse(code = 401, message = "Invalid credentials")
     })
     @PostMapping
-    private ResponseEntity createUser(@RequestBody User user) {
+    private ResponseEntity<User> createUser(@RequestBody User user) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(UserStatements.createUser(user));
+            return new ResponseEntity<User>(UserStatements.createUser(user), HttpStatus.OK);
         } catch (SQLException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
