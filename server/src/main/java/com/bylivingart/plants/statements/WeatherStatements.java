@@ -130,32 +130,32 @@ public class WeatherStatements {
         }
     }
 
-    public static void storeWeerstation(WeerstationType weerstation, int stationnaamId, String icoonactueelId) throws Exception {
+    public static void storeWeerstation(WeerstationType ws, int stationnaamId, String icoonactueelId) throws Exception {
         Connection conn = new DatabaseConnection().getConnection();
-        PreparedStatement preparedStatement = conn.prepareStatement("INSERT INTO weerstation VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        preparedStatement.setString(1, weerstation.getStationcode());
-        preparedStatement.setInt(2, stationnaamId);
-        preparedStatement.setString(3, weerstation.getLat());
-        preparedStatement.setString(4, weerstation.getLon());
-        preparedStatement.setString(5, weerstation.getDatum());
-        preparedStatement.setString(6, weerstation.getLuchtvochtigheid());
-        preparedStatement.setString(7, weerstation.getTemperatuurGC());
-        preparedStatement.setString(8, weerstation.getWindsnelheidMS());
-        preparedStatement.setString(9, weerstation.getWindsnelheidBF());
-        preparedStatement.setString(10, weerstation.getWindrichtingGR());
-        preparedStatement.setString(11, weerstation.getWindrichting());
-        preparedStatement.setString(12, weerstation.getLuchtdruk());
-        preparedStatement.setString(13, weerstation.getZichtmeters());
-        preparedStatement.setString(14, weerstation.getWindstotenMS());
-        preparedStatement.setString(15, weerstation.getRegenMMPU());
-        preparedStatement.setString(16, weerstation.getZonintensiteitWM2());
-        preparedStatement.setString(17, icoonactueelId);
-        preparedStatement.setString(18, weerstation.getTemperatuur10Cm());
-        preparedStatement.setString(19, weerstation.getUrl());
-        preparedStatement.setString(20, weerstation.getLatGraden());
-        preparedStatement.setString(21, weerstation.getLonGraden());
-        preparedStatement.setString(22, weerstation.getId());
-        preparedStatement.execute();
+        PreparedStatement ps = conn.prepareStatement("INSERT INTO weerstation VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        ps.setString(1, ws.getStationcode());
+        ps.setInt(2, stationnaamId);
+        ps.setString(3, ws.getLat());
+        ps.setString(4, ws.getLon());
+        ps.setString(5, ws.getDatum());
+        ps.setString(6, ws.getLuchtvochtigheid());
+        ps.setString(7, ws.getTemperatuurGC());
+        ps.setString(8, ws.getWindsnelheidMS());
+        ps.setString(9, ws.getWindsnelheidBF());
+        ps.setString(10, ws.getWindrichtingGR());
+        ps.setString(11, ws.getWindrichting());
+        ps.setString(12, ws.getLuchtdruk());
+        ps.setString(13, ws.getZichtmeters());
+        ps.setString(14, ws.getWindstotenMS());
+        ps.setString(15, ws.getRegenMMPU());
+        ps.setString(16, ws.getZonintensiteitWM2());
+        ps.setString(17, icoonactueelId);
+        ps.setString(18, ws.getTemperatuur10Cm());
+        ps.setString(19, ws.getUrl());
+        ps.setString(20, ws.getLatGraden());
+        ps.setString(21, ws.getLonGraden());
+        ps.setString(22, ws.getId());
+        ps.execute();
         conn.close();
     }
 }
