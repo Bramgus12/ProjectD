@@ -20,11 +20,13 @@ import java.io.IOException;
 public class WeatherController {
 
     @ApiOperation(value = "Get the full weather object")
-    @ApiResponses(@ApiResponse(code=200, message="Successfully gotten the weather", response = BuienradarnlType.class))
+    @ApiResponses(value = {
+            @ApiResponse(code=200, message="Successfully gotten the weather", response = BuienradarnlType.class),
+            @ApiResponse(code=400, message = "Failed to get the weather")
+    })
     @GetMapping
     private ResponseEntity getWeather() throws IllegalArgumentException{
         try {
-            WeatherStatements.storeWeatherData();
             return ResponseEntity.status(HttpStatus.OK).body(WeatherStatements.getWeather());
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
