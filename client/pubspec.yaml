@@ -14,7 +14,7 @@ description: The helping reminder to water your plants
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -24,6 +24,7 @@ dependencies:
   http: ^0.12.0+4
   animations: ^1.0.0+5
   flutter_local_notifications: ^1.3.0
+
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -73,5 +74,14 @@ flutter:
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
   #
+  fonts:
+    - family: Libre Baskerville
+      fonts:
+        - asset: lib/fonts/LibreBaskerville-Regular.ttf
+        - asset: lib/fonts/LibreBaskerville-Italic.ttf
+          style: italic
+        - asset: lib/fonts/LibreBaskerville-Bold.ttf
+          weight: 700
+
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
