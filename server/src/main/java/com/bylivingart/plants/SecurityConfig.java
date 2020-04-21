@@ -96,7 +96,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         }
     }
 
+    @Configuration
     @Order(3)
+    public static class UserStatementsSecurit extends WebSecurityConfigurerAdapter {
+        @Autowired
+        private AuthenticationEntryPoint authEntryPoint;
+
+        protected void configure(HttpSecurity http) throws Exception {
+            http
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                    .csrf().disable().antMatcher("/api/users/**")
+                    .authorizeRequests().anyRequest()
+                    .hasRole("ADMIN")
+                    .and().httpBasic()
+                    .authenticationEntryPoint(authEntryPoint);
+        }
+    }
+
+    @Order(4)
     @Configuration
     public static class FormLoginWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
