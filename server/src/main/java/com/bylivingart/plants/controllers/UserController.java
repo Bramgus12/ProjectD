@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 @Api(value = "User controller")
 @RestController
@@ -23,9 +24,9 @@ public class UserController {
             @ApiResponse(code = 401, message = "Invalid credentials")
     })
     @GetMapping
-    private ResponseEntity getAllUsers() {
+    private ResponseEntity<ArrayList<User>> getAllUsers() {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(UserStatements.getAllUsers());
+            return new ResponseEntity<>(UserStatements.getAllUsers(), HttpStatus.OK);
         } catch (SQLException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
@@ -40,7 +41,7 @@ public class UserController {
     @PostMapping
     private ResponseEntity<User> createUser(@RequestBody User user) {
         try {
-            return new ResponseEntity<User>(UserStatements.createUser(user), HttpStatus.OK);
+            return new ResponseEntity<>(UserStatements.createUser(user), HttpStatus.OK);
         } catch (SQLException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
@@ -54,14 +55,14 @@ public class UserController {
             @ApiResponse(code = 401, message = "Bad credentials")
     })
     @PutMapping("/{id}")
-    private ResponseEntity updateUser(
+    private ResponseEntity<User> updateUser(
             @ApiParam(value = "Id of the User that you want to update", required = true) @PathVariable Integer id,
             @ApiParam(value = "The object with the User that you want to update", required = true) @RequestBody User user
     ) {
         try {
             if (id.equals(user.getId())) {
                 User result = UserStatements.updateUser(user);
-                return ResponseEntity.status(HttpStatus.OK).body(result);
+                return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
                 throw new IllegalArgumentException("ID's are different");
             }
@@ -78,11 +79,11 @@ public class UserController {
             @ApiResponse(code = 401, message = "Bad credentials")
     })
     @DeleteMapping("/{id}")
-    private ResponseEntity deleteUser(
+    private ResponseEntity<User> deleteUser(
             @ApiParam(value = "Id for the object you want to delete", required = true) @PathVariable Integer id
     ) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(UserStatements.deleteUser(id));
+            return new ResponseEntity<>(UserStatements.deleteUser(id), HttpStatus.OK);
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
         }
