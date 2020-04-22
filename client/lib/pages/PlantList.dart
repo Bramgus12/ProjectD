@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../MenuNavigation.dart';
 
 class PlantList extends StatelessWidget {
+  final List<String> plantNames = <String>["croton", "dracaena_lemon_lime", "peace_lily", "pothos", "snake_plant"];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,11 +17,11 @@ class PlantList extends StatelessWidget {
       body: ListView.builder(
           itemBuilder: (_, index) =>
           PlantItem(
-              name: 'Garlic Boi',
-              image: 'assets/images/garlic_boi.png',
+              name: plantNames[index % 5],
+              image: 'assets/images/' + plantNames[index % 5] + '.jpg',
               temp: index,
           ),
-        itemCount: 15,
+        itemCount: 25,
       )
     );
   }
@@ -34,16 +36,28 @@ class PlantItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(8.0),
-      color: temp & 1 == 0 ? Colors.red : Colors.blue,
-      child: new Column(
-        children: <Widget>[
-          Text(name),
-          Image.asset(image,
-              height: 150.0, width: 150.0)
-        ],
-      ),
+    return Stack(
+      children: <Widget>[
+        Container(
+          color: temp & 1 == 0 ? Colors.red : Colors.blue,
+          height: 200.0,
+
+        ),
+        Positioned(
+          left: 225,
+          top: 50,
+          child: Text("Naam\n" + name)
+        ),
+        Positioned(
+          left: 25,
+          top: 25,
+          child: Image.asset(
+              image,
+            width: 150.0,
+            height: 150.0,
+          )
+        )
+      ],
     );
   }
 }
