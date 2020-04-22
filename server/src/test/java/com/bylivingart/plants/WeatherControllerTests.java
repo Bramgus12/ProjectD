@@ -32,8 +32,8 @@ public class WeatherControllerTests {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
-    public void insertRegion_whenGetWeatherData_returnJsonList() throws Exception {
-        mvc.perform(get("/api/weather/Rotterdam")
-        .contentType(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk()).andExpect(content().json())
-    }
+    // public void insertRegion_whenGetWeatherData_returnJsonList() throws Exception {
+    //     mvc.perform(get("/api/weather/Rotterdam")
+    //     .contentType(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk()).andExpect(content().json())
+    // }
 }
