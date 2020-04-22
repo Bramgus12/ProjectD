@@ -39,9 +39,10 @@ class PlantItem extends StatelessWidget {
     return Stack(
       children: <Widget>[
         Container(
-          color: temp & 1 == 0 ? Colors.red : Colors.blue,
+          decoration: BoxDecoration(
+            border: Border.all()
+          ),
           height: 200.0,
-
         ),
         Positioned(
           left: 225,
@@ -49,10 +50,10 @@ class PlantItem extends StatelessWidget {
           child: Text("Naam\n" + name)
         ),
         Positioned(
-          left: 25,
+          left: 15,
           top: 25,
           child: Image.asset(
-              image,
+            image,
             width: 150.0,
             height: 150.0,
           )
