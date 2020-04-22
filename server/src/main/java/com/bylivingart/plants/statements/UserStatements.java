@@ -1,6 +1,5 @@
 package com.bylivingart.plants.statements;
 
-import com.bylivingart.plants.DatabaseConnection;
 import com.bylivingart.plants.SecurityConfig;
 import com.bylivingart.plants.dataclasses.User;
 
@@ -11,8 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class UserStatements {
-    public static ArrayList<User> getAllUsers() throws SQLException {
-        Connection conn = new DatabaseConnection().getConnection();
+    public static ArrayList<User> getAllUsers(Connection conn) throws SQLException {
         ArrayList<User> list = new ArrayList<>();
         PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM users");
         ResultSet result = preparedStatement.executeQuery();
@@ -26,10 +24,10 @@ public class UserStatements {
         }
     }
 
-    public static User createUser(User user) throws SQLException {
+    public static User createUser(User user, Connection conn) throws SQLException {
         boolean userExists = false;
         try {
-            ArrayList<User> users = getAllUsers();
+            ArrayList<User> users = getAllUsers(conn);
             for (User userFromList : users) {
                 if (user.getUser_name().equals(userFromList.getUser_name())) {
                     userExists = true;
@@ -41,7 +39,6 @@ public class UserStatements {
         }
         if (!userExists) {
             if (!user.getPassword().isEmpty() && user.getPassword().length() > 6) {
-                Connection conn = new DatabaseConnection().getConnection();
                 User newUser = SecurityConfig.HashUserPassword(user);
                 PreparedStatement preparedStatement = conn.prepareStatement("INSERT INTO users VALUES (DEFAULT, ?, ?, ?, ?)");
                 preparedStatement.setString(1, newUser.getUser_name());
@@ -58,8 +55,7 @@ public class UserStatements {
         }
     }
 
-    public static User updateUser(User user) throws SQLException {
-        Connection conn = new DatabaseConnection().getConnection();
+    public static User updateUser(User user, Connection conn) throws SQLException {
         User newUser = SecurityConfig.HashUserPassword(user);
         int id = newUser.getId();
         String userName = newUser.getUser_name();
@@ -83,8 +79,7 @@ public class UserStatements {
         }
     }
 
-    public static User deleteUser(int id) throws SQLException{
-        Connection conn = new DatabaseConnection().getConnection();
+    public static User deleteUser(int id, Connection conn) throws SQLException{
         PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM users WHERE id=?;");
         preparedStatement.setInt(1, id);
         ResultSet resultSet = preparedStatement.executeQuery();

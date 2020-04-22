@@ -4,8 +4,6 @@ import com.bylivingart.plants.PlantsApplication;
 import com.bylivingart.plants.buienradar.BuienradarnlType;
 import com.bylivingart.plants.buienradar.WeerstationType;
 import com.bylivingart.plants.dataclasses.Error401;
-import com.bylivingart.plants.dataclasses.User;
-import com.bylivingart.plants.statements.UserStatements;
 import com.bylivingart.plants.statements.WeatherStatements;
 import io.swagger.annotations.*;
 import org.springframework.http.HttpStatus;
