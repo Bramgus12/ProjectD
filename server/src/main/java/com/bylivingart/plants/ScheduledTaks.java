@@ -80,10 +80,10 @@ public class ScheduledTaks {
 
     public static int getStationnaamId(StationnaamType stationnaam) throws Exception {
         Connection conn = new DatabaseConnection().getConnection();
-        PreparedStatement preparedStatementGetId = conn.prepareStatement("SELECT * FROM stationnaam WHERE value=? AND regio=?");
-        preparedStatementGetId.setString(1, stationnaam.getValue());
-        preparedStatementGetId.setString(2, stationnaam.getRegio());
-        ResultSet resultSet = preparedStatementGetId.executeQuery();
+        PreparedStatement ps = conn.prepareStatement("SELECT * FROM stationnaam WHERE value=? AND regio=?");
+        ps.setString(1, stationnaam.getValue());
+        ps.setString(2, stationnaam.getRegio());
+        ResultSet resultSet = ps.executeQuery();
         conn.close();
 
         if (resultSet.next()) {

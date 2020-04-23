@@ -1,5 +1,6 @@
 package com.bylivingart.plants.controllers;
 
+import com.bylivingart.plants.DatabaseConnection;
 import com.bylivingart.plants.PlantsApplication;
 import com.bylivingart.plants.buienradar.BuienradarnlType;
 import com.bylivingart.plants.buienradar.WeerstationType;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.ArrayList;
 
 @Api(value = "Weather controller")
@@ -43,7 +45,9 @@ public class WeatherController {
             @ApiParam(value = "The region you want the weather of", required = true) @PathVariable String regio
     ) throws IllegalArgumentException {
         try {
-            return new ResponseEntity<>(WeatherStatements.getWeerStationByRegio(regio), HttpStatus.OK);
+            Connection conn = new DatabaseConnection().getConnection();
+            ResponseEntity<ArrayList<WeerstationType>> response = new ResponseEntity<>(WeatherStatements.getWeerStationByRegio(regio, conn), HttpStatus.OK);
+            return response;
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
         }
