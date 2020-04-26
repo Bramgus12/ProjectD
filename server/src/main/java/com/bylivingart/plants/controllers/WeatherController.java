@@ -53,6 +53,25 @@ public class WeatherController {
         }
     }
 
+
+    @ApiOperation("Get the weather station by latitute and longitude.")
+    @ApiResponses(value = {
+        @ApiResponse(code=200, message = "Successfully gotten the weather station", response = WeerstationType.class),
+        @ApiResponse(code=400, message = "Failed to get the weather station", response = Error401.class)
+    })
+    @GetMapping("/distance")
+    private ResponseEntity<WeerstationType> getDistanceBetweenPoints(
+        @ApiParam(value = "Latitude of your location", required = true) @RequestParam Double lat, 
+        @ApiParam(value = "Longitude of your location", required = true) @RequestParam Double lon
+        ) throws IllegalArgumentException {
+        try {
+            ResponseEntity<WeerstationType> response = new ResponseEntity<>(WeatherStatements.getWeerstationByLatLon(lat, lon), HttpStatus.OK);
+            return response;
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+    }
+
     @ExceptionHandler
     void handleIllegalArgumentException(IllegalArgumentException e, HttpServletResponse response) throws IOException {
         PlantsApplication.printErrorInConsole(e.getMessage());
