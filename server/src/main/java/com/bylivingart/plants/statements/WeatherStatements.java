@@ -70,27 +70,31 @@ public class WeatherStatements {
     }
 
     public static WeerstationType getWeerstationByLatLon(Double lat, Double lon) throws Exception{
-        Double shortestDistance = null;
-        WeerstationType weerstationResult = null;
-        List<WeerstationType> weerstations = getWeather().getWeergegevens().getActueelWeer().getWeerstations().getWeerstation();
-        for (WeerstationType weerstationType : weerstations) {
-            Double latStation = Double.parseDouble(weerstationType.getLat());
-            Double lonStation = Double.parseDouble(weerstationType.getLon());
-            
-            Double distance = Math.sqrt(Math.pow(lat - latStation, 2) + Math.pow(lon - lonStation, 2));
-            if (shortestDistance == null) {
-                shortestDistance = distance;
-                weerstationResult = weerstationType;
-            } else {
-                if (shortestDistance > distance) {
+        if (lat > 50.841774 && lat < 53.670272 && lon > 2.649452 && lon < 7.232709) {
+            Double shortestDistance = null;
+            WeerstationType weerstationResult = null;
+            List<WeerstationType> weerstations = getWeather().getWeergegevens().getActueelWeer().getWeerstations().getWeerstation();
+            for (WeerstationType weerstationType : weerstations) {
+                Double latStation = Double.parseDouble(weerstationType.getLat());
+                Double lonStation = Double.parseDouble(weerstationType.getLon());
+                
+                Double distance = Math.sqrt(Math.pow(lat - latStation, 2) + Math.pow(lon - lonStation, 2));
+                if (shortestDistance == null) {
                     shortestDistance = distance;
                     weerstationResult = weerstationType;
                 } else {
-                    continue;
+                    if (shortestDistance > distance) {
+                        shortestDistance = distance;
+                        weerstationResult = weerstationType;
+                    } else {
+                        continue;
+                    }
                 }
             }
+            return weerstationResult;
+        } else {
+            throw new Exception("Coordinates are not from The Netherlands");
         }
-        return weerstationResult;
     }
 
     private static ArrayList<WeerstationType> getWeerstationsFromResultSet(ResultSet resultSet, Connection conn) throws Exception {
