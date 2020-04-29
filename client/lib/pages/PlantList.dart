@@ -19,6 +19,8 @@ class PlantList extends StatelessWidget {
           PlantItem(
               name: plantNames[index % 5],
               image: 'assets/images/' + plantNames[index % 5] + '.jpg',
+              waterNeeded: (index % 5) + 1,
+              sunlightNeeded: (index % 5) + 1,
           ),
         itemCount: 25,
       )
@@ -29,11 +31,13 @@ class PlantList extends StatelessWidget {
 class PlantItem extends StatelessWidget {
   final String name;
   final String image;
+  final int sunlightNeeded;
+  final int waterNeeded;
 
   final double _imageWidth = 150.0;
   final double _imageHeight = 150.0;
 
-  PlantItem({this.name, this.image});
+  PlantItem({this.name, this.image, this.sunlightNeeded, this.waterNeeded});
 
   @override
   Widget build(BuildContext context) {
@@ -74,9 +78,6 @@ class PlantItem extends StatelessWidget {
               top: 20,
               child: Text(
                 name,
-                style: TextStyle(
-                    color: Colors.white
-                ),
               ),
             ),
             Positioned(
@@ -91,6 +92,15 @@ class PlantItem extends StatelessWidget {
             ),
             Positioned(
               left: 200,
+              top: 70,
+              child: RatingRow(
+                count: sunlightNeeded,
+                filledIcon: Icons.star,
+                unfilledIcon: Icons.star_border
+              )
+            ),
+            Positioned(
+              left: 200,
               top: 100,
               child: Text(
                 'Hoeveelheid water',
@@ -98,13 +108,44 @@ class PlantItem extends StatelessWidget {
                     color: Colors.grey
                 ),
               ),
-            )
+            ),
+            Positioned(
+                left: 200,
+                top: 120,
+                child: RatingRow(
+                    count: waterNeeded,
+                    filledIcon: Icons.star,
+                    unfilledIcon: Icons.star_border
+                )
+            ),
           ],
         ),
       ),
       style: TextStyle(
-          fontFamily: 'Libre Baskerville'
+          fontFamily: 'Libre Baskerville',
+          color: Colors.white
       ),
+    );
+  }
+}
+
+class RatingRow extends StatelessWidget {
+  final int count;
+  final IconData filledIcon;
+  final IconData unfilledIcon;
+
+  RatingRow({this.count, this.filledIcon, this.unfilledIcon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(5, (index) =>
+        Icon(
+          index < count ? filledIcon : unfilledIcon,
+          color: Colors.white
+        )
+      )
     );
   }
 }
