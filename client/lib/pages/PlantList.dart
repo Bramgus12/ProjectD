@@ -15,29 +15,46 @@ class PlantList extends StatelessWidget {
         centerTitle: true,
       ),
       body: ListView.builder(
-          itemBuilder: (_, index) =>
-          PlantItem(
+          itemBuilder: (_, index) {
+            final PlantInfo plantInfo = new PlantInfo(
               name: plantNames[index % 5],
-              image: 'assets/images/' + plantNames[index % 5] + '.jpg',
-              waterNeeded: (index % 5) + 1,
-              sunlightNeeded: (index % 5) + 1,
-          ),
+              imageName: 'assets/images/' + plantNames[index % 5] + '.jpg',
+              plantDescription: "Omschrijving van de plant.",
+              waterDescription: "Informatie over hoeveel water de plant nodig heeft.",
+              sunLightDescription: "Informatie over hoeveel zonlicht de plant nodig heeft.",
+              waterAmount: (index % 5) + 1,
+              sunLightAmount: (index % 5) + 1,
+            );
+            return PlantListItem(plantInfo: plantInfo);
+          },
         itemCount: 25,
       )
     );
   }
 }
 
-class PlantItem extends StatelessWidget {
+class PlantInfo {
   final String name;
-  final String image;
-  final int sunlightNeeded;
-  final int waterNeeded;
+  final String imageName;
+  final String plantDescription;
+  final String waterDescription;
+  final String sunLightDescription;
+  final int waterAmount;
+  final int sunLightAmount;
+
+  PlantInfo({
+    this.name, this.imageName, this.plantDescription, this.waterDescription,
+    this.sunLightDescription, this.waterAmount, this.sunLightAmount
+  });
+}
+
+class PlantListItem extends StatelessWidget {
+  final PlantInfo plantInfo;
 
   final double _imageWidth = 150.0;
   final double _imageHeight = 150.0;
 
-  PlantItem({this.name, this.image, this.sunlightNeeded, this.waterNeeded});
+  PlantListItem({this.plantInfo});
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +75,7 @@ class PlantItem extends StatelessWidget {
             Align(
               alignment: Alignment.centerLeft,
               child: Image.asset(
-                image,
+                plantInfo.imageName,
                 width: _imageWidth,
                 height: _imageHeight,
               ),
@@ -77,7 +94,7 @@ class PlantItem extends StatelessWidget {
               left: 200,
               top: 20,
               child: Text(
-                name,
+                plantInfo.name,
               ),
             ),
             Positioned(
@@ -94,7 +111,7 @@ class PlantItem extends StatelessWidget {
               left: 200,
               top: 70,
               child: RatingRow(
-                count: sunlightNeeded,
+                count: plantInfo.sunLightAmount,
                 filledIcon: Icons.star,
                 unfilledIcon: Icons.star_border
               )
@@ -113,7 +130,7 @@ class PlantItem extends StatelessWidget {
                 left: 200,
                 top: 120,
                 child: RatingRow(
-                    count: waterNeeded,
+                    count: plantInfo.waterAmount,
                     filledIcon: Icons.star,
                     unfilledIcon: Icons.star_border
                 )
@@ -139,7 +156,6 @@ class RatingRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisSize: MainAxisSize.min,
       children: List.generate(5, (index) =>
         Icon(
           index < count ? filledIcon : unfilledIcon,
