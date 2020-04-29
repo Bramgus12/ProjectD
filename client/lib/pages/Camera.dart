@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
@@ -6,6 +7,7 @@ import '../MenuNavigation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tflite/tflite.dart';
 import 'package:flutter/services.dart';
+import 'package:image/image.dart' as img;
 class Camera extends StatefulWidget {
   @override
   _CameraState createState() => _CameraState();
@@ -79,7 +81,7 @@ class _CameraState extends State<Camera> {
     }else{
 
       return Text(
-          _recognitions.map((res){ return "Prediction: ${res["label"]}: Confidence: ${res["confidence"].toStringAsFixed(3)}";}).toString(),
+          _recognitions.map((res){ return "Prediction: ${res["label"]}: Confidence: ${res["confidence"].toStringAsFixed(3)}";}).toList()[0].toString(),
         textAlign: TextAlign.center,
         style: TextStyle(
           color: Colors.black,
@@ -97,8 +99,8 @@ class _CameraState extends State<Camera> {
     try {
       String res;
       res = await Tflite.loadModel(
-          model: "assets/m3_n2.tflite",
-          labels: "assets/m3_n.txt");
+          model: "assets/m0_0.81.tflite",
+          labels: "assets/label.txt");
       print(res);
     } on PlatformException {
       print('Failed to load model.');
@@ -107,21 +109,53 @@ class _CameraState extends State<Camera> {
   Future plantModel(File image) async {
     var recognitions = await Tflite.runModelOnImage(
       path: image.path,
-      numResults: 5,
+      numResults: 6,
       threshold: 0.05,
-      imageMean: 0.5586782040001759,
-      imageStd: 0.3291770070307013,
+      imageMean: 0.4526901778594428,
+      imageStd: 0.3290300460265408,
     );
+    print("----------------------------------------------------");
     print(recognitions);
     setState(() {
       _recognitions = recognitions;
     });
   }
+
+  Future plantModelWithBinary(img.Image image) async {
+
+
+    Uint8List imageToByteListFloat32(
+        img.Image image, int inputSize, double mean, double std) {
+      var convertedBytes = Float32List(1 * inputSize * inputSize * 3);
+      var buffer = Float32List.view(convertedBytes.buffer);
+      int pixelIndex = 0;
+      for (var i = 0; i < inputSize; i++) {
+        for (var j = 0; j < inputSize; j++) {
+          var pixel = image.getPixel(j, i);
+          buffer[pixelIndex++] = (img.getRed(pixel) - mean) / std;
+          buffer[pixelIndex++] = (img.getGreen(pixel) - mean) / std;
+          buffer[pixelIndex++] = (img.getBlue(pixel) - mean) / std;
+        }
+      }
+
+      return convertedBytes.buffer.asUint8List();
+    }
+    var recognitions = await Tflite.runModelOnBinary(
+        binary: imageToByteListFloat32(image, 200, 0.4526901778594428, 0.3290300460265408),// required
+        numResults: 6,    // defaults to 5
+        threshold: 0.05,  // defaults to 0.1
+        asynch: true      // defaults to true
+    );
+    print("----------------------------------------------------");
+    print(recognitions);
+    setState(() {
+      _recognitions = recognitions;
+    });
+  }
+
+
   Future predictImage(File image) async {
-    if (image == null) return;
-    _busy = true;
     await plantModel(image);
-    _busy = false;
     }
 
 

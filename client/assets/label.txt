@@ -3,3 +3,4 @@ dracaena_lemon_lime
 peace_lily
 pothos
 snake_plant
+unknown
