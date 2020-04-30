@@ -101,7 +101,7 @@ class PlantListItem extends StatelessWidget {
               left: 200,
               top: 50,
               child: Text(
-                'Hoevelheid zonlicht',
+                'Hoeveelheid zonlicht',
                 style: TextStyle(
                     color: Colors.grey
                 ),
