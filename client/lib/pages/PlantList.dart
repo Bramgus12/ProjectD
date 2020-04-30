@@ -103,7 +103,7 @@ class PlantListItem extends StatelessWidget {
                   ),
                   RatingRow(
                     count: plantInfo.sunLightAmount,
-                    // FIXME: find better icons for sunlight
+                    // TODO: find better icons for sunlight
                     filledIcon: Icons.star,
                     unfilledIcon: Icons.star_border,
                   ),
@@ -115,7 +115,7 @@ class PlantListItem extends StatelessWidget {
                   ),
                   RatingRow(
                       count: plantInfo.waterAmount,
-                      // FIXME: find better icons for water
+                      // TODO: find better icons for water
                       filledIcon: Icons.star,
                       unfilledIcon: Icons.star_border,
                   )
