@@ -27,7 +27,7 @@ class PlantList extends StatelessWidget {
             );
             return PlantListItem(plantInfo: plantInfo);
           },
-        itemCount: 5,
+        itemCount: 13,
       )
     );
   }
