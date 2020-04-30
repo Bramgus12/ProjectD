@@ -27,7 +27,7 @@ class PlantList extends StatelessWidget {
             );
             return PlantListItem(plantInfo: plantInfo);
           },
-        itemCount: 25,
+        itemCount: 5,
       )
     );
   }
@@ -61,6 +61,7 @@ class PlantListItem extends StatelessWidget {
     return DefaultTextStyle(
       child: Container(
         padding: EdgeInsets.all(10.0),
+        height: _imageHeight * 1.1,
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
@@ -70,73 +71,53 @@ class PlantListItem extends StatelessWidget {
           ),
           color: Colors.black
         ),
-        child: Stack(
-          children: <Widget>[
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Image.asset(
+        child: GestureDetector(
+          // onTap: () {  },
+          child: Row(
+            children: <Widget>[
+              Image.asset(
                 plantInfo.imageName,
                 width: _imageWidth,
                 height: _imageHeight,
               ),
-            ),
-            Positioned(
-              left: 200,
-              top: 0,
-              child: Text(
-                'Naam',
-                style: TextStyle(
-                  color: Colors.grey
-                ),
+              SizedBox(
+                width: 50,
               ),
-            ),
-            Positioned(
-              left: 200,
-              top: 20,
-              child: Text(
-                plantInfo.name,
-              ),
-            ),
-            Positioned(
-              left: 200,
-              top: 50,
-              child: Text(
-                'Hoeveelheid zonlicht',
-                style: TextStyle(
-                    color: Colors.grey
-                ),
-              ),
-            ),
-            Positioned(
-              left: 200,
-              top: 70,
-              child: RatingRow(
-                count: plantInfo.sunLightAmount,
-                filledIcon: Icons.star,
-                unfilledIcon: Icons.star_border
-              )
-            ),
-            Positioned(
-              left: 200,
-              top: 100,
-              child: Text(
-                'Hoeveelheid water',
-                style: TextStyle(
-                    color: Colors.grey
-                ),
-              ),
-            ),
-            Positioned(
-                left: 200,
-                top: 120,
-                child: RatingRow(
-                    count: plantInfo.waterAmount,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    'Naam',
+                    style: TextStyle(color: Colors.grey)
+                  ),
+                  Text(plantInfo.name),
+                  SizedBox(height: 10),
+
+                  Text(
+                      'Hoeveelheid zonlicht',
+                      style: TextStyle(color: Colors.grey)
+                  ),
+                  RatingRow(
+                    count: plantInfo.sunLightAmount,
                     filledIcon: Icons.star,
-                    unfilledIcon: Icons.star_border
-                )
-            ),
-          ],
-        ),
+                    unfilledIcon: Icons.star_border,
+                  ),
+                  SizedBox(height: 10),
+
+                  Text(
+                      'Hoeveelheid water',
+                      style: TextStyle(color: Colors.grey)
+                  ),
+                  RatingRow(
+                      count: plantInfo.waterAmount,
+                      filledIcon: Icons.star,
+                      unfilledIcon: Icons.star_border,
+                  )
+                ],
+              )
+            ],
+          ),
+        )
       ),
       style: TextStyle(
           fontFamily: 'Libre Baskerville',
