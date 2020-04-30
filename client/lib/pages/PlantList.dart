@@ -35,10 +35,13 @@ class PlantList extends StatelessWidget {
 
 class PlantInfo {
   final String name;
+  // the name of the image in the assets/images folder
   final String imageName;
+  // the wireframes show multiple descriptions
   final String plantDescription;
   final String waterDescription;
   final String sunLightDescription;
+  // amount 1-5
   final int waterAmount;
   final int sunLightAmount;
 
@@ -72,6 +75,7 @@ class PlantListItem extends StatelessWidget {
           color: Colors.black
         ),
         child: GestureDetector(
+          // onTap to got to the detail page of the clicked plant
           // onTap: () {  },
           child: Row(
             children: <Widget>[
@@ -99,6 +103,7 @@ class PlantListItem extends StatelessWidget {
                   ),
                   RatingRow(
                     count: plantInfo.sunLightAmount,
+                    // FIXME: find better icons for sunlight
                     filledIcon: Icons.star,
                     unfilledIcon: Icons.star_border,
                   ),
@@ -110,6 +115,7 @@ class PlantListItem extends StatelessWidget {
                   ),
                   RatingRow(
                       count: plantInfo.waterAmount,
+                      // FIXME: find better icons for water
                       filledIcon: Icons.star,
                       unfilledIcon: Icons.star_border,
                   )
