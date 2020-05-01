@@ -42,7 +42,7 @@ class _HomePageState extends State<HomePage> {
     if(weatherStations == null)
       return;
     for (var weatherStation in weatherStations) {
-      print(weatherStation.code);
+      print(weatherStation);
     }
   }
 }
