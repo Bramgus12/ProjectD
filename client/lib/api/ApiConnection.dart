@@ -1,17 +1,26 @@
 import 'package:http/http.dart' as http;
+import 'package:global_configuration/global_configuration.dart';
 import 'package:plantexpert/api/WeatherStation.dart';
 import 'dart:convert';
 
 class ApiConnection {
 
-  final String url = 'http://192.168.178.29:8080/api/';
+  final String baseUrl;
+
+  ApiConnection()
+    : baseUrl = 'http://${GlobalConfiguration().getString("server")}:${GlobalConfiguration().getInt("port")}/api/';
+
+  Future<dynamic> _fetchJson(String url) async {
+    http.Response response = await http.get(url);
+    if(response.statusCode != 200)
+      return null;
+    return json.decode(response.body);
+  }
   
   Future<List<WeatherStation>> fetchWeatherStations(String region) async {
-    http.Response response = await http.get('${url}weather/$region');
-    if(response.statusCode != 200) {
+    Iterable jsonWeatherStations = await _fetchJson('${baseUrl}weather/$region');
+    if(jsonWeatherStations == null)
       return null;
-    }
-    Iterable jsonWeatherStations = json.decode(response.body);
     return jsonWeatherStations.map<WeatherStation>((jsonWeatherStation) => WeatherStation.fromJson(jsonWeatherStation)).toList();
   }
 
