@@ -1,11 +1,23 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:global_configuration/global_configuration.dart';
 
 import 'pages/Camera.dart';
 import 'pages/Home.dart';
 import 'pages/PlantList.dart';
 import 'pages/plant-detail.dart';
 
-void main() {
+Future<void> main() async {
+  // Load configuration
+  WidgetsFlutterBinding.ensureInitialized();
+  if (kReleaseMode) {
+    // Running in release mode
+    await GlobalConfiguration().loadFromAsset("release");
+  } else {
+    // Running in debug mode
+    await GlobalConfiguration().loadFromAsset("debug");
+  }
+
   runApp(MyApp());
 }
 
