@@ -19,7 +19,10 @@ class _CameraState extends State<Camera> {
   List _recognitions;
   bool _busy = false;
 
-  openGallary( BuildContext context) async {
+  openGallery( BuildContext context) async {
+    this.setState(() {
+      _recognitions = null;
+    });
     var img = await ImagePicker.pickImage(source: ImageSource.gallery);
     predictImage(img);
     this.setState((){
@@ -29,10 +32,14 @@ class _CameraState extends State<Camera> {
 
   }
   openCamera(BuildContext context) async{
+    this.setState(() {
+      _recognitions = null;
+    });
     var img = await ImagePicker.pickImage(source: ImageSource.camera);
     predictImage(img);
     this.setState((){
       imageFile = img;
+
     });
     Navigator.of(context).pop();
   }
@@ -48,7 +55,7 @@ class _CameraState extends State<Camera> {
                   GestureDetector(
                     child: Text("Gallary"),
                     onTap: (){
-                      openGallary(context);
+                      openGallery(context);
                     },
                   ),
                   Padding(padding: EdgeInsets.all(8.0),),
@@ -70,16 +77,15 @@ class _CameraState extends State<Camera> {
   Widget selectedImageView(){
     if(imageFile == null){
       return Text("No image Selected!", textAlign: TextAlign.center);
+
     }else{
       return  Image.file(imageFile,width: 400, height: 400,);
     }
   }
   Widget predictionView(){
-
     if(_recognitions == null){
-      return Text("prediction: ......", textAlign: TextAlign.center);
+      return Text("", textAlign: TextAlign.center);
     }else{
-
       return Text(
           _recognitions.map((res){ return "Prediction: ${res["label"]}: Confidence: ${res["confidence"].toStringAsFixed(3)}";}).toList()[0].toString(),
         textAlign: TextAlign.center,
@@ -117,7 +123,7 @@ class _CameraState extends State<Camera> {
     print("----------------------------------------------------");
     print(recognitions);
     setState(() {
-      _recognitions = recognitions;
+        _recognitions = recognitions;
     });
   }
 
@@ -149,12 +155,13 @@ class _CameraState extends State<Camera> {
     print("----------------------------------------------------");
     print(recognitions);
     setState(() {
-      _recognitions = recognitions;
+        _recognitions = recognitions;
     });
   }
 
 
   Future predictImage(File image) async {
+
     await plantModel(image);
     }
 
