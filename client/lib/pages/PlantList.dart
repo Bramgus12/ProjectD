@@ -75,8 +75,7 @@ class PlantListItem extends StatelessWidget {
           color: Colors.black
         ),
         child: GestureDetector(
-          // onTap to got to the detail page of the clicked plant
-          // onTap: () {  },
+          onTap: () => Navigator.pushNamed(context, '/plant-detail', arguments: plantInfo),
           child: Row(
             children: <Widget>[
               Image.asset(
