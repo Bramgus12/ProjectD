@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'pages/Camera.dart';
 import 'pages/Home.dart';
 import 'pages/PlantList.dart';
+import 'pages/plant-detail.dart';
 
 void main() {
   runApp(MyApp());
@@ -31,17 +32,17 @@ class MyApp extends StatelessWidget {
         ),
       ),
       initialRoute: '/',
+      routes: {
+        '/plant-detail': (context) => PlantDetail(plantInfo: ModalRoute.of(context).settings.arguments),
+      },
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {
           case '/':
             return SlideRightRoute(widget:HomePage(), settings:settings);
-            break;
           case '/camera':
             return SlideRightRoute(widget:Camera(), settings:settings);
-            break;
           case '/my-plants':
             return SlideRightRoute(widget:PlantList(), settings:settings);
-            break;
           default:
             return null;
         }
