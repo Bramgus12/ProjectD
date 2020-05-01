@@ -1,6 +1,5 @@
 package com.bylivingart.plants.statements;
 
-import com.bylivingart.plants.DatabaseConnection;
 import com.bylivingart.plants.buienradar.BuienradarnlType;
 import com.bylivingart.plants.buienradar.IcoonactueelType;
 import com.bylivingart.plants.buienradar.StationnaamType;
@@ -14,12 +13,10 @@ import org.apache.http.util.EntityUtils;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.crypto.Data;
 import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,131 +28,186 @@ public class WeatherStatements {
         JAXBContext jaxbContext;
 
         try (CloseableHttpResponse response = httpClient.execute(request)) {
-            System.out.println(response.getStatusLine().toString());
 
             HttpEntity entity = response.getEntity();
-
             String result = EntityUtils.toString(entity);
 
             jaxbContext = JAXBContext.newInstance(BuienradarnlType.class);
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            BuienradarnlType buienradarnlType = (BuienradarnlType) jaxbUnmarshaller.unmarshal(new StringReader(result));
 
-            return (BuienradarnlType) jaxbUnmarshaller.unmarshal(new StringReader(result));
+            return buienradarnlType;
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
         }
     }
 
-    public static ArrayList<WeerstationType> getWeerStationByRegio(String regio) throws Exception {
-        BuienradarnlType buienradarnlType = getWeather();
-        List<WeerstationType> Weerstations = buienradarnlType.getWeergegevens().getActueelWeer().getWeerstations().getWeerstation();
-        ArrayList<WeerstationType> SearchedWeerStation = new ArrayList<>();
-
-        for (WeerstationType weerstationType : Weerstations) {
-            if (weerstationType.getStationnaam().getRegio().contains(regio)) {
-                SearchedWeerStation.add(weerstationType);
-            }
-        }
-        return SearchedWeerStation;
-    }
-
-    public static void storeWeatherData() {
-        Connection conn = new DatabaseConnection().getConnection();
+    public static ArrayList<WeerstationType> getWeerStationByRegio(String regio, Connection conn) throws Exception {
         try {
-            BuienradarnlType weather = getWeather();
-            List<WeerstationType> weerStations = weather.getWeergegevens().getActueelWeer().getWeerstations().getWeerstation();
-            for (WeerstationType weerstation : weerStations) {
-                IcoonactueelType icoonactueel = weerstation.getIcoonactueel();
-                StationnaamType stationnaam = weerstation.getStationnaam();
-                String icoonactueelId;
+            String regioEdit = "%" + regio + "%";
+            PreparedStatement snStatement = conn.prepareStatement("SELECT * FROM stationnaam WHERE regio LIKE ?");
+            snStatement.setString(1, regioEdit);
+            ResultSet stationnaamResult = snStatement.executeQuery();
 
-                PreparedStatement preparedStatementIcoonactueel = conn.prepareStatement("SELECT * FROM icoonactueel WHERE id=?");
-                preparedStatementIcoonactueel.setString(1, icoonactueel.getID());
-                ResultSet resultIcoonactueel = preparedStatementIcoonactueel.executeQuery();
+            ArrayList<StationnaamType> stationnaamTypes = getStationnaamFromResultSet(stationnaamResult);
 
-                if (!resultIcoonactueel.next()) {
-                    storeIcoonActueel(icoonactueel);
-                    icoonactueelId = icoonactueel.getID();
-                } else {
-                    icoonactueelId = resultIcoonactueel.getString("id");
-                }
+            ArrayList<WeerstationType> weerstationsNew = new ArrayList<>();
 
-                PreparedStatement preparedStatementStationnaam = conn.prepareStatement("SELECT * FROM stationnaam WHERE value=?");
-                preparedStatementStationnaam.setString(1, stationnaam.getValue());
-                ResultSet resultStationnaam = preparedStatementStationnaam.executeQuery();
-                int stationnaamId;
-
-                if (!resultStationnaam.next()) {
-                    storeStationnaam(stationnaam);
-                }
-                stationnaamId = getStationnaamId(stationnaam);
-
-                storeWeerstation(weerstation, stationnaamId, icoonactueelId);
+            for (StationnaamType stationnaamType : stationnaamTypes) {
+                int id = stationnaamType.getId();
+                PreparedStatement wsStatement = conn.prepareStatement("SELECT * FROM weerstation WHERE stationnaam=?");
+                wsStatement.setInt(1, id);
+                ResultSet resultSet = wsStatement.executeQuery();
+                ArrayList<WeerstationType> weerstations = getWeerstationsFromResultSet(resultSet, conn);
+                WeerstationType lastWeerstation = weerstations.get(weerstations.size() - 1);
+                weerstationsNew.add(lastWeerstation);
             }
-            conn.close();
+            return weerstationsNew;
         } catch (Exception e) {
             e.printStackTrace();
+            throw new Exception(e.getMessage());
         }
     }
 
-    public static void storeIcoonActueel(IcoonactueelType icoonactueel) throws Exception {
-        Connection conn = new DatabaseConnection().getConnection();
-        PreparedStatement preparedStatement = conn.prepareStatement("INSERT INTO icoonactueel VALUES (?, ?, ?)");
-        preparedStatement.setString(1, icoonactueel.getID());
-        preparedStatement.setString(2, icoonactueel.getValue());
-        preparedStatement.setString(3, icoonactueel.getZin());
-        preparedStatement.execute();
-        conn.close();
-    }
-
-    public static void storeStationnaam(StationnaamType stationnaam) throws Exception {
-        Connection conn = new DatabaseConnection().getConnection();
-        PreparedStatement preparedStatement = conn.prepareStatement("INSERT INTO stationnaam VALUES (DEFAULT, ?, ?)");
-        preparedStatement.setString(1, stationnaam.getValue());
-        preparedStatement.setString(2, stationnaam.getRegio());
-        preparedStatement.execute();
-        conn.close();
-    }
-
-    public static int getStationnaamId(StationnaamType stationnaam) throws Exception {
-        Connection conn = new DatabaseConnection().getConnection();
-        PreparedStatement preparedStatementGetId = conn.prepareStatement("SELECT * FROM stationnaam WHERE value=? AND regio=?");
-        preparedStatementGetId.setString(1, stationnaam.getValue());
-        preparedStatementGetId.setString(2, stationnaam.getRegio());
-        ResultSet resultSet = preparedStatementGetId.executeQuery();
-        conn.close();
-
-        if (resultSet.next()) {
-            return resultSet.getInt("id");
+    public static WeerstationType getWeerstationByLatLon(Double lat, Double lon) throws Exception{
+        if (lat > 50.841774 && lat < 53.670272 && lon > 2.649452 && lon < 7.232709) {
+            Double shortestDistance = null;
+            WeerstationType weerstationResult = null;
+            List<WeerstationType> weerstations = getWeather().getWeergegevens().getActueelWeer().getWeerstations().getWeerstation();
+            for (WeerstationType weerstationType : weerstations) {
+                Double latStation = Double.parseDouble(weerstationType.getLat());
+                Double lonStation = Double.parseDouble(weerstationType.getLon());
+                
+                Double distance = Math.sqrt(Math.pow(lat - latStation, 2) + Math.pow(lon - lonStation, 2));
+                if (shortestDistance == null) {
+                    shortestDistance = distance;
+                    weerstationResult = weerstationType;
+                } else {
+                    if (shortestDistance > distance) {
+                        shortestDistance = distance;
+                        weerstationResult = weerstationType;
+                    } else {
+                        continue;
+                    }
+                }
+            }
+            return weerstationResult;
         } else {
-            throw new SQLException("Couldn't find id of object.");
+            throw new Exception("Coordinates are not from The Netherlands");
         }
     }
 
-    public static void storeWeerstation(WeerstationType ws, int stationnaamId, String icoonactueelId) throws Exception {
-        Connection conn = new DatabaseConnection().getConnection();
-        PreparedStatement ps = conn.prepareStatement("INSERT INTO weerstation VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        ps.setString(1, ws.getStationcode());
-        ps.setInt(2, stationnaamId);
-        ps.setString(3, ws.getLat());
-        ps.setString(4, ws.getLon());
-        ps.setString(5, ws.getDatum());
-        ps.setString(6, ws.getLuchtvochtigheid());
-        ps.setString(7, ws.getTemperatuurGC());
-        ps.setString(8, ws.getWindsnelheidMS());
-        ps.setString(9, ws.getWindsnelheidBF());
-        ps.setString(10, ws.getWindrichtingGR());
-        ps.setString(11, ws.getWindrichting());
-        ps.setString(12, ws.getLuchtdruk());
-        ps.setString(13, ws.getZichtmeters());
-        ps.setString(14, ws.getWindstotenMS());
-        ps.setString(15, ws.getRegenMMPU());
-        ps.setString(16, ws.getZonintensiteitWM2());
-        ps.setString(17, icoonactueelId);
-        ps.setString(18, ws.getTemperatuur10Cm());
-        ps.setString(19, ws.getUrl());
-        ps.setString(20, ws.getLatGraden());
-        ps.setString(21, ws.getLonGraden());
-        ps.setString(22, ws.getId());
-        ps.execute();
-        conn.close();
+    private static ArrayList<WeerstationType> getWeerstationsFromResultSet(ResultSet resultSet, Connection conn) throws Exception {
+        try {
+            ArrayList<WeerstationType> weerstations = new ArrayList<>();
+            if (!resultSet.next()) {
+                throw new Exception("Database is empty");
+            } else {
+                do {
+                    String stationCode = resultSet.getString(1);
+                    int stationnaamId = resultSet.getInt(2);
+                    String lat = resultSet.getString(3);
+                    String lon = resultSet.getString(4);
+                    String datum = resultSet.getString(5);
+                    String luchtvochtigheid = resultSet.getString(6);
+                    String temperatuurGC = resultSet.getString(7);
+                    String windsnelheidMS = resultSet.getString(8);
+                    String windsnelheidBF = resultSet.getString(9);
+                    String windrichtingGR = resultSet.getString(10);
+                    String windrichting = resultSet.getString(11);
+                    String luchtdruk = resultSet.getString(12);
+                    String zichtmeters = resultSet.getString(13);
+                    String windstotenMS = resultSet.getString(14);
+                    String regenMMPU = resultSet.getString(15);
+                    String zonintensiteitWM2 = resultSet.getString(16);
+                    String icoonactueelID = resultSet.getString(17);
+                    String temperatuur10Cm = resultSet.getString(18);
+                    String url = resultSet.getString(19);
+                    String latGraden = resultSet.getString(20);
+                    String lonGraden = resultSet.getString(21);
+                    String id = resultSet.getString(22);
+                    
+                    StationnaamType stationnaamObj = getStationnaamByID(stationnaamId, conn);
+
+                    IcoonactueelType icoonactueelObj = getIcoonactueelById(icoonactueelID, conn);
+
+                    WeerstationType weerstation = new WeerstationType(
+                        stationCode, 
+                        stationnaamObj, 
+                        lat, 
+                        lon, 
+                        datum, 
+                        luchtvochtigheid, 
+                        temperatuurGC, 
+                        windsnelheidMS, 
+                        windsnelheidBF, 
+                        windrichtingGR,
+                        windrichting, 
+                        luchtdruk, 
+                        zichtmeters, 
+                        windstotenMS, 
+                        regenMMPU, 
+                        zonintensiteitWM2, 
+                        icoonactueelObj, 
+                        temperatuur10Cm, 
+                        url, 
+                        latGraden, 
+                        lonGraden, 
+                        id
+                    );
+
+                    weerstations.add(weerstation);
+                } while (resultSet.next());
+                return weerstations;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception (e.getMessage());
+        }
+    }
+
+    private static ArrayList<StationnaamType> getStationnaamFromResultSet(ResultSet resultSet) throws Exception{
+        ArrayList<StationnaamType> stationnamen = new ArrayList<>();
+        if (!resultSet.next()) {
+            throw new Exception("No data in result.");
+        } else {
+            do {
+                String value = resultSet.getString("value");
+                String regio = resultSet.getString("regio");
+                int id = resultSet.getInt("id");
+                stationnamen.add(new StationnaamType(value, regio, id));
+            } while (resultSet.next());
+        }
+        return stationnamen;
+    }
+
+
+    private static IcoonactueelType getIcoonactueelById(String id, Connection conn) throws Exception{
+        PreparedStatement ps = conn.prepareStatement("SELECT * FROM icoonactueel WHERE id=?");
+        ps.setString(1, id);
+        ResultSet rs = ps.executeQuery();
+
+        if (!rs.next()) {
+            throw new Exception("Can't find and entry on id: " + id);
+        } else {
+            String value = rs.getString("value");
+            String zin = rs.getString("zin");
+            return new IcoonactueelType(value, zin, id);
+        }
+    }
+
+
+    private static StationnaamType getStationnaamByID(int id, Connection conn) throws Exception {
+        PreparedStatement ps = conn.prepareStatement("SELECT * FROM stationnaam WHERE id=?");
+        ps.setInt(1, id);
+        ResultSet rs = ps.executeQuery();
+
+        if (!rs.next()) {
+            throw new Exception("Can't find an entry on id: " + id);
+        } else {
+            String value = rs.getString("value");
+            String regio = rs.getString("regio");
+            return new StationnaamType(value, regio, id);
+        }
     }
 }

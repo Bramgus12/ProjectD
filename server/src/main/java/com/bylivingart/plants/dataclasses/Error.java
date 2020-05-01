@@ -3,22 +3,22 @@ package com.bylivingart.plants.dataclasses;
 import java.sql.Timestamp;
 import java.util.Date;
 
-public class Error401 {
-    private Timestamp timestamp;
+public class Error {
+    private String timestamp;
     private int status;
     private String error;
     private String message;
     private String path;
 
-    public Error401(int status, String error, String message, String path){
-        this.timestamp = new Timestamp(new Date().getTime());
+    public Error(int status, String error, String message, String path){
+        this.timestamp = new Timestamp(new Date().getTime()).toString();
         this.status = status;
         this.error = error;
         this.message = message;
         this.path = path;
     }
 
-    public Timestamp getTimestamp() {
+    public String getTimestamp() {
         return timestamp;
     }
 
@@ -38,7 +38,7 @@ public class Error401 {
         return path;
     }
 
-    public void setTimestamp(Timestamp timestamp) {
+    public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
 

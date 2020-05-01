@@ -148,6 +148,55 @@ public class WeerstationType {
     @XmlAttribute(name = "id")
     protected String id;
 
+    public WeerstationType(){};
+
+    public WeerstationType(
+        String stationcode, 
+        StationnaamType stationnaam, 
+        String lat, 
+        String lon, 
+        String datum, 
+        String luchtvochtigheid, 
+        String temperatuurGC, 
+        String windsnelheidMS, 
+        String windsnelheidBF, 
+        String windrichtingGR, 
+        String windrichting, 
+        String luchtdruk, 
+        String zichtmeters, 
+        String windstotenMS,
+        String regenMMPU, 
+        String zonintensiteitWM2, 
+        IcoonactueelType icoonactueel, 
+        String temperatuur10Cm, 
+        String url, 
+        String latGraden, 
+        String lonGraden, 
+        String id){
+            this.stationcode = stationcode;
+            this.stationnaam = stationnaam;
+            this.lat = lat;
+            this.lon = lon;
+            this.datum = datum;
+            this.luchtvochtigheid = luchtvochtigheid;
+            this.temperatuurGC = temperatuurGC;
+            this.windsnelheidMS = windsnelheidMS;
+            this.windsnelheidBF = windsnelheidBF;
+            this.windrichtingGR = windrichtingGR;
+            this.windrichting = windrichting;
+            this.luchtdruk = luchtdruk;
+            this.zichtmeters = zichtmeters;
+            this.windstotenMS = windstotenMS;
+            this.regenMMPU = regenMMPU;
+            this.zonintensiteitWM2 = zonintensiteitWM2;
+            this.icoonactueel = icoonactueel;
+            this.temperatuur10Cm = temperatuur10Cm;
+            this.url = url;
+            this.latGraden = latGraden;
+            this.lonGraden = lonGraden;
+            this.id = id;
+    }
+
     /**
      * Gets the value of the stationcode property.
      * 

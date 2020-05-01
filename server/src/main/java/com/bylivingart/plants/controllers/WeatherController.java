@@ -1,10 +1,10 @@
 package com.bylivingart.plants.controllers;
 
+import com.bylivingart.plants.DatabaseConnection;
 import com.bylivingart.plants.PlantsApplication;
 import com.bylivingart.plants.buienradar.BuienradarnlType;
 import com.bylivingart.plants.buienradar.WeerstationType;
-import com.bylivingart.plants.dataclasses.User;
-import com.bylivingart.plants.statements.UserStatements;
+import com.bylivingart.plants.dataclasses.Error;
 import com.bylivingart.plants.statements.WeatherStatements;
 import io.swagger.annotations.*;
 import org.springframework.http.HttpStatus;
@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.Connection;
+import java.util.ArrayList;
 
 @Api(value = "Weather controller")
 @RestController
@@ -20,12 +22,14 @@ import java.io.IOException;
 public class WeatherController {
 
     @ApiOperation(value = "Get the full weather object")
-    @ApiResponses(@ApiResponse(code=200, message="Successfully gotten the weather", response = BuienradarnlType.class))
+    @ApiResponses(value = {
+            @ApiResponse(code=200, message="Successfully gotten the weather", response = BuienradarnlType.class),
+            @ApiResponse(code=400, message = "Failed to get the weather", response = Error.class)
+    })
     @GetMapping
-    private ResponseEntity getWeather() throws IllegalArgumentException{
+    private ResponseEntity<BuienradarnlType> getWeather() throws IllegalArgumentException{
         try {
-            WeatherStatements.storeWeatherData();
-            return ResponseEntity.status(HttpStatus.OK).body(WeatherStatements.getWeather());
+            return new ResponseEntity<>(WeatherStatements.getWeather(), HttpStatus.OK);
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
         }
@@ -34,14 +38,35 @@ public class WeatherController {
     @ApiOperation("Get the weather for a region.")
     @ApiResponses( value = {
             @ApiResponse(code=200, message = "Successfully gotten weather of the region.", response = WeerstationType.class, responseContainer = "List"),
-            @ApiResponse(code=400, message = "Failed to get the weather of the region")
+            @ApiResponse(code=400, message = "Failed to get the weather of the region", response = Error.class)
     })
     @GetMapping("/{regio}")
-    private ResponseEntity getWeatherByRegio(
+    private ResponseEntity<ArrayList<WeerstationType>> getWeatherByRegio(
             @ApiParam(value = "The region you want the weather of", required = true) @PathVariable String regio
     ) throws IllegalArgumentException {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(WeatherStatements.getWeerStationByRegio(regio));
+            Connection conn = new DatabaseConnection().getConnection();
+            ResponseEntity<ArrayList<WeerstationType>> response = new ResponseEntity<>(WeatherStatements.getWeerStationByRegio(regio, conn), HttpStatus.OK);
+            return response;
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+    }
+
+
+    @ApiOperation("Get the weather station by latitute and longitude.")
+    @ApiResponses(value = {
+        @ApiResponse(code=200, message = "Successfully gotten the weather station", response = WeerstationType.class),
+        @ApiResponse(code=400, message = "Failed to get the weather station", response = Error.class)
+    })
+    @GetMapping("/latlon")
+    private ResponseEntity<WeerstationType> getWeatherByLatLon(
+        @ApiParam(value = "Latitude of your location", required = true) @RequestParam Double lat, 
+        @ApiParam(value = "Longitude of your location", required = true) @RequestParam Double lon
+        ) throws IllegalArgumentException {
+        try {
+            ResponseEntity<WeerstationType> response = new ResponseEntity<>(WeatherStatements.getWeerstationByLatLon(lat, lon), HttpStatus.OK);
+            return response;
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
         }

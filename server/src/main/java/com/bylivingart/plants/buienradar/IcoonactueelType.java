@@ -46,6 +46,14 @@ public class IcoonactueelType {
     @XmlAttribute(name = "zin")
     protected String zin;
 
+    public IcoonactueelType(){};
+
+    public IcoonactueelType(String value, String zin, String id){
+        this.value = value;
+        this.zin = zin;
+        this.id = id;
+    }
+
     /**
      * Gets the value of the value property.
      * 

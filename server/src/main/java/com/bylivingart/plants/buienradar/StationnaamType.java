@@ -45,6 +45,15 @@ public class StationnaamType {
     @XmlAttribute
     protected int id;
 
+    public StationnaamType(){};
+
+    public StationnaamType(String value, String regio, int id){
+        this.value = value;
+        this.regio = regio;
+        this.id = id;
+    }
+
+
     public int getId() {
         return id;
     }
