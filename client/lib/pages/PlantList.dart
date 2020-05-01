@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../MenuNavigation.dart';
 
 class PlantList extends StatelessWidget {
+  // plants with images in assets/folder
   final List<String> plantNames = <String>["croton", "dracaena_lemon_lime", "peace_lily", "pothos", "snake_plant"];
 
   @override
@@ -17,17 +18,17 @@ class PlantList extends StatelessWidget {
       body: ListView.builder(
           itemBuilder: (_, index) {
             final PlantInfo plantInfo = new PlantInfo(
-              name: plantNames[index % 5],
-              imageName: 'assets/images/' + plantNames[index % 5] + '.jpg',
+              name: plantNames[index % plantNames.length],
+              imageName: 'assets/images/' + plantNames[index % plantNames.length] + '.jpg',
               plantDescription: "Omschrijving van de plant.",
               waterDescription: "Informatie over hoeveel water de plant nodig heeft.",
               sunLightDescription: "Informatie over hoeveel zonlicht de plant nodig heeft.",
-              waterAmount: (index % 5) + 1,
-              sunLightAmount: (index % 5) + 1,
+              waterAmount: (index % plantNames.length) + 1,
+              sunLightAmount: (index % plantNames.length) + 1,
             );
             return PlantListItem(plantInfo: plantInfo);
           },
-        itemCount: 13,
+        itemCount: 16,
       )
     );
   }
@@ -62,20 +63,20 @@ class PlantListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTextStyle(
-      child: Container(
-        padding: EdgeInsets.all(10.0),
-        height: _imageHeight * 1.1,
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              width: 1.0,
-              color: Colors.white
-            )
+      child: GestureDetector(
+        onTap: () => Navigator.pushNamed(context, '/plant-detail', arguments: plantInfo),
+        child: Container(
+          padding: EdgeInsets.all(10.0),
+          height: _imageHeight * 1.1,
+          decoration: BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(
+                      width: 1.0,
+                      color: Colors.white
+                  )
+              ),
+              color: Colors.black
           ),
-          color: Colors.black
-        ),
-        child: GestureDetector(
-          onTap: () => Navigator.pushNamed(context, '/plant-detail', arguments: plantInfo),
           child: Row(
             children: <Widget>[
               Image.asset(
