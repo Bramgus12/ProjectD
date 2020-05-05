@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -55,7 +56,9 @@ public class PlantsController {
     })
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/admin/plants")
-    private ResponseEntity<Plants> createPlant(@RequestBody Plants plant){
+    private ResponseEntity<Plants> createPlant(
+        @ApiParam(value = "The plant you want to create in the database", required = true) @RequestBody Plants plant
+    ){
         try {
             Connection conn = new DatabaseConnection().getConnection();
             Plants newPlant = PlantStatements.createPlant(plant, conn);
@@ -65,7 +68,8 @@ public class PlantsController {
             throw new IllegalArgumentException(e.getMessage());
         }
     }
-    @ApiOperation(value = "Deleted plant")
+
+    @ApiOperation(value = "Delete a plant")
     @ApiResponses(value = {
         @ApiResponse(code = 204, message = "Deleted plant succesfully"),
         @ApiResponse(code = 400, message = "Failed to delete plant", response = Error.class),
@@ -74,7 +78,9 @@ public class PlantsController {
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/admin/plants/{id}")
-    private ResponseEntity<Void> deletePlant(@PathVariable int id) throws IllegalArgumentException{
+    private ResponseEntity<Void> deletePlant(
+        @ApiParam(value = "The id of the plant you want to delete", required = true) @PathVariable int id
+    ) throws IllegalArgumentException{
         try {
             Connection conn = new DatabaseConnection().getConnection();
             if (PlantStatements.deletePlant(id, conn)) {
@@ -88,6 +94,39 @@ public class PlantsController {
             }
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "update a plant")
+    @ApiResponses(value = {
+        @ApiResponse(code = 204, message = "Updated plant succesfully"),
+        @ApiResponse(code = 400, message = "Failed to update plant", response = Error.class),
+        @ApiResponse(code = 401, message = "Unauthorized", response = Error.class),
+        @ApiResponse(code = 404, message = "Can't find the plant to update")
+    })
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PutMapping("/admin/plants/{id}")
+    private ResponseEntity<Void> updatePlant(
+        @ApiParam(value = "The id of the plant you want to update", required = true) @PathVariable int id, 
+        @ApiParam(value = "The new values of the plant (You can't change the id and id has to be the same as in the path)", required = true) @RequestBody Plants plant
+    ) throws IllegalArgumentException {
+        if (plant.getId() != id) {
+            throw new IllegalArgumentException("Id's can't be changed");
+        } else {
+            try {
+                Connection conn = new DatabaseConnection().getConnection();
+                if (PlantStatements.updatePlant(plant, conn)) {
+                    ResponseEntity<Void> response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                    conn.close();
+                    return response;
+                } else {
+                    ResponseEntity<Void> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                    conn.close();
+                    return response;
+                }
+            } catch (Exception e) {
+                throw new IllegalArgumentException(e.getMessage());
+            }
         }
     }
 

@@ -58,6 +58,23 @@ public class PlantStatements {
         }
     }
 
+    public static boolean updatePlant(Plants plant, Connection conn) throws Exception{
+        PreparedStatement ps2 = conn.prepareStatement("SELECT * FROM plants WHERE id=?");
+        ps2.setInt(1, plant.getId());
+        ResultSet rs = ps2.executeQuery();
+
+        if (rs.next()){
+            PreparedStatement ps = conn.prepareStatement(
+                "UPDATE plants SET name=?, water_scale=?, water_number=?, water_text=?, sun_scale=?, sun_number=?, sun_text=?, description=?, optimum_temp=? WHERE id=?"
+            );
+            ps.setInt(10, plant.getId());
+            fillPreparedStatement(ps, plant, 1).execute();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     private static PreparedStatement fillPreparedStatement(PreparedStatement ps, Plants plant, int startingNumber) throws Exception{
         ps.setString(startingNumber, plant.getName());
         ps.setDouble(startingNumber + 1, plant.getWaterScale());

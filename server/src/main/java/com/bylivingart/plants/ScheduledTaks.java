@@ -19,7 +19,7 @@ import static com.bylivingart.plants.statements.WeatherStatements.getWeather;
 public class ScheduledTaks {
 
 
-    @Scheduled(fixedRate = 1200000)
+    // @Scheduled(fixedRate = 1200000)
     public static void storeWeatherData() {
         Connection conn = new DatabaseConnection().getConnection();
         try {
