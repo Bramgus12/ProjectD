@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import com.bylivingart.plants.dataclasses.Plants;
 
-public class PlantStatements {
+public class PlantsStatements {
     public static ArrayList<Plants> getAllPlants(Connection conn) throws Exception{
         ResultSet rs = conn.createStatement().executeQuery("SELECT * FROM plants");
         ArrayList<Plants> plantsList = new ArrayList<>();
@@ -19,6 +19,18 @@ public class PlantStatements {
                 plantsList.add(newPlant);
             } while (rs.next());
             return plantsList;
+        }
+    }
+
+    public static Plants getPlant(int id, Connection conn) throws Exception {
+        PreparedStatement ps = conn.prepareStatement("SELECT * FROM plants WHERE id=?");
+        ps.setInt(1, id);
+        ResultSet rs = ps.executeQuery();
+        if (!rs.next()) {
+            throw new Exception("No data in database");
+        } else {
+            Plants plant = createObjectFromResultSet(rs);
+            return plant;
         }
     }
 

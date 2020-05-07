@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.bylivingart.plants.DatabaseConnection;
 import com.bylivingart.plants.PlantsApplication;
 import com.bylivingart.plants.dataclasses.Plants;
-import com.bylivingart.plants.statements.PlantStatements;
+import com.bylivingart.plants.statements.PlantsStatements;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,20 +33,49 @@ public class PlantsController {
 
     @ApiOperation(value = "Get all the plants")
     @ApiResponses(value = {
-            @ApiResponse(code=200, message="Successfully gotten all the plants", response = Plants.class, responseContainer = "List"),
-            @ApiResponse(code=400, message = "Failed to get the plants", response = Error.class)
+            @ApiResponse(code = 200, message = "Successfully gotten all the plants", response = Plants.class, responseContainer = "List"),
+            @ApiResponse(code = 400, message = "Failed to get the plants", response = Error.class),
+            @ApiResponse(code = 404, message = "No data in database")
     })
     @GetMapping("/plants")
     private ResponseEntity<ArrayList<Plants>> getAllPlants() throws IllegalArgumentException {
         try {
             Connection conn = new DatabaseConnection().getConnection();
-            ResponseEntity<ArrayList<Plants>> response = new ResponseEntity<>(PlantStatements.getAllPlants(conn), HttpStatus.OK);
+            ResponseEntity<ArrayList<Plants>> response = new ResponseEntity<>(PlantsStatements.getAllPlants(conn), HttpStatus.OK);
             conn.close();
             return response;
         } catch (Exception e) {
-            throw new IllegalArgumentException(e.getMessage());
+            if (e.getMessage() == "No data in databse") {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } else {
+                throw new IllegalArgumentException(e.getMessage());
+            }
         }
     }
+
+
+    @ApiOperation(value = "Get a plant by id")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message= "Successfully gotten the plant"),
+        @ApiResponse(code = 400, message= "Something went wrong"),
+        @ApiResponse(code = 404, message= "Can't find the plant")
+    })
+    @GetMapping("/plants/{id}")
+    private ResponseEntity<Plants> getPlant(@PathVariable int id) throws IllegalArgumentException {
+        try {
+            Connection conn = new DatabaseConnection().getConnection();
+            ResponseEntity<Plants> response = new ResponseEntity<>(PlantsStatements.getPlant(id, conn), HttpStatus.OK);
+            conn.close();
+            return response;
+        } catch (Exception e) {
+            if (e.getMessage() == "No data in database") {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } else {
+                throw new IllegalArgumentException(e.getMessage());
+            }
+        }
+    }
+
 
     @ApiOperation(value = "Create a new plant in database")
     @ApiResponses(value = {
@@ -61,7 +90,7 @@ public class PlantsController {
     ){
         try {
             Connection conn = new DatabaseConnection().getConnection();
-            Plants newPlant = PlantStatements.createPlant(plant, conn);
+            Plants newPlant = PlantsStatements.createPlant(plant, conn);
             conn.close();
             return new ResponseEntity<>(newPlant, HttpStatus.CREATED);
         } catch (Exception e){
@@ -83,7 +112,7 @@ public class PlantsController {
     ) throws IllegalArgumentException{
         try {
             Connection conn = new DatabaseConnection().getConnection();
-            if (PlantStatements.deletePlant(id, conn)) {
+            if (PlantsStatements.deletePlant(id, conn)) {
                 ResponseEntity<Void> response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
                 conn.close();
                 return response;
@@ -115,7 +144,7 @@ public class PlantsController {
         } else {
             try {
                 Connection conn = new DatabaseConnection().getConnection();
-                if (PlantStatements.updatePlant(plant, conn)) {
+                if (PlantsStatements.updatePlant(plant, conn)) {
                     ResponseEntity<Void> response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
                     conn.close();
                     return response;
