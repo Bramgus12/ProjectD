@@ -5,7 +5,8 @@ import 'package:global_configuration/global_configuration.dart';
 import 'pages/Camera.dart';
 import 'pages/Home.dart';
 import 'pages/PlantList.dart';
-import 'pages/plant-detail.dart';
+import 'pages/PlantDetail.dart';
+import 'pages/AddPlant.dart';
 
 Future<void> main() async {
   // Load configuration
@@ -50,11 +51,13 @@ class MyApp extends StatelessWidget {
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {
           case '/':
-            return SlideRightRoute(widget:HomePage(), settings:settings);
+            return SlideRightRoute(widget: HomePage(), settings:settings);
           case '/camera':
-            return SlideRightRoute(widget:Camera(), settings:settings);
+            return SlideRightRoute(widget: Camera(), settings:settings);
           case '/my-plants':
-            return SlideRightRoute(widget:PlantList(), settings:settings);
+            return SlideRightRoute(widget: PlantList(), settings:settings);
+          case '':
+            return SlideRightRoute(widget: AddPlant(), settings:settings);
           default:
             return null;
         }
