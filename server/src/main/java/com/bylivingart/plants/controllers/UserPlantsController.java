@@ -2,10 +2,15 @@ package com.bylivingart.plants.controllers;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.bylivingart.plants.DatabaseConnection;
 import com.bylivingart.plants.PlantsApplication;
+import com.bylivingart.plants.dataclasses.UserPlants;
+import com.bylivingart.plants.statements.UserPlantsStatements;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpStatus;
@@ -31,6 +36,23 @@ public class UserPlantsController {
             return response;
         } catch (final Exception e) {
             throw new IllegalArgumentException(e.getMessage());
+        }
+    }
+
+    @GetMapping("/userplants/all")
+    private ResponseEntity<ArrayList<UserPlants>> getAllUserPlants() throws IllegalArgumentException {
+        try {
+            Connection conn = new DatabaseConnection().getConnection();
+            ResponseEntity<ArrayList<UserPlants>> response = new ResponseEntity<>(UserPlantsStatements.getAllUserPlants(conn), HttpStatus.OK);
+            conn.close();
+            return response;
+        } catch (Exception e) {
+            if (e.getMessage() == "No data in database") {
+                ResponseEntity<ArrayList<UserPlants>> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                return response;
+            } else {
+                throw new IllegalArgumentException(e.getMessage());
+            }
         }
     }
 
