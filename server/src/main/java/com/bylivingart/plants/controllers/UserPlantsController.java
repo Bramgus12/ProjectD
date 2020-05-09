@@ -1,6 +1,7 @@
 package com.bylivingart.plants.controllers;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -9,6 +10,8 @@ import java.util.ArrayList;
 import javax.servlet.http.HttpServletResponse;
 
 import com.bylivingart.plants.DatabaseConnection;
+import com.bylivingart.plants.FileService;
+import com.bylivingart.plants.GetPropertyValues;
 import com.bylivingart.plants.PlantsApplication;
 import com.bylivingart.plants.dataclasses.UserPlants;
 import com.bylivingart.plants.statements.PlantsStatements;
@@ -29,12 +32,27 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api")
 public class UserPlantsController {
 
-    @GetMapping(value = "/userplants", produces = MediaType.IMAGE_JPEG_VALUE)
-    private ResponseEntity<byte[]> getImage() throws IllegalArgumentException {
+
+    @ApiOperation("Get an image")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully gotten the image"),
+            @ApiResponse(code = 400, message = "failed to get the image", response = Error.class)
+    })
+    @GetMapping(value = "/{deviceid}/{imagename}", produces = MediaType.IMAGE_JPEG_VALUE)
+    private ResponseEntity<byte[]> getImage(
+            @PathVariable String deviceid,
+            @PathVariable String imagename
+    ) throws IllegalArgumentException {
         try {
-            InputStream in = getClass().getResourceAsStream("/photos/TestId1/test.jpg");
-            ResponseEntity<byte[]> response = new ResponseEntity<>(IOUtils.toByteArray(in), HttpStatus.OK);
-            return response;
+//            InputStream in = getClass().getResourceAsStream("/photos/" + deviceid + "/" + imagename);
+            File file = GetPropertyValues.getResourcePath(deviceid, imagename);
+            InputStream in = new FileInputStream(file);
+            if (in.available() != 0) {
+                ResponseEntity<byte[]> response = new ResponseEntity<>(HttpStatus.OK);
+                return response;
+            } else {
+                throw new Exception("Not found");
+            }
         } catch (final Exception e) {
             throw new IllegalArgumentException(e.getMessage());
         }
@@ -90,6 +108,7 @@ public class UserPlantsController {
             @ApiResponse(code = 401, message = "Unauthorized", response = Error.class),
             @ApiResponse(code = 404, message = "Resource not found")
     })
+    @ResponseStatus(HttpStatus.CREATED)
     @PutMapping("/admin/userplants")
     private ResponseEntity<Void> updateUserPlant(@RequestBody UserPlants userPlants, @RequestParam int id) throws IllegalArgumentException {
         try {
@@ -116,6 +135,7 @@ public class UserPlantsController {
             @ApiResponse(code = 401, message = "Unauthorized", response = Error.class),
             @ApiResponse(code = 404, message = "Resource not found")
     })
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/admin/userplants")
     private ResponseEntity<Void> deleteUserPlant(int id) throws IllegalArgumentException {
         try {
@@ -138,6 +158,7 @@ public class UserPlantsController {
             @ApiResponse(code = 400, message = "Image could not be uploaded"),
             @ApiResponse(code = 401, message = "Unauthorized")
     })
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/admin/userplants/image")
     private ResponseEntity<Void> uploadPlantImage(
             @RequestParam MultipartFile file,
