@@ -56,10 +56,10 @@ public class GetPropertyValues {
             throw new IOException("Property file file_path.properties not found");
         }
         if (!fileName.isEmpty()) {
-            String file_path = properties.getProperty("file_path") + FolderName + "/" + fileName;
+            String file_path = properties.getProperty("file_path") + "photos/" + FolderName + "/" + fileName;
             return new File(file_path);
         } else {
-            String file_path = properties.getProperty("file_path") + FolderName;
+            String file_path = properties.getProperty("file_path") + "photos/" + FolderName;
             return new File(file_path);
         }
     }
