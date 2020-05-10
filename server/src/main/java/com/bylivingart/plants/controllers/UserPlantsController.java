@@ -10,16 +10,12 @@ import java.util.ArrayList;
 import javax.servlet.http.HttpServletResponse;
 
 import com.bylivingart.plants.DatabaseConnection;
-import com.bylivingart.plants.FileService;
 import com.bylivingart.plants.GetPropertyValues;
 import com.bylivingart.plants.PlantsApplication;
 import com.bylivingart.plants.dataclasses.UserPlants;
-import com.bylivingart.plants.statements.PlantsStatements;
 import com.bylivingart.plants.statements.UserPlantsStatements;
 
 import io.swagger.annotations.*;
-import io.swagger.models.Response;
-import net.bytebuddy.pool.TypePool;
 import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -48,9 +44,11 @@ public class UserPlantsController {
             File file = GetPropertyValues.getResourcePath(deviceid, imagename);
             InputStream in = new FileInputStream(file);
             if (in.available() != 0) {
-                ResponseEntity<byte[]> response = new ResponseEntity<>(HttpStatus.OK);
+                ResponseEntity<byte[]> response = new ResponseEntity<>(IOUtils.toByteArray(in), HttpStatus.OK);
+                in.close();
                 return response;
             } else {
+                in.close();
                 throw new Exception("Not found");
             }
         } catch (final Exception e) {

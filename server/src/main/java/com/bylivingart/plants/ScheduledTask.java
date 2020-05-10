@@ -16,7 +16,7 @@ import java.util.List;
 import static com.bylivingart.plants.statements.WeatherStatements.getWeather;
 
 @Component
-public class ScheduledTaks {
+public class ScheduledTask {
 
 
     // @Scheduled(fixedRate = 1200000)

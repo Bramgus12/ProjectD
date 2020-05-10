@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 public class GetPropertyValues {
@@ -56,11 +58,11 @@ public class GetPropertyValues {
             throw new IOException("Property file file_path.properties not found");
         }
         if (!fileName.isEmpty()) {
-            String file_path = properties.getProperty("file_path") + "photos/" + FolderName + "/" + fileName;
-            return new File(file_path);
+            Path path = Paths.get(properties.getProperty("file_path"), "photos", FolderName, fileName);
+            return path.toFile();
         } else {
-            String file_path = properties.getProperty("file_path") + "photos/" + FolderName;
-            return new File(file_path);
+            Path path = Paths.get(properties.getProperty("file_path"), "photos", FolderName);
+            return path.toFile();
         }
     }
 }

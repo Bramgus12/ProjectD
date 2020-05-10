@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import com.bylivingart.plants.FileService;
 import com.bylivingart.plants.GetPropertyValues;
 import com.bylivingart.plants.dataclasses.UserPlants;
-import net.bytebuddy.dynamic.scaffold.MethodRegistry;
 import org.springframework.web.multipart.MultipartFile;
 
 public class UserPlantsStatements {
@@ -89,7 +88,6 @@ public class UserPlantsStatements {
             if (mimeType != null && mimeType.equals("image/jpeg")) {
                 if (!f.exists()) {
                     FileService.uploadFile(file, deviceId, imageName);
-                    File fileRef = GetPropertyValues.getResourcePath(deviceId, imageName);
                     if (f.exists()) {
                         return true;
                     } else {
