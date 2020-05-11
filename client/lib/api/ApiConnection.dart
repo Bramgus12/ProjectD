@@ -7,6 +7,8 @@ import 'package:plantexpert/api/UserPlant.dart';
 import 'package:plantexpert/api/WeatherStation.dart';
 import 'dart:convert';
 
+import 'ApiConnectionException.dart';
+
 class ApiConnection {
 
   final String baseUrl;
@@ -18,87 +20,59 @@ class ApiConnection {
     try {
       http.Response response = await http.get(url);
       if(response.statusCode != 200){
-        print("Received response with status code no equal to 200 while fetching url: $url");
-        print("Status Code: ${response.statusCode}");
-        return null;
+        throw ApiConnectionException("Received response with status code ${response.statusCode} while fetching url: $url");
       }
       return json.decode(response.body);
     } on SocketException catch(e) {
-      print("SocketException occured while trying to fetch url: $url");
       print(e);
-      return null;
+      throw ApiConnectionException("SocketException occured while trying to fetch url: $url");
     } on FormatException catch(e) {
-      print("Invalid json received from url: $url");
       print(e);
-      return null;
+      throw ApiConnectionException("Invalid json received from url: $url");
     }
   }
 
   Future<Map<String, dynamic>> _fetchJsonObject(String url) async {
     dynamic jsonObject = await _fetchJson(url);
-    if (jsonObject != null && jsonObject is Map<String, dynamic>)
+    if (jsonObject is Map<String, dynamic>)
       return jsonObject;
-    else
-      print("Error: json fetched from url: $url is not a list.");
-    return null;
+    throw ApiConnectionException("jsonObject is not of type Map<String, dynamic>. Url: $url");
   }
 
   Future<Iterable> _fetchJsonList(String url) async {
     Iterable jsonList = await _fetchJson(url);
-    if (jsonList != null && jsonList is Iterable)
+    if (jsonList is Iterable)
       return jsonList;
-    else
-      print("Error: json fetched from url: $url is not a list.");
-    return null;
+    throw ApiConnectionException("jsonList is not of type Iterable. Url: $url");
   }
   
   // Weather stations
   Future<List<WeatherStation>> fetchWeatherStations(String region) async {
     Iterable jsonWeatherStations = await _fetchJsonList('${baseUrl}weather/$region');
-    if (jsonWeatherStations != null)
-      return jsonWeatherStations.map<WeatherStation>((jsonWeatherStation) => WeatherStation.fromJson(jsonWeatherStation)).toList();
-    else
-      print("Error: jsonWeatherStations is null");
-    return null;
+    return jsonWeatherStations.map<WeatherStation>((jsonWeatherStation) => WeatherStation.fromJson(jsonWeatherStation)).toList();
   }
 
   // Plants
   Future<List<Plant>> fetchPlants() async {
     Iterable jsonPlants = await _fetchJsonList('${baseUrl}plants');
-    if (jsonPlants != null)
-      return jsonPlants.map<Plant>((jsonPlant) => Plant.fromJson(jsonPlant)).toList();
-    else
-      print("Error: jsonPlants is null.");
-    return null;
+    return jsonPlants.map<Plant>((jsonPlant) => Plant.fromJson(jsonPlant)).toList();
   }
 
   Future<Plant> fetchPlant(int id) async {
     Map<String, dynamic> jsonPlant = await _fetchJsonObject('${baseUrl}plants/$id');
-    if (jsonPlant != null)
-      return Plant.fromJson(jsonPlant);
-    else
-      print("Error: jsonPlant is null.");
-    return null;
+    return Plant.fromJson(jsonPlant);
   }
 
   // User plants
   Future<List<UserPlant>> fetchUserPlants() async {
     Iterable jsonUserPlants = await _fetchJsonList('${baseUrl}userplants/all');
-    if (jsonUserPlants != null)
-      return jsonUserPlants.map<UserPlant>((jsonUserPlant) => UserPlant.fromJson(jsonUserPlant)).toList();
-    else
-      print("Error: jsonUserPlants is null.");
-    return null;
+    return jsonUserPlants.map<UserPlant>((jsonUserPlant) => UserPlant.fromJson(jsonUserPlant)).toList();
   }
 
 // Not yet implemented on server
   // Future<UserPlant> fetchUserPlant(int id) async {
   //   Map<String, dynamic> jsonUserPlant = await _fetchJsonObject('${baseUrl}userplants/$id');
-  //   if (jsonUserPlant != null)
-  //     return UserPlant.fromJson(jsonUserPlant);
-  //   else
-  //     print("Error: jsonPlant is null.");
-  //   return null;
+  //   return UserPlant.fromJson(jsonUserPlant);
   // }
 
 }
