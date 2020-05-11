@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
@@ -16,9 +18,12 @@ class ApiConnection {
   ApiConnection()
     : baseUrl = 'http://${GlobalConfiguration().getString("server")}:${GlobalConfiguration().getInt("port")}/api/';
 
-  Future<dynamic> _fetchJson(String url) async {
+  Future<dynamic> _fetchJson(String url, { Map<String, String> headers } ) async {
+    if (headers == null) headers = HashMap();
+    headers.putIfAbsent('Accept', () => 'application/json');
     try {
-      http.Response response = await http.get(url);
+      http.Response response = await http.get(url, headers: headers)
+        .timeout(const Duration(seconds: 15));
       if(response.statusCode != 200){
         throw ApiConnectionException("Received response with status code ${response.statusCode} while fetching url: $url");
       }
@@ -26,9 +31,16 @@ class ApiConnection {
     } on SocketException catch(e) {
       print(e);
       throw ApiConnectionException("SocketException occured while trying to fetch url: $url");
-    } on FormatException catch(e) {
+    } on TimeoutException catch(e) {
+      print(e);
+      throw ApiConnectionException("Timed out while trying to fetch url: $url");
+    }
+    on FormatException catch(e) {
       print(e);
       throw ApiConnectionException("Invalid json received from url: $url");
+    } catch(e) {
+      print(e);
+      throw ApiConnectionException("Exception occured while trying to fetch url: $url");
     }
   }
 
