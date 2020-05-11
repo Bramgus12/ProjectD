@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:plantexpert/api/ApiConnection.dart';
-import 'package:plantexpert/api/WeatherStation.dart';
+import 'package:plantexpert/api/Plant.dart';
 
 import '../MenuNavigation.dart';
 
@@ -28,8 +28,8 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             RaisedButton(
-              onPressed: weatherButtonTest,
-              child: Text('Weather Station Test'),
+              onPressed: plantsButtonTest,
+              child: Text('Plants Test'),
             )
           ],
         ),
@@ -37,12 +37,14 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future<void> weatherButtonTest() async {
-    List<WeatherStation> weatherStations = await widget.apiConnection.fetchWeatherStations('Rotterdam');
-    if(weatherStations == null)
-      return;
-    for (var weatherStation in weatherStations) {
-      print(weatherStation);
-    }
+  Future<void> plantsButtonTest() async {
+    // List<Plant> plants = await widget.apiConnection.fetchPlants();
+    // if(plants == null)
+    //   return;
+    // for (var plant in plants) {
+    //   print(plant);
+    // }
+    Plant plant = await widget.apiConnection.fetchPlant(5);
+    print(plant);
   }
 }
