@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:global_configuration/global_configuration.dart';
 import 'package:plantexpert/api/Plant.dart';
+import 'package:plantexpert/api/UserPlant.dart';
 import 'package:plantexpert/api/WeatherStation.dart';
 import 'dart:convert';
 
@@ -79,5 +80,25 @@ class ApiConnection {
       print("Error: jsonPlant is null.");
     return null;
   }
+
+  // User plants
+  Future<List<UserPlant>> fetchUserPlants() async {
+    Iterable jsonUserPlants = await _fetchJsonList('${baseUrl}userplants/all');
+    if (jsonUserPlants != null)
+      return jsonUserPlants.map<UserPlant>((jsonUserPlant) => UserPlant.fromJson(jsonUserPlant)).toList();
+    else
+      print("Error: jsonUserPlants is null.");
+    return null;
+  }
+
+// Not yet implemented on server
+  // Future<UserPlant> fetchUserPlant(int id) async {
+  //   Map<String, dynamic> jsonUserPlant = await _fetchJsonObject('${baseUrl}userplants/$id');
+  //   if (jsonUserPlant != null)
+  //     return UserPlant.fromJson(jsonUserPlant);
+  //   else
+  //     print("Error: jsonPlant is null.");
+  //   return null;
+  // }
 
 }

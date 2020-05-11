@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:plantexpert/api/ApiConnection.dart';
-import 'package:plantexpert/api/Plant.dart';
+import 'package:plantexpert/api/UserPlant.dart';
 
 import '../MenuNavigation.dart';
 
@@ -38,13 +38,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> plantsButtonTest() async {
-    // List<Plant> plants = await widget.apiConnection.fetchPlants();
-    // if(plants == null)
-    //   return;
-    // for (var plant in plants) {
-    //   print(plant);
-    // }
-    Plant plant = await widget.apiConnection.fetchPlant(5);
-    print(plant);
+    List<UserPlant> userPlants = await widget.apiConnection.fetchUserPlants();
+    if(userPlants == null)
+      return;
+    for (var userPlant in userPlants) {
+      print(userPlant);
+    }
+    // Plant plant = await widget.apiConnection.fetchPlant(5);
+    // print(plant);
   }
 }
