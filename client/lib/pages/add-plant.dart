@@ -32,7 +32,7 @@ class _AddPlant extends State<AddPlant> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: MenuNavigation(),
-      bottomNavigationBar: BottomNavigation(),
+      // bottomNavigationBar: BottomNavigation(),
       appBar: AppBar(
         title: Text("Plant toevoegen",
             style: TextStyle(fontFamily: 'Libre Baskerville')),

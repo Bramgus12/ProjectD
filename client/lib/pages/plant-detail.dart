@@ -29,7 +29,11 @@ class PlantDetail extends StatelessWidget {
           color: Colors.black,
           child: ListView(
             children: <Widget>[
-              Image.asset(plantInfo.imageName),
+              Image.asset(
+                plantInfo.imageName,
+                width: 300,
+                height: 300,
+              ),
               SizedBox(height: 20),
 
               Text('Naam', style: TextStyle(color: Colors.grey)),

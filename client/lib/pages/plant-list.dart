@@ -15,21 +15,31 @@ class PlantList extends StatelessWidget {
         title: Text("Plant list", style: TextStyle(fontFamily: 'Libre Baskerville')),
         centerTitle: true,
       ),
-      body: ListView.builder(
+      body: Container(
+        width: MediaQuery.of(context).size.width,
+        child: ListView.builder(
           itemBuilder: (_, index) {
             final PlantInfo plantInfo = new PlantInfo(
               name: plantNames[index % plantNames.length],
               imageName: 'assets/images/' + plantNames[index % plantNames.length] + '.jpg',
               plantDescription: "Omschrijving van de plant.",
-              waterDescription: "Informatie over hoeveel water de plant nodig heeft.",
+              waterDescription: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque varius dui venenatis eros dictum, sit amet fringilla lorem iaculis. Vivamus porttitor lacus ante, nec rhoncus nisi vestibulum ut. Nam interdum, purus condimentum sagittis vulputate, libero tortor viverra velit, et mollis leo ipsum quis tellus. Aenean tristique felis sapien, sed faucibus augue fringilla at. Nunc efficitur nibh id mollis mattis. Donec neque risus, molestie eget urna a, pellentesque feugiat magna. Curabitur facilisis id libero nec aliquam. Ut sit amet sollicitudin sapien, iaculis condimentum nulla. Donec consequat placerat venenatis.",
               sunLightDescription: "Informatie over hoeveel zonlicht de plant nodig heeft.",
               waterAmount: (index % plantNames.length) + 1,
               sunLightAmount: (index % plantNames.length) + 1,
             );
             return PlantListItem(plantInfo: plantInfo);
           },
-        itemCount: 16,
-      )
+          itemCount: 5,
+        )
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.pushNamed(context, '/add-plant'),
+        backgroundColor: Colors.blue,
+        child: Icon(
+          Icons.control_point
+        ),
+    ),
     );
   }
 }
@@ -67,7 +77,7 @@ class PlantListItem extends StatelessWidget {
         onTap: () => Navigator.pushNamed(context, '/plant-detail', arguments: plantInfo),
         child: Container(
           padding: EdgeInsets.all(10.0),
-          height: _imageHeight * 1.1,
+          height: _imageHeight * 1.2,
           decoration: BoxDecoration(
               border: Border(
                   bottom: BorderSide(
@@ -79,50 +89,57 @@ class PlantListItem extends StatelessWidget {
           ),
           child: Row(
             children: <Widget>[
-              Image.asset(
-                plantInfo.imageName,
-                width: _imageWidth,
-                height: _imageHeight,
+              Expanded(
+                flex: 4,
+                child: Image.asset(
+                  plantInfo.imageName,
+                  width: _imageWidth,
+                  height: _imageHeight,
+                ),
               ),
-              SizedBox(
-                width: 50,
+              Expanded(
+                flex: 1,
+                child: SizedBox(width: 1),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    'Naam',
-                    style: TextStyle(color: Colors.grey)
-                  ),
-                  Text(plantInfo.name),
-                  SizedBox(height: 10),
+              Expanded(
+                flex: 5,
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        'Naam',
+                        style: TextStyle(color: Colors.grey)
+                      ),
+                      Text(plantInfo.name),
+                      SizedBox(height: 10),
 
-                  Text(
-                      'Hoeveelheid zonlicht',
-                      style: TextStyle(color: Colors.grey)
-                  ),
-                  RatingRow(
-                    count: plantInfo.sunLightAmount,
-                    // TODO: find better icons for sunlight
-                    filledIcon: Icons.star,
-                    unfilledIcon: Icons.star_border,
-                  ),
-                  SizedBox(height: 10),
+                      Text(
+                          'Hoeveelheid zonlicht',
+                          style: TextStyle(color: Colors.grey)
+                      ),
+                      RatingRow(
+                        count: plantInfo.sunLightAmount,
+                        // TODO: find better icons for sunlight
+                        filledIcon: Icons.star,
+                        unfilledIcon: Icons.star_border,
+                      ),
+                      SizedBox(height: 10),
 
-                  Text(
-                      'Hoeveelheid water',
-                      style: TextStyle(color: Colors.grey)
-                  ),
-                  RatingRow(
-                      count: plantInfo.waterAmount,
-                      // TODO: find better icons for water
-                      filledIcon: Icons.star,
-                      unfilledIcon: Icons.star_border,
+                      Text(
+                          'Hoeveelheid water',
+                          style: TextStyle(color: Colors.grey)
+                      ),
+                      RatingRow(
+                          count: plantInfo.waterAmount,
+                          // TODO: find better icons for water
+                          filledIcon: Icons.star,
+                          unfilledIcon: Icons.star_border,
+                      )
+                    ],
                   )
-                ],
-              )
-            ],
-          ),
+                )
+              ],
+            ),
         )
       ),
       style: TextStyle(
