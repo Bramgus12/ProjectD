@@ -1,11 +1,16 @@
 package com.bylivingart.plants.statements;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
+import com.bylivingart.plants.FileService;
+import com.bylivingart.plants.GetPropertyValues;
 import com.bylivingart.plants.dataclasses.Plants;
+import org.springframework.web.multipart.MultipartFile;
 
 public class PlantsStatements {
     public static ArrayList<Plants> getAllPlants(Connection conn) throws Exception{
@@ -35,12 +40,12 @@ public class PlantsStatements {
     }
 
     public static Plants createPlant(Plants plant, Connection conn) throws Exception{
-        PreparedStatement ps = conn.prepareStatement("INSERT INTO plants VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        PreparedStatement ps = conn.prepareStatement("INSERT INTO plants VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         PreparedStatement filledPs = fillPreparedStatement(ps, plant, 1);
         filledPs.execute();
 
         PreparedStatement ps2 = conn.prepareStatement(
-            "SELECT * FROM plants WHERE name=? AND water_scale=? AND water_number=? AND water_text=? AND sun_scale=? AND sun_number=? AND sun_text=? AND description=? AND optimum_temp=?"
+            "SELECT * FROM plants WHERE name=? AND water_scale=? AND water_number=? AND water_text=? AND sun_scale=? AND sun_number=? AND sun_text=? AND description=? AND optimum_temp=? AND image_name=?"
         );
         PreparedStatement filledPs2 = fillPreparedStatement(ps2, plant, 1);
 
@@ -48,8 +53,7 @@ public class PlantsStatements {
         if (!rs.next()){
             throw new Exception("Cant find the plant");
         } else {
-            Plants newPlant = createObjectFromResultSet(rs);
-            return newPlant;
+            return createObjectFromResultSet(rs);
         }
     }
 
@@ -77,7 +81,7 @@ public class PlantsStatements {
 
         if (rs.next()){
             PreparedStatement ps = conn.prepareStatement(
-                "UPDATE plants SET name=?, water_scale=?, water_number=?, water_text=?, sun_scale=?, sun_number=?, sun_text=?, description=?, optimum_temp=? WHERE id=?"
+                "UPDATE plants SET name=?, water_scale=?, water_number=?, water_text=?, sun_scale=?, sun_number=?, sun_text=?, description=?, optimum_temp=?, image_name=? WHERE id=?"
             );
             ps.setInt(10, plant.getId());
             fillPreparedStatement(ps, plant, 1).execute();
@@ -97,6 +101,7 @@ public class PlantsStatements {
         ps.setString(startingNumber + 6, plant.getSunText());
         ps.setString(startingNumber + 7, plant.getDescription());
         ps.setInt(startingNumber + 8, plant.getOptimumTemp());
+        ps.setString(startingNumber + 9, plant.getImageName());
         return ps;
     }
 
@@ -112,6 +117,7 @@ public class PlantsStatements {
         String sunText = rs.getString(8);
         String description = rs.getString(9);
         int optimumTemp = rs.getInt(10);
-        return new Plants(id, name, waterScale, waterNumber, waterText, sunScale, sunNumber, sunText, description, optimumTemp);
+        String imageName = rs.getString(11);
+        return new Plants(id, name, waterScale, waterNumber, waterText, sunScale, sunNumber, sunText, description, optimumTemp, imageName);
     }
 }

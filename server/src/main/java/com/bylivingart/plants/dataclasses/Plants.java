@@ -12,10 +12,11 @@ public class Plants {
     private String sunText;
     private String description;
     private int optimumTemp;
+    private String imageName;
 
     public Plants(){}
 
-    public Plants(int id, String name, double waterScale, double waterNumber, String waterText, double sunScale, double sunNumber, String sunText, String description, int optimumTemp){
+    public Plants(int id, String name, double waterScale, double waterNumber, String waterText, double sunScale, double sunNumber, String sunText, String description, int optimumTemp, String imageName){
         this.id = id;
         this.name = name;
         this.waterScale = waterScale;
@@ -23,8 +24,10 @@ public class Plants {
         this.waterText = waterText;
         this.sunScale = sunScale;
         this.sunNumber = sunNumber;
+        this.sunText = sunText;
         this.description = description;
         this.optimumTemp = optimumTemp;
+        this.imageName = imageName;
     }
 
     /**
@@ -97,6 +100,10 @@ public class Plants {
         return waterText;
     }
 
+    public String getImageName() {
+        return imageName;
+    }
+
     /**
      * @param description the description to set
      */
@@ -165,5 +172,9 @@ public class Plants {
      */
     public void setWaterText(String waterText) {
         this.waterText = waterText;
+    }
+
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
     }
 }

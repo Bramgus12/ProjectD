@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import javax.servlet.http.HttpServletResponse;
 
 import com.bylivingart.plants.DatabaseConnection;
+import com.bylivingart.plants.FileService;
 import com.bylivingart.plants.GetPropertyValues;
 import com.bylivingart.plants.PlantsApplication;
 import com.bylivingart.plants.dataclasses.UserPlants;
@@ -34,14 +35,13 @@ public class UserPlantsController {
             @ApiResponse(code = 200, message = "Successfully gotten the image"),
             @ApiResponse(code = 400, message = "failed to get the image", response = Error.class)
     })
-    @GetMapping(value = "/{deviceid}/{imagename}", produces = MediaType.IMAGE_JPEG_VALUE)
+    @GetMapping(value = "/userplants/{deviceid}/{imagename}", produces = MediaType.IMAGE_JPEG_VALUE)
     private ResponseEntity<byte[]> getImage(
             @PathVariable String deviceid,
             @PathVariable String imagename
     ) throws IllegalArgumentException {
         try {
-//            InputStream in = getClass().getResourceAsStream("/photos/" + deviceid + "/" + imagename);
-            File file = GetPropertyValues.getResourcePath(deviceid, imagename);
+            File file = GetPropertyValues.getResourcePath(deviceid, imagename, true);
             InputStream in = new FileInputStream(file);
             if (in.available() != 0) {
                 ResponseEntity<byte[]> response = new ResponseEntity<>(IOUtils.toByteArray(in), HttpStatus.OK);
@@ -164,7 +164,7 @@ public class UserPlantsController {
             @RequestParam String imageName
     ) throws IllegalArgumentException {
         try {
-            if (UserPlantsStatements.uploadImage(file, deviceId, imageName)) {
+            if (FileService.uploadImage(file, deviceId, imageName, true)) {
                 return new ResponseEntity<>(HttpStatus.CREATED);
             } else {
                 throw new IllegalArgumentException("Couldn't upload file");

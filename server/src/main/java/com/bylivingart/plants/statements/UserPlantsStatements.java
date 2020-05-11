@@ -78,32 +78,6 @@ public class UserPlantsStatements {
         return rs.next();
     }
 
-    public static boolean uploadImage(MultipartFile file, String deviceId, String imageName) throws Exception {
-        File f = GetPropertyValues.getResourcePath(deviceId, imageName);
-        File folder = GetPropertyValues.getResourcePath(deviceId, "");
-        if (folder.mkdirs()) {
-            String mimeType = Files.probeContentType(f.toPath());
-            System.out.println(mimeType);
-            System.out.println(f);
-            if (mimeType != null && mimeType.equals("image/jpeg")) {
-                if (!f.exists()) {
-                    FileService.uploadFile(file, deviceId, imageName);
-                    if (f.exists()) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } else {
-                    throw new Exception("File already exists");
-                }
-            } else {
-                throw new Exception("This file is not in the right format");
-            }
-        } else {
-            throw new Exception("Folder could not be made");
-        }
-    }
-
     private static PreparedStatement fillPreparedStatement(PreparedStatement ps, UserPlants userPlants, int startingIndex) throws Exception{
         ps.setString(startingIndex, userPlants.getDeviceId());
         ps.setString(startingIndex + 1, userPlants.getNickname());

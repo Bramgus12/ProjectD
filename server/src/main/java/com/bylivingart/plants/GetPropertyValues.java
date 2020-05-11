@@ -49,7 +49,7 @@ public class GetPropertyValues {
         return result;
     }
 
-    public static File getResourcePath(String FolderName, String fileName) throws IOException {
+    public static File getResourcePath(String FolderName, String fileName, boolean forUsers) throws IOException {
         Properties properties = new Properties();
         inputStream = GetPropertyValues.class.getClassLoader().getResourceAsStream("file_path.properties");
         if (inputStream != null) {
@@ -58,10 +58,20 @@ public class GetPropertyValues {
             throw new IOException("Property file file_path.properties not found");
         }
         if (!fileName.isEmpty()) {
-            Path path = Paths.get(properties.getProperty("file_path"), "photos", FolderName, fileName);
+            Path path;
+            if (forUsers) {
+                path = Paths.get(properties.getProperty("file_path"), "photos", FolderName, fileName);
+            } else {
+                path = Paths.get(properties.getProperty("file_path"), "plants", FolderName, fileName);
+            }
             return path.toFile();
         } else {
-            Path path = Paths.get(properties.getProperty("file_path"), "photos", FolderName);
+            Path path;
+            if (forUsers) {
+                path = Paths.get(properties.getProperty("file_path"), "photos", FolderName);
+            } else {
+                path = Paths.get(properties.getProperty("file_path"), "plants", FolderName);
+            }
             return path.toFile();
         }
     }

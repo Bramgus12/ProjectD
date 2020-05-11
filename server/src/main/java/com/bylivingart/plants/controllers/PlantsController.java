@@ -1,35 +1,35 @@
 package com.bylivingart.plants.controllers;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletResponse;
 
 import com.bylivingart.plants.DatabaseConnection;
+import com.bylivingart.plants.FileService;
+import com.bylivingart.plants.GetPropertyValues;
 import com.bylivingart.plants.PlantsApplication;
 import com.bylivingart.plants.dataclasses.Plants;
 import com.bylivingart.plants.statements.PlantsStatements;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import io.swagger.annotations.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Api(value = "Plants controller")
 @RestController
 @RequestMapping("/api")
 public class PlantsController {
+
 
     @ApiOperation(value = "Get all the plants")
     @ApiResponses(value = {
@@ -45,11 +45,61 @@ public class PlantsController {
             conn.close();
             return response;
         } catch (Exception e) {
-            if (e.getMessage() == "No data in databse") {
+            if (e.getMessage().equals("No data in databse")) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             } else {
                 throw new IllegalArgumentException(e.getMessage());
             }
+        }
+    }
+
+    @ApiOperation("Get an image")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully gotten the image"),
+            @ApiResponse(code = 400, message = "failed to get the image", response = Error.class)
+    })
+    @GetMapping(value = "/plants/{plantname}/{imagename}", produces = MediaType.IMAGE_JPEG_VALUE)
+    private ResponseEntity<byte[]> getImage(
+            @PathVariable String plantname,
+            @PathVariable String imagename
+    ) throws IllegalArgumentException {
+        try {
+            File file = GetPropertyValues.getResourcePath(plantname, imagename, false);
+            InputStream in = new FileInputStream(file);
+            if (in.available() != 0) {
+                ResponseEntity<byte[]> response = new ResponseEntity<>(IOUtils.toByteArray(in), HttpStatus.OK);
+                in.close();
+                return response;
+            } else {
+                in.close();
+                throw new Exception("Not found");
+            }
+        } catch (final Exception e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+    }
+
+    @ApiOperation("Upload image")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Image has been uploaded"),
+            @ApiResponse(code = 400, message = "Image could not be uploaded"),
+            @ApiResponse(code = 401, message = "Unauthorized")
+    })
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/admin/plants/image")
+    private ResponseEntity<Void> uploadPlantImage(
+            @RequestParam MultipartFile file,
+            @RequestParam String plantName,
+            @RequestParam String imageName
+    ) throws IllegalArgumentException {
+        try {
+            if (FileService.uploadImage(file, plantName, imageName, false)) {
+                return new ResponseEntity<>(HttpStatus.CREATED);
+            } else {
+                throw new IllegalArgumentException("Couldn't upload file");
+            }
+        } catch (Exception e){
+            throw new IllegalArgumentException(e.getMessage());
         }
     }
 
@@ -68,7 +118,7 @@ public class PlantsController {
             conn.close();
             return response;
         } catch (Exception e) {
-            if (e.getMessage() == "No data in database") {
+            if (e.getMessage().equals("No data in database")) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             } else {
                 throw new IllegalArgumentException(e.getMessage());
