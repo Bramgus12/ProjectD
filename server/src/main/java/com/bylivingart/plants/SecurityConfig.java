@@ -36,7 +36,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public static javax.sql.DataSource createDataSource() {
+    public static javax.sql.DataSource createDataSource() throws Exception {
         String propFileName = "Database_config.properties";
         String[] values = GetPropertyValues.getDatabasePropValues(propFileName);
         org.postgresql.ds.PGSimpleDataSource ds = new org.postgresql.ds.PGSimpleDataSource();

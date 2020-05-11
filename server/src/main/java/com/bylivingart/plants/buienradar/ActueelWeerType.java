@@ -16,9 +16,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for actueel_weerType complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="actueel_weerType">
  *   &lt;complexContent>
@@ -34,16 +34,14 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "actueel_weerType", propOrder = {
-    "weerstations",
-    "buienindex",
-    "buienradar",
-    "aantalonweer",
-    "aantalhagel"
+        "weerstations",
+        "buienindex",
+        "buienradar",
+        "aantalonweer",
+        "aantalhagel"
 })
 public class ActueelWeerType {
 
@@ -60,11 +58,9 @@ public class ActueelWeerType {
 
     /**
      * Gets the value of the weerstations property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link WeerstationsType }
-     *     
+     *
+     * @return possible object is
+     * {@link WeerstationsType }
      */
     public WeerstationsType getWeerstations() {
         return weerstations;
@@ -72,11 +68,9 @@ public class ActueelWeerType {
 
     /**
      * Sets the value of the weerstations property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link WeerstationsType }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link WeerstationsType }
      */
     public void setWeerstations(WeerstationsType value) {
         this.weerstations = value;
@@ -84,11 +78,9 @@ public class ActueelWeerType {
 
     /**
      * Gets the value of the buienindex property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BuienindexType }
-     *     
+     *
+     * @return possible object is
+     * {@link BuienindexType }
      */
     public BuienindexType getBuienindex() {
         return buienindex;
@@ -96,11 +88,9 @@ public class ActueelWeerType {
 
     /**
      * Sets the value of the buienindex property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BuienindexType }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link BuienindexType }
      */
     public void setBuienindex(BuienindexType value) {
         this.buienindex = value;
@@ -108,11 +98,9 @@ public class ActueelWeerType {
 
     /**
      * Gets the value of the buienradar property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BuienradarType }
-     *     
+     *
+     * @return possible object is
+     * {@link BuienradarType }
      */
     public BuienradarType getBuienradar() {
         return buienradar;
@@ -120,11 +108,9 @@ public class ActueelWeerType {
 
     /**
      * Sets the value of the buienradar property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BuienradarType }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link BuienradarType }
      */
     public void setBuienradar(BuienradarType value) {
         this.buienradar = value;
@@ -132,11 +118,9 @@ public class ActueelWeerType {
 
     /**
      * Gets the value of the aantalonweer property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getAantalonweer() {
         return aantalonweer;
@@ -144,11 +128,9 @@ public class ActueelWeerType {
 
     /**
      * Sets the value of the aantalonweer property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setAantalonweer(String value) {
         this.aantalonweer = value;
@@ -156,11 +138,9 @@ public class ActueelWeerType {
 
     /**
      * Gets the value of the aantalhagel property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getAantalhagel() {
         return aantalhagel;
@@ -168,11 +148,9 @@ public class ActueelWeerType {
 
     /**
      * Sets the value of the aantalhagel property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setAantalhagel(String value) {
         this.aantalhagel = value;

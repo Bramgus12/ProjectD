@@ -34,7 +34,7 @@ public class SwaggerConfig {
 
     private SecurityContext securityContext() {
         return SecurityContext.builder()
-                .securityReferences(Arrays.asList(basicAuthReference()))
+                .securityReferences(Collections.singletonList(basicAuthReference()))
                 .forPaths(PathSelectors.ant("/api/**"))
                 .build();
     }

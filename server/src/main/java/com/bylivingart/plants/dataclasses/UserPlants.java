@@ -17,19 +17,19 @@ public class UserPlants {
     private int plantId;
 
     public UserPlants(
-        int id, 
-        String deviceId, 
-        String nickname, 
-        double potVolume, 
-        double lat, 
-        double lon, 
-        String imageName, 
-        LocalDateTime lastWaterDate,
-        double distanceToWindow, 
-        int maxTemp, 
-        int minTemp, 
-        int plantId
-    ){
+            int id,
+            String deviceId,
+            String nickname,
+            double potVolume,
+            double lat,
+            double lon,
+            String imageName,
+            LocalDateTime lastWaterDate,
+            double distanceToWindow,
+            int maxTemp,
+            int minTemp,
+            int plantId
+    ) {
         this.id = id;
         this.deviceId = deviceId;
         this.nickname = nickname;
@@ -52,87 +52,17 @@ public class UserPlants {
     }
 
     /**
-     * @return the distanceToWindow
-     */
-    public double getDistanceToWindow() {
-        return distanceToWindow;
-    }
-
-    /**
-     * @return the id
-     */
-    public int getId() {
-        return id;
-    }
-
-    /**
-     * @return the imageName
-     */
-    public String getImageName() {
-        return imageName;
-    }
-
-    /**
-     * @return the lastWaterDate
-     */
-    public LocalDateTime getLastWaterDate() {
-        return lastWaterDate;
-    }
-
-    /**
-     * @return the lat
-     */
-    public double getLat() {
-        return lat;
-    }
-
-    /**
-     * @return the lon
-     */
-    public double getLon() {
-        return lon;
-    }
-
-    /**
-     * @return the maxTemp
-     */
-    public int getMaxTemp() {
-        return maxTemp;
-    }
-
-    /**
-     * @return the minTemp
-     */
-    public int getMinTemp() {
-        return minTemp;
-    }
-
-    /**
-     * @return the nickname
-     */
-    public String getNickname() {
-        return nickname;
-    }
-
-    /**
-     * @return the plantId
-     */
-    public int getPlantId() {
-        return plantId;
-    }
-
-    /**
-     * @return the potVolume
-     */
-    public double getPotVolume() {
-        return potVolume;
-    }
-
-    /**
      * @param deviceId the deviceId to set
      */
     public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
+    }
+
+    /**
+     * @return the distanceToWindow
+     */
+    public double getDistanceToWindow() {
+        return distanceToWindow;
     }
 
     /**
@@ -143,10 +73,24 @@ public class UserPlants {
     }
 
     /**
+     * @return the id
+     */
+    public int getId() {
+        return id;
+    }
+
+    /**
      * @param id the id to set
      */
     public void setId(int id) {
         this.id = id;
+    }
+
+    /**
+     * @return the imageName
+     */
+    public String getImageName() {
+        return imageName;
     }
 
     /**
@@ -157,10 +101,24 @@ public class UserPlants {
     }
 
     /**
+     * @return the lastWaterDate
+     */
+    public LocalDateTime getLastWaterDate() {
+        return lastWaterDate;
+    }
+
+    /**
      * @param lastWaterDate the lastWaterDate to set
      */
     public void setLastWaterDate(LocalDateTime lastWaterDate) {
         this.lastWaterDate = lastWaterDate;
+    }
+
+    /**
+     * @return the lat
+     */
+    public double getLat() {
+        return lat;
     }
 
     /**
@@ -171,10 +129,24 @@ public class UserPlants {
     }
 
     /**
+     * @return the lon
+     */
+    public double getLon() {
+        return lon;
+    }
+
+    /**
      * @param lon the lon to set
      */
     public void setLon(double lon) {
         this.lon = lon;
+    }
+
+    /**
+     * @return the maxTemp
+     */
+    public int getMaxTemp() {
+        return maxTemp;
     }
 
     /**
@@ -185,10 +157,24 @@ public class UserPlants {
     }
 
     /**
+     * @return the minTemp
+     */
+    public int getMinTemp() {
+        return minTemp;
+    }
+
+    /**
      * @param minTemp the minTemp to set
      */
     public void setMinTemp(int minTemp) {
         this.minTemp = minTemp;
+    }
+
+    /**
+     * @return the nickname
+     */
+    public String getNickname() {
+        return nickname;
     }
 
     /**
@@ -199,10 +185,24 @@ public class UserPlants {
     }
 
     /**
+     * @return the plantId
+     */
+    public int getPlantId() {
+        return plantId;
+    }
+
+    /**
      * @param plantId the plantId to set
      */
     public void setPlantId(int plantId) {
         this.plantId = plantId;
+    }
+
+    /**
+     * @return the potVolume
+     */
+    public double getPotVolume() {
+        return potVolume;
     }
 
     /**

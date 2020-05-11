@@ -1,5 +1,7 @@
 package com.bylivingart.plants;
 
+import com.bylivingart.plants.Exceptions.BadRequestException;
+import com.bylivingart.plants.Exceptions.InternalServerException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,7 +14,7 @@ import java.nio.file.Paths;
 
 @Service
 public class FileService {
-    public static void uploadFile(MultipartFile file, String folder, String fileName, boolean forUsers) throws IOException {
+    public static void uploadFile(MultipartFile file, String folder, String fileName, boolean forUsers) throws Exception {
         File f = GetPropertyValues.getResourcePath(folder, fileName, forUsers);
         Path copyLocation = Paths.get(String.valueOf(f));
         Files.copy(file.getInputStream(), copyLocation);
@@ -32,13 +34,13 @@ public class FileService {
                     FileService.uploadFile(file, folderName, imageName, forUsers);
                     return f.exists();
                 } else {
-                    throw new Exception("File already exists");
+                    throw new BadRequestException("File already exists");
                 }
             } else {
-                throw new Exception("This file is not in the right format");
+                throw new BadRequestException("This file is not in the right format");
             }
         } else {
-            throw new Exception("Folder could not be made");
+            throw new InternalServerException("Folder could not be made");
         }
     }
 }

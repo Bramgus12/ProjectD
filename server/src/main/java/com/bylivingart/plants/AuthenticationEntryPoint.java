@@ -1,6 +1,5 @@
 package com.bylivingart.plants;
 
-import com.bylivingart.plants.dataclasses.Error;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
@@ -23,7 +22,7 @@ public class AuthenticationEntryPoint extends BasicAuthenticationEntryPoint {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         PrintWriter writer = response.getWriter();
         System.out.println("HTTP STATUS 401 - " + authEx.getMessage() + " - URI: " + request.getRequestURI() + " - Host: " + request.getRemoteHost());
-        writer.print(objectMapper.writeValueAsString(new Error(401, "Unathorized", authEx.getMessage(), request.getRequestURI())));
+        HandleException.handleUnauthorizedException(authEx, response);
     }
 
     @Override

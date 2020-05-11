@@ -14,9 +14,10 @@ public class Plants {
     private int optimumTemp;
     private String imageName;
 
-    public Plants(){}
+    public Plants() {
+    }
 
-    public Plants(int id, String name, double waterScale, double waterNumber, String waterText, double sunScale, double sunNumber, String sunText, String description, int optimumTemp, String imageName){
+    public Plants(int id, String name, double waterScale, double waterNumber, String waterText, double sunScale, double sunNumber, String sunText, String description, int optimumTemp, String imageName) {
         this.id = id;
         this.name = name;
         this.waterScale = waterScale;
@@ -38,77 +39,17 @@ public class Plants {
     }
 
     /**
-     * @return the id
-     */
-    public int getId() {
-        return id;
-    }
-
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @return the optimumTemp
-     */
-    public int getOptimumTemp() {
-        return optimumTemp;
-    }
-
-    /**
-     * @return the sunNumber
-     */
-    public double getSunNumber() {
-        return sunNumber;
-    }
-
-    /**
-     * @return the sunScale
-     */
-    public double getSunScale() {
-        return sunScale;
-    }
-
-    /**
-     * @return the sunText
-     */
-    public String getSunText() {
-        return sunText;
-    }
-
-    /**
-     * @return the waterNumber
-     */
-    public double getWaterNumber() {
-        return waterNumber;
-    }
-
-    /**
-     * @return the waterScale
-     */
-    public double getWaterScale() {
-        return waterScale;
-    }
-
-    /**
-     * @return the waterText
-     */
-    public String getWaterText() {
-        return waterText;
-    }
-
-    public String getImageName() {
-        return imageName;
-    }
-
-    /**
      * @param description the description to set
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * @return the id
+     */
+    public int getId() {
+        return id;
     }
 
     /**
@@ -119,10 +60,24 @@ public class Plants {
     }
 
     /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
      * @param name the name to set
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * @return the optimumTemp
+     */
+    public int getOptimumTemp() {
+        return optimumTemp;
     }
 
     /**
@@ -133,10 +88,24 @@ public class Plants {
     }
 
     /**
+     * @return the sunNumber
+     */
+    public double getSunNumber() {
+        return sunNumber;
+    }
+
+    /**
      * @param sunNumber the sunNumber to set
      */
     public void setSunNumber(double sunNumber) {
         this.sunNumber = sunNumber;
+    }
+
+    /**
+     * @return the sunScale
+     */
+    public double getSunScale() {
+        return sunScale;
     }
 
     /**
@@ -147,10 +116,24 @@ public class Plants {
     }
 
     /**
+     * @return the sunText
+     */
+    public String getSunText() {
+        return sunText;
+    }
+
+    /**
      * @param sunText the sunText to set
      */
     public void setSunText(String sunText) {
         this.sunText = sunText;
+    }
+
+    /**
+     * @return the waterNumber
+     */
+    public double getWaterNumber() {
+        return waterNumber;
     }
 
     /**
@@ -161,6 +144,13 @@ public class Plants {
     }
 
     /**
+     * @return the waterScale
+     */
+    public double getWaterScale() {
+        return waterScale;
+    }
+
+    /**
      * @param waterScale the waterScale to set
      */
     public void setWaterScale(double waterScale) {
@@ -168,10 +158,21 @@ public class Plants {
     }
 
     /**
+     * @return the waterText
+     */
+    public String getWaterText() {
+        return waterText;
+    }
+
+    /**
      * @param waterText the waterText to set
      */
     public void setWaterText(String waterText) {
         this.waterText = waterText;
+    }
+
+    public String getImageName() {
+        return imageName;
     }
 
     public void setImageName(String imageName) {
