@@ -65,8 +65,7 @@ public class WeatherController {
         @ApiParam(value = "Longitude of your location", required = true) @RequestParam Double lon
         ) throws IllegalArgumentException {
         try {
-            ResponseEntity<WeerstationType> response = new ResponseEntity<>(WeatherStatements.getWeerstationByLatLon(lat, lon), HttpStatus.OK);
-            return response;
+            return new ResponseEntity<>(WeatherStatements.getWeerstationByLatLon(lat, lon), HttpStatus.OK);
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
         }
@@ -75,6 +74,6 @@ public class WeatherController {
     @ExceptionHandler
     void handleIllegalArgumentException(IllegalArgumentException e, HttpServletResponse response) throws IOException {
         PlantsApplication.printErrorInConsole(e.getMessage());
-        response.sendError(HttpStatus.BAD_REQUEST.value());
+        response.sendError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
     }
 }

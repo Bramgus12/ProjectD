@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 public class GetPropertyValues {
@@ -47,7 +49,7 @@ public class GetPropertyValues {
         return result;
     }
 
-    public static File getResourcePath(String FolderName, String fileName) throws IOException {
+    public static File getResourcePath(String FolderName, String fileName, boolean forUsers) throws IOException {
         Properties properties = new Properties();
         inputStream = GetPropertyValues.class.getClassLoader().getResourceAsStream("file_path.properties");
         if (inputStream != null) {
@@ -56,11 +58,21 @@ public class GetPropertyValues {
             throw new IOException("Property file file_path.properties not found");
         }
         if (!fileName.isEmpty()) {
-            String file_path = properties.getProperty("file_path") + FolderName + "/" + fileName;
-            return new File(file_path);
+            Path path;
+            if (forUsers) {
+                path = Paths.get(properties.getProperty("file_path"), "photos", FolderName, fileName);
+            } else {
+                path = Paths.get(properties.getProperty("file_path"), "plants", FolderName, fileName);
+            }
+            return path.toFile();
         } else {
-            String file_path = properties.getProperty("file_path") + FolderName;
-            return new File(file_path);
+            Path path;
+            if (forUsers) {
+                path = Paths.get(properties.getProperty("file_path"), "photos", FolderName);
+            } else {
+                path = Paths.get(properties.getProperty("file_path"), "plants", FolderName);
+            }
+            return path.toFile();
         }
     }
 }
