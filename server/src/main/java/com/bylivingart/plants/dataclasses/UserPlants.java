@@ -1,5 +1,7 @@
 package com.bylivingart.plants.dataclasses;
 
+import java.time.LocalDateTime;
+
 public class UserPlants {
     private int id;
     private String deviceId;
@@ -8,7 +10,7 @@ public class UserPlants {
     private double lat;
     private double lon;
     private String imageName;
-    private String lastWaterDate;
+    private LocalDateTime lastWaterDate;
     private double distanceToWindow;
     private int maxTemp;
     private int minTemp;
@@ -22,7 +24,7 @@ public class UserPlants {
         double lat, 
         double lon, 
         String imageName, 
-        String lastWaterDate, 
+        LocalDateTime lastWaterDate,
         double distanceToWindow, 
         int maxTemp, 
         int minTemp, 
@@ -73,7 +75,7 @@ public class UserPlants {
     /**
      * @return the lastWaterDate
      */
-    public String getLastWaterDate() {
+    public LocalDateTime getLastWaterDate() {
         return lastWaterDate;
     }
 
@@ -157,7 +159,7 @@ public class UserPlants {
     /**
      * @param lastWaterDate the lastWaterDate to set
      */
-    public void setLastWaterDate(String lastWaterDate) {
+    public void setLastWaterDate(LocalDateTime lastWaterDate) {
         this.lastWaterDate = lastWaterDate;
     }
 

@@ -5,6 +5,8 @@ import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import com.bylivingart.plants.FileService;
@@ -85,7 +87,7 @@ public class UserPlantsStatements {
         ps.setDouble(startingIndex + 3, userPlants.getLat());
         ps.setDouble(startingIndex + 4, userPlants.getLon());
         ps.setString(startingIndex + 5, userPlants.getImageName());
-        ps.setString(startingIndex + 6, userPlants.getLastWaterDate());
+        ps.setTimestamp(startingIndex + 6, Timestamp.valueOf(userPlants.getLastWaterDate()));
         ps.setDouble(startingIndex + 7, userPlants.getDistanceToWindow());
         ps.setInt(startingIndex + 8, userPlants.getMaxTemp());
         ps.setInt(startingIndex + 9, userPlants.getMinTemp());
@@ -101,7 +103,7 @@ public class UserPlantsStatements {
         double lat = rs.getDouble("lat");
         double lon = rs.getDouble("lon");
         String imageName = rs.getString("image_name");
-        String lastWaterDate = rs.getString("last_water_date");
+        LocalDateTime lastWaterDate = rs.getTimestamp("last_water_date").toLocalDateTime();
         double distanceToWindow = rs.getDouble("distance_to_window");
         int maxTemp = rs.getInt("max_temp");
         int minTemp = rs.getInt("min_temp");
