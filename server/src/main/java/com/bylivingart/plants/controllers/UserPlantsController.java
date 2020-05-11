@@ -5,7 +5,9 @@ import com.bylivingart.plants.Exceptions.BadRequestException;
 import com.bylivingart.plants.Exceptions.NotFoundException;
 import com.bylivingart.plants.FileService;
 import com.bylivingart.plants.GetPropertyValues;
+import com.bylivingart.plants.dataclasses.Plants;
 import com.bylivingart.plants.dataclasses.UserPlants;
+import com.bylivingart.plants.statements.PlantsStatements;
 import com.bylivingart.plants.statements.UserPlantsStatements;
 import io.swagger.annotations.*;
 import org.apache.commons.io.IOUtils;
@@ -33,12 +35,14 @@ public class UserPlantsController {
             @ApiResponse(code = 400, message = "failed to get the image", response = Error.class),
             @ApiResponse(code = 404, message = "Image not found", response = Error.class)
     })
-    @GetMapping(value = "/userplants/{deviceId}/{imageName}", produces = MediaType.IMAGE_JPEG_VALUE)
+    @GetMapping(value = "/userplants/{deviceId}/{userPlantId}/{imageName}", produces = MediaType.IMAGE_JPEG_VALUE)
     private ResponseEntity<byte[]> getImage(
             @PathVariable String deviceId,
+            @PathVariable String userPlantId,
             @PathVariable String imageName
+
     ) throws Exception {
-        File file = GetPropertyValues.getResourcePath(deviceId, imageName, true);
+        File file = GetPropertyValues.getResourcePath(deviceId, imageName, userPlantId,true);
         InputStream in = new FileInputStream(file);
         if (in.available() != 0) {
             ResponseEntity<byte[]> response = new ResponseEntity<>(IOUtils.toByteArray(in), HttpStatus.OK);
@@ -48,6 +52,20 @@ public class UserPlantsController {
             in.close();
             throw new NotFoundException("Image not found");
         }
+    }
+
+    @ApiOperation(value = "Get a userPlant by id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully gotten the userPlant", response = UserPlants.class, responseContainer = "List"),
+            @ApiResponse(code = 400, message = "Something went wrong", response = Error.class),
+            @ApiResponse(code = 404, message = "Can't find the userPlant", response = Error.class)
+    })
+    @GetMapping("/userplants/{deviceId}")
+    private ResponseEntity<ArrayList<UserPlants>> getUserPlant(@PathVariable String deviceId) throws Exception {
+        Connection conn = new DatabaseConnection().getConnection();
+        ResponseEntity<ArrayList<UserPlants>> response = new ResponseEntity<>(UserPlantsStatements.getUserPlant(deviceId, conn), HttpStatus.OK);
+        conn.close();
+        return response;
     }
 
     @ApiOperation("Get all the userPlants from the database")
@@ -137,9 +155,10 @@ public class UserPlantsController {
     private ResponseEntity<Void> uploadPlantImage(
             @RequestParam MultipartFile file,
             @RequestParam String deviceId,
-            @RequestParam String imageName
+            @RequestParam String imageName,
+            @RequestParam String userPlantId
     ) throws Exception {
-        if (FileService.uploadImage(file, deviceId, imageName, true)) {
+        if (FileService.uploadImage(file, deviceId, imageName,userPlantId, true)) {
             return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
             throw new BadRequestException("Couldn't upload file");

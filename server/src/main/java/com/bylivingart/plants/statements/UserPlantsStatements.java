@@ -1,6 +1,7 @@
 package com.bylivingart.plants.statements;
 
 import com.bylivingart.plants.Exceptions.NotFoundException;
+import com.bylivingart.plants.dataclasses.Plants;
 import com.bylivingart.plants.dataclasses.UserPlants;
 
 import java.sql.Connection;
@@ -23,6 +24,21 @@ public class UserPlantsStatements {
             } while (rs.next());
             return list;
         }
+    }
+
+    public static ArrayList<UserPlants> getUserPlant(String deviceId, Connection conn) throws Exception {
+        PreparedStatement ps = conn.prepareStatement("SELECT * FROM user_plants WHERE device_id=?");
+        ps.setString(1, deviceId);
+        ResultSet rs = ps.executeQuery();
+        ArrayList<UserPlants> list = new ArrayList<>();
+        if (!rs.next()) {
+            throw new NotFoundException("No data in database");
+        } else {
+            do {
+                list.add(getAllFromResultSet(rs));
+            } while (rs.next());
+        }
+        return list;
     }
 
     public static UserPlants createUserPlants(UserPlants userPlants, Connection conn) throws Exception {

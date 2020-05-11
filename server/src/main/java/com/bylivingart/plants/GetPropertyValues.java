@@ -52,7 +52,11 @@ public class GetPropertyValues {
         return result;
     }
 
-    public static File getResourcePath(String FolderName, String fileName, boolean forUsers) throws Exception {
+    public static File getResourcePath(String folderName, String fileName, boolean forUsers) throws Exception {
+        return getResourcePath(folderName, fileName, null, forUsers);
+    }
+
+    public static File getResourcePath(String FolderName, String fileName, String userPlantId, boolean forUsers) throws Exception {
         Properties properties = new Properties();
         inputStream = GetPropertyValues.class.getClassLoader().getResourceAsStream("file_path.properties");
         if (inputStream != null) {
@@ -60,22 +64,12 @@ public class GetPropertyValues {
         } else {
             throw new NotFoundException("Property file file_path.properties not found");
         }
-        if (!fileName.isEmpty()) {
-            Path path;
-            if (forUsers) {
-                path = Paths.get(properties.getProperty("file_path"), "photos", FolderName, fileName);
-            } else {
-                path = Paths.get(properties.getProperty("file_path"), "plants", FolderName, fileName);
-            }
-            return path.toFile();
+        Path path;
+        if (forUsers && userPlantId != null) {
+            path = Paths.get(properties.getProperty("file_path"), "photos", FolderName, userPlantId, fileName);
         } else {
-            Path path;
-            if (forUsers) {
-                path = Paths.get(properties.getProperty("file_path"), "photos", FolderName);
-            } else {
-                path = Paths.get(properties.getProperty("file_path"), "plants", FolderName);
-            }
-            return path.toFile();
+            path = Paths.get(properties.getProperty("file_path"), "plants", FolderName, fileName);
         }
+        return path.toFile();
     }
 }

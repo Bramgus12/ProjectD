@@ -14,8 +14,17 @@ import java.nio.file.Paths;
 
 @Service
 public class FileService {
+
     public static void uploadFile(MultipartFile file, String folder, String fileName, boolean forUsers) throws Exception {
-        File f = GetPropertyValues.getResourcePath(folder, fileName, forUsers);
+        uploadFile(file, folder, fileName, null, forUsers);
+    }
+    public static void uploadFile(MultipartFile file, String folder, String fileName,String userPlantId, boolean forUsers) throws Exception {
+        File f;
+        if (userPlantId == null) {
+            f = GetPropertyValues.getResourcePath(folder, fileName, forUsers);
+        } else {
+            f = GetPropertyValues.getResourcePath(folder, fileName, userPlantId, forUsers);
+        }
         Path copyLocation = Paths.get(String.valueOf(f));
         Files.copy(file.getInputStream(), copyLocation);
         OutputStream os = Files.newOutputStream(copyLocation);
@@ -23,15 +32,30 @@ public class FileService {
     }
 
     public static boolean uploadImage(MultipartFile file, String folderName, String imageName, boolean forUsers) throws Exception {
-        File f = GetPropertyValues.getResourcePath(folderName, imageName, forUsers);
-        File folder = GetPropertyValues.getResourcePath(folderName, "", forUsers);
-        if (folder.mkdirs()) {
+        return uploadImage(file, folderName, imageName, null, forUsers);
+    }
+
+    public static boolean uploadImage(MultipartFile file, String folderName, String imageName, String userPlantId, boolean forUsers) throws Exception {
+        File f;
+        File folder;
+        if (userPlantId == null ) {
+            f = GetPropertyValues.getResourcePath(folderName, imageName, forUsers);
+            folder = GetPropertyValues.getResourcePath(folderName, "", forUsers);
+        } else {
+            f = GetPropertyValues.getResourcePath(folderName, imageName, userPlantId, forUsers);
+            folder = GetPropertyValues.getResourcePath(folderName, "", userPlantId, forUsers);
+        }
+        if (folder.exists() || folder.mkdirs()) {
             String mimeType = Files.probeContentType(f.toPath());
             System.out.println(mimeType);
             System.out.println(f);
             if (mimeType != null && mimeType.equals("image/jpeg")) {
                 if (!f.exists()) {
-                    FileService.uploadFile(file, folderName, imageName, forUsers);
+                    if (userPlantId == null) {
+                        FileService.uploadFile(file, folderName, imageName, forUsers);
+                    } else {
+                        FileService.uploadFile(file, folderName, imageName, userPlantId, forUsers);
+                    }
                     return f.exists();
                 } else {
                     throw new BadRequestException("File already exists");
