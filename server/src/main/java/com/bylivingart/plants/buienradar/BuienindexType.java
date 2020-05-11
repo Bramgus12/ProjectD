@@ -16,9 +16,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for buienindexType complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="buienindexType">
  *   &lt;complexContent>
@@ -31,13 +31,11 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "buienindexType", propOrder = {
-    "waardepercentage",
-    "datum"
+        "waardepercentage",
+        "datum"
 })
 public class BuienindexType {
 
@@ -48,11 +46,9 @@ public class BuienindexType {
 
     /**
      * Gets the value of the waardepercentage property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getWaardepercentage() {
         return waardepercentage;
@@ -60,11 +56,9 @@ public class BuienindexType {
 
     /**
      * Sets the value of the waardepercentage property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setWaardepercentage(String value) {
         this.waardepercentage = value;
@@ -72,11 +66,9 @@ public class BuienindexType {
 
     /**
      * Gets the value of the datum property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getDatum() {
         return datum;
@@ -84,11 +76,9 @@ public class BuienindexType {
 
     /**
      * Sets the value of the datum property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setDatum(String value) {
         this.datum = value;

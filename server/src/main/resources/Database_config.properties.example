@@ -1,0 +1,6 @@
+# Database connection information;
+db_url=jdbc:postgresql://[URL]:[Port]/[Database name]
+db_username=
+db_password=
+db_url_short=
+db_name=

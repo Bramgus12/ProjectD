@@ -1,21 +1,22 @@
 package com.bylivingart.plants.statements;
 
+import com.bylivingart.plants.Exceptions.BadRequestException;
+import com.bylivingart.plants.Exceptions.NotFoundException;
 import com.bylivingart.plants.SecurityConfig;
 import com.bylivingart.plants.dataclasses.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class UserStatements {
-    public static ArrayList<User> getAllUsers(Connection conn) throws SQLException {
+    public static ArrayList<User> getAllUsers(Connection conn) throws Exception {
         ArrayList<User> list = new ArrayList<>();
         PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM users");
         ResultSet result = preparedStatement.executeQuery();
         if (!result.next()) {
-            throw new SQLException("No data in database");
+            throw new NotFoundException("No data in database");
         } else {
             do {
                 list.add(getResult(result.getInt("id"), result));
@@ -24,18 +25,14 @@ public class UserStatements {
         }
     }
 
-    public static User createUser(User user, Connection conn) throws SQLException {
+    public static User createUser(User user, Connection conn) throws Exception {
         boolean userExists = false;
-        try {
-            ArrayList<User> users = getAllUsers(conn);
-            for (User userFromList : users) {
-                if (user.getUser_name().equals(userFromList.getUser_name())) {
-                    userExists = true;
-                    break;
-                }
+        ArrayList<User> users = getAllUsers(conn);
+        for (User userFromList : users) {
+            if (user.getUser_name().equals(userFromList.getUser_name())) {
+                userExists = true;
+                break;
             }
-        } catch (SQLException e) {
-            throw new SQLException("Can't check if user already exists or not: " + e.getMessage());
         }
         if (!userExists) {
             if (!user.getPassword().isEmpty() && user.getPassword().length() > 6) {
@@ -48,14 +45,14 @@ public class UserStatements {
                 preparedStatement.execute();
                 return newUser;
             } else {
-                throw new SQLException("Password is not long enough. It has to be at least a length of 6.");
+                throw new BadRequestException("Password is not long enough. It has to be at least a length of 6.");
             }
         } else {
-            throw new SQLException("User already exists.");
+            throw new BadRequestException("User already exists.");
         }
     }
 
-    public static User updateUser(User user, Connection conn) throws SQLException {
+    public static User updateUser(User user, Connection conn) throws Exception {
         User newUser = SecurityConfig.HashUserPassword(user);
         int id = newUser.getId();
         String userName = newUser.getUser_name();
@@ -73,18 +70,18 @@ public class UserStatements {
         preparedStatement1.setInt(1, id);
         ResultSet resultSet = preparedStatement1.executeQuery();
         if (!resultSet.next()) {
-            throw new SQLException("Address doesn't exist on this id after updating");
+            throw new NotFoundException("Address doesn't exist on this id after updating");
         } else {
             return getResult(id, resultSet);
         }
     }
 
-    public static User deleteUser(int id, Connection conn) throws SQLException{
+    public static User deleteUser(int id, Connection conn) throws Exception {
         PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM users WHERE id=?;");
         preparedStatement.setInt(1, id);
         ResultSet resultSet = preparedStatement.executeQuery();
         if (!resultSet.next()) {
-            throw new SQLException("User doesn't exist.");
+            throw new NotFoundException("User doesn't exist.");
         } else {
             User user = getResult(id, resultSet);
             PreparedStatement preparedStatement1 = conn.prepareStatement("DELETE FROM users where id=?;");
@@ -95,7 +92,7 @@ public class UserStatements {
 
     }
 
-    private static User getResult(int id, ResultSet resultSet) throws SQLException {
+    private static User getResult(int id, ResultSet resultSet) throws Exception {
         String user_nameResult = resultSet.getString("user_name");
         String passwordResult = resultSet.getString("password");
         String authorityResult = resultSet.getString("authority");

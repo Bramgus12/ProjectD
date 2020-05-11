@@ -13,9 +13,9 @@ import javax.xml.bind.annotation.*;
 
 /**
  * <p>Java class for buienradarnlType complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="buienradarnlType">
  *   &lt;complexContent>
@@ -27,14 +27,12 @@ import javax.xml.bind.annotation.*;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "buienradarnlType", propOrder = {
-    "weergegevens"
+        "weergegevens"
 })
-@XmlRootElement(name="buienradarnl")
+@XmlRootElement(name = "buienradarnl")
 public class BuienradarnlType {
 
     @XmlElement(required = true)
@@ -42,11 +40,9 @@ public class BuienradarnlType {
 
     /**
      * Gets the value of the weergegevens property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link WeergegevensType }
-     *     
+     *
+     * @return possible object is
+     * {@link WeergegevensType }
      */
     public WeergegevensType getWeergegevens() {
         return weergegevens;
@@ -54,11 +50,9 @@ public class BuienradarnlType {
 
     /**
      * Sets the value of the weergegevens property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link WeergegevensType }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link WeergegevensType }
      */
     public void setWeergegevens(WeergegevensType value) {
         this.weergegevens = value;

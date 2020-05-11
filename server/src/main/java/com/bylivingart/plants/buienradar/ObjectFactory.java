@@ -15,18 +15,17 @@ import javax.xml.namespace.QName;
 
 
 /**
- * This object contains factory methods for each 
- * Java content interface and Java element interface 
- * generated in the com.bylivingart.plants package. 
- * <p>An ObjectFactory allows you to programatically 
- * construct new instances of the Java representation 
- * for XML content. The Java representation of XML 
- * content can consist of schema derived interfaces 
- * and classes representing the binding of schema 
- * type definitions, element declarations and model 
- * groups.  Factory methods for each of these are 
+ * This object contains factory methods for each
+ * Java content interface and Java element interface
+ * generated in the com.bylivingart.plants package.
+ * <p>An ObjectFactory allows you to programatically
+ * construct new instances of the Java representation
+ * for XML content. The Java representation of XML
+ * content can consist of schema derived interfaces
+ * and classes representing the binding of schema
+ * type definitions, element declarations and model
+ * groups.  Factory methods for each of these are
  * provided in this class.
- * 
  */
 @XmlRegistry
 public class ObjectFactory {
@@ -35,14 +34,12 @@ public class ObjectFactory {
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: com.bylivingart.plants
-     * 
      */
     public ObjectFactory() {
     }
 
     /**
      * Create an instance of {@link BuienradarnlType }
-     * 
      */
     public BuienradarnlType createBuienradarnlType() {
         return new BuienradarnlType();
@@ -50,7 +47,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link StationnaamType }
-     * 
      */
     public StationnaamType createStationnaamType() {
         return new StationnaamType();
@@ -58,7 +54,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link BuienindexType }
-     * 
      */
     public BuienindexType createBuienindexType() {
         return new BuienindexType();
@@ -66,7 +61,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link VerwachtingMeerdaagsType }
-     * 
      */
     public VerwachtingMeerdaagsType createVerwachtingMeerdaagsType() {
         return new VerwachtingMeerdaagsType();
@@ -74,7 +68,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link DagPlus4Type }
-     * 
      */
     public DagPlus4Type createDagPlus4Type() {
         return new DagPlus4Type();
@@ -82,7 +75,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link DagPlus1Type }
-     * 
      */
     public DagPlus1Type createDagPlus1Type() {
         return new DagPlus1Type();
@@ -90,7 +82,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link WeerstationType }
-     * 
      */
     public WeerstationType createWeerstationType() {
         return new WeerstationType();
@@ -98,7 +89,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link WeerstationsType }
-     * 
      */
     public WeerstationsType createWeerstationsType() {
         return new WeerstationsType();
@@ -106,7 +96,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link VerwachtingVandaagType }
-     * 
      */
     public VerwachtingVandaagType createVerwachtingVandaagType() {
         return new VerwachtingVandaagType();
@@ -114,7 +103,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link IcoonactueelType }
-     * 
      */
     public IcoonactueelType createIcoonactueelType() {
         return new IcoonactueelType();
@@ -122,7 +110,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link WeergegevensType }
-     * 
      */
     public WeergegevensType createWeergegevensType() {
         return new WeergegevensType();
@@ -130,7 +117,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link ActueelWeerType }
-     * 
      */
     public ActueelWeerType createActueelWeerType() {
         return new ActueelWeerType();
@@ -138,7 +124,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link TekstMiddellangType }
-     * 
      */
     public TekstMiddellangType createTekstMiddellangType() {
         return new TekstMiddellangType();
@@ -146,7 +131,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link TekstLangType }
-     * 
      */
     public TekstLangType createTekstLangType() {
         return new TekstLangType();
@@ -154,7 +138,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link DagPlus5Type }
-     * 
      */
     public DagPlus5Type createDagPlus5Type() {
         return new DagPlus5Type();
@@ -162,7 +145,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link DagPlus2Type }
-     * 
      */
     public DagPlus2Type createDagPlus2Type() {
         return new DagPlus2Type();
@@ -170,7 +152,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link IcoonType }
-     * 
      */
     public IcoonType createIcoonType() {
         return new IcoonType();
@@ -178,7 +159,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link DagPlus3Type }
-     * 
      */
     public DagPlus3Type createDagPlus3Type() {
         return new DagPlus3Type();
@@ -186,7 +166,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link ImageType }
-     * 
      */
     public ImageType createImageType() {
         return new ImageType();
@@ -194,7 +173,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link BuienradarType }
-     * 
      */
     public BuienradarType createBuienradarType() {
         return new BuienradarType();
@@ -202,7 +180,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link BuienradarnlType }{@code >}}
-     * 
      */
     @XmlElementDecl(namespace = "", name = "buienradarnl")
     public JAXBElement<BuienradarnlType> createBuienradarnl(BuienradarnlType value) {

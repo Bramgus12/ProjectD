@@ -4,7 +4,6 @@ import com.bylivingart.plants.buienradar.BuienradarnlType;
 import com.bylivingart.plants.buienradar.IcoonactueelType;
 import com.bylivingart.plants.buienradar.StationnaamType;
 import com.bylivingart.plants.buienradar.WeerstationType;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
@@ -20,9 +19,9 @@ public class ScheduledTask {
 
 
     // @Scheduled(fixedRate = 1200000)
-    public static void storeWeatherData() {
-        Connection conn = new DatabaseConnection().getConnection();
+    public static void storeWeatherData(){
         try {
+            Connection conn = new DatabaseConnection().getConnection();
             BuienradarnlType weather = getWeather();
             List<WeerstationType> weerStations = weather.getWeergegevens().getActueelWeer().getWeerstations().getWeerstation();
             for (WeerstationType weerstation : weerStations) {
