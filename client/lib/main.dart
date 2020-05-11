@@ -4,9 +4,9 @@ import 'package:global_configuration/global_configuration.dart';
 
 import 'pages/Camera.dart';
 import 'pages/Home.dart';
-import 'pages/PlantList.dart';
-import 'pages/PlantDetail.dart';
-import 'pages/AddPlant.dart';
+import 'pages/plant-list.dart';
+import 'pages/plant-detail.dart';
+import 'pages/add-plant.dart';
 
 Future<void> main() async {
   // Load configuration
@@ -56,7 +56,7 @@ class MyApp extends StatelessWidget {
             return SlideRightRoute(widget: Camera(), settings:settings);
           case '/my-plants':
             return SlideRightRoute(widget: PlantList(), settings:settings);
-          case '':
+          case '/add-plant':
             return SlideRightRoute(widget: AddPlant(), settings:settings);
           default:
             return null;

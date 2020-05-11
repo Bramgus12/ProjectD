@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../MenuNavigation.dart';
-import 'PlantList.dart';
+import 'plant-list.dart';
 
 class PlantDetail extends StatelessWidget {
   final PlantInfo plantInfo;
@@ -27,8 +27,7 @@ class PlantDetail extends StatelessWidget {
           padding: EdgeInsets.all(20.0),
           width: MediaQuery.of(context).size.width,
           color: Colors.black,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListView(
             children: <Widget>[
               Image.asset(plantInfo.imageName),
               SizedBox(height: 20),

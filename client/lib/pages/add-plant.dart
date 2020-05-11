@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../MenuNavigation.dart';
-import 'PlantList.dart';
+import 'plant-list.dart';
 
 class AddPlant extends StatefulWidget {
   @override
@@ -49,15 +49,8 @@ class _AddPlant extends State<AddPlant> {
                 key: _formKey,
                 child: ListView(
                   children: <Widget>[
-                    TextFormField(
-                      decoration: InputDecoration(
-                          hintText: 'Naam',
-                          hintStyle: TextStyle(color: Colors.white),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white))),
+                    AddPlantTextField(
+                      hintText: 'Naam',
                       validator: (String value) {
                         if (value.isEmpty) {
                           return 'Leeg';
@@ -108,6 +101,34 @@ class _AddPlant extends State<AddPlant> {
               ),
             )),
       ),
+    );
+  }
+}
+
+class AddPlantTextField extends StatelessWidget {
+  final String hintText;
+  final TextInputType keyboardType;
+  final Function(String) validator;
+  final Function(String) onSaved;
+
+  AddPlantTextField({this.hintText, this.keyboardType, this.validator, this.onSaved});
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      decoration: InputDecoration(
+        hintText: this.hintText,
+        hintStyle: TextStyle(color: Colors.white),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.white),
+        ),
+        enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.white)
+        ),
+      ),
+      keyboardType: keyboardType,
+      validator: this.validator,
+      onSaved: this.onSaved,
     );
   }
 }
