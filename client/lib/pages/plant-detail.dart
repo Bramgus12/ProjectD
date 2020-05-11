@@ -24,7 +24,7 @@ class PlantDetail extends StatelessWidget {
           color: Colors.white
         ),
         child: Container(
-          padding: EdgeInsets.all(20.0),
+          padding: EdgeInsets.all(10.0),
           width: MediaQuery.of(context).size.width,
           color: Colors.black,
           child: ListView(
