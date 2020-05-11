@@ -48,6 +48,7 @@ public class WeatherControllerTests {
         mvc.perform(get("/api/weather/latlon?lat=61.269172&lon=55.927234")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(status().reason(containsString("Coordinates are not from The Netherlands")));
     }
 }
