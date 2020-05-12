@@ -43,9 +43,27 @@ class _HomePageState extends State<HomePage> {
     // for (var plant in plants) {
     //   print(plant);
     // }
-    try {
-      Plant plant = await widget.apiConnection.fetchPlant(5);
-      print(plant);
+    // try {
+    //   Plant plant = await widget.apiConnection.fetchPlant(5);
+    //   print(plant);
+    // } on ApiConnectionException catch(e) {
+    //   print(e);
+    // }
+    try{
+      Plant newPlant = Plant(
+        id:0, 
+        name: "Post Test Plant", 
+        waterScale: 2.3, 
+        waterNumber: 3.4, 
+        waterText: "Requires water.", 
+        sunScale: 4.0, 
+        sunNumber: 4.1, 
+        sunText: "Requires sunlight.", 
+        description: "Plant to test post functionality.",
+        optimalTemp: 30
+      );
+
+      widget.apiConnection.postPlant(newPlant);
     } on ApiConnectionException catch(e) {
       print(e);
     }

@@ -1,4 +1,6 @@
-class UserPlant {
+import 'package:plantexpert/api/JsonSerializeable.dart';
+
+class UserPlant implements JsonSerializeable {
 
   int id;
   String deviceId;
@@ -43,6 +45,24 @@ class UserPlant {
       minTemp: jsonUserPlant['minTemp'],
       plantId: jsonUserPlant['plantId']
     );
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      "id" : id,
+      "deviceId" : deviceId,
+      "nickname" : nickname,
+      "potVolume" : potVolume,
+      "lat" : latitude,
+      "lon" : longitude,
+      "imageName" : imageName,
+      "lastWaterDate" : lastWaterDate.toIso8601String(),
+      "distanceToWindow" : distanceToWindow,
+      "maxTemp" : maxTemp,
+      "minTemp" : minTemp,
+      "plantId" : plantId
+    };
   }
 
   @override

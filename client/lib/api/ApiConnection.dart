@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:global_configuration/global_configuration.dart';
+import 'package:plantexpert/api/JsonSerializeable.dart';
 import 'package:plantexpert/api/Plant.dart';
 import 'package:plantexpert/api/UserPlant.dart';
 import 'package:plantexpert/api/WeatherStation.dart';
@@ -18,16 +19,19 @@ class ApiConnection {
   ApiConnection()
     : baseUrl = 'http://${GlobalConfiguration().getString("server")}:${GlobalConfiguration().getInt("port")}/api/';
 
+  // Fetch json
   Future<dynamic> _fetchJson(String url, { Map<String, String> headers } ) async {
     if (headers == null) headers = HashMap();
     headers.putIfAbsent('Accept', () => 'application/json');
     try {
       http.Response response = await http.get(url, headers: headers)
         .timeout(const Duration(seconds: 15));
+
       if(response.statusCode != 200){
         throw ApiConnectionException("Received response with status code ${response.statusCode} while fetching url: $url");
       }
       return json.decode(response.body);
+
     } on SocketException catch(e) {
       print(e);
       throw ApiConnectionException("SocketException occured while trying to fetch url: $url");
@@ -57,6 +61,37 @@ class ApiConnection {
       return jsonList;
     throw ApiConnectionException("jsonList is not of type Iterable. Url: $url");
   }
+
+  // Post json
+  Future<http.Response> _postJson(String url, JsonSerializeable jsonObject, { Map<String, String> headers }) async {
+    if (headers == null) headers = HashMap();
+    headers.putIfAbsent('Accept', () => 'application/json');
+    try {
+      http.Response response = await http.post(
+        url,
+        body: json.encode(jsonObject.toJson())
+      );
+
+      if(response.statusCode != 200){
+        throw ApiConnectionException("Received response with status code ${response.statusCode} while fetching url: $url");
+      }
+      return response;
+
+    } on SocketException catch(e) {
+      print(e);
+      throw ApiConnectionException("SocketException occured while posting to url: $url");
+    } on TimeoutException catch(e) {
+      print(e);
+      throw ApiConnectionException("Timed out while posting to url: $url");
+    }
+    on FormatException catch(e) {
+      print(e);
+      throw ApiConnectionException("Invalid json url: $url");
+    } catch(e) {
+      print(e);
+      throw ApiConnectionException("Exception occured while trying to post json to url: $url");
+    }
+  }
   
   // Weather stations
   Future<List<WeatherStation>> fetchWeatherStations(String region) async {
@@ -73,6 +108,11 @@ class ApiConnection {
   Future<Plant> fetchPlant(int id) async {
     Map<String, dynamic> jsonPlant = await _fetchJsonObject('${baseUrl}plants/$id');
     return Plant.fromJson(jsonPlant);
+  }
+
+  Future<http.Response> postPlant(Plant plant) async {
+    // TODO: add authentication headers
+    return await _postJson("${baseUrl}admin/plants", plant);
   }
 
   // User plants

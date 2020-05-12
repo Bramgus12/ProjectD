@@ -1,4 +1,6 @@
-class Plant {
+import 'package:plantexpert/api/JsonSerializeable.dart';
+
+class Plant implements JsonSerializeable {
 
   int id;
   String name;
@@ -37,6 +39,22 @@ class Plant {
       description: jsonPlant['description'],
       optimalTemp: jsonPlant['optimumTemp']
     );
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      "id" : id,
+      "name" : name,
+      "waterScale" : waterScale,
+      "waterNumber" : waterNumber,
+      "waterText" : waterText,
+      "sunScale" : sunScale,
+      "sunNumber" : sunNumber,
+      "sunText" : sunText,
+      "description" : description,
+      "optimumTemp" : optimalTemp
+    };
   }
 
   @override
