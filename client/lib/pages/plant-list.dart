@@ -97,6 +97,7 @@ class PlantListItem extends StatelessWidget {
                   height: _imageHeight,
                 ),
               ),
+              // space between image and text
               Expanded(
                 flex: 1,
                 child: SizedBox(width: 1),

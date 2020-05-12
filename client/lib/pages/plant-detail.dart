@@ -77,6 +77,4 @@ class PlantDetail extends StatelessWidget {
       ),
     );
   }
-
-
 }
