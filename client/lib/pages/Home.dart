@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:plantexpert/api/ApiConnection.dart';
 import 'package:plantexpert/api/ApiConnectionException.dart';
-import 'package:plantexpert/api/Plant.dart';
+import 'package:plantexpert/api/UserPlant.dart';
 
 import '../MenuNavigation.dart';
 
@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage> {
           children: <Widget>[
             RaisedButton(
               onPressed: plantsButtonTest,
-              child: Text('Plants Test'),
+              child: Text('UserPlant Post Test'),
             )
           ],
         ),
@@ -51,21 +51,27 @@ class _HomePageState extends State<HomePage> {
     //   print(e);
     // }
     try{
-      Plant newPlant = Plant(
-        id:0, 
-        name: "Post Test Plant", 
-        waterScale: 2.3, 
-        waterNumber: 3.4, 
-        waterText: "Requires water.", 
-        sunScale: 4.0, 
-        sunNumber: 4.1, 
-        sunText: "Requires sunlight.", 
-        description: "Plant to test post functionality.",
-        optimalTemp: 30
+      UserPlant newUserPlant = UserPlant(
+        deviceId: "1337",
+        distanceToWindow: 5.5,
+        id: 0,
+        imageName: "testPostPlant.jpg",
+        lastWaterDate: DateTime.parse("2020-05-12T20:32:47.389Z"),
+        latitude: 53.534676,
+        longitude: 6.506173,
+        maxTemp: 2,
+        minTemp: 4,
+        nickname: "Pedro's Post Test Plant",
+        plantId: 5,
+        potVolume: 3.2
       );
 
-      await apiConnection.postPlant(newPlant);
+      await apiConnection.postUserPlant(newUserPlant);
+
+      print("Successfull UserPlant post");
     } on ApiConnectionException catch(e) {
+      print(e);
+    } on InvalidCredentialsException catch(e) {
       print(e);
     }
   }

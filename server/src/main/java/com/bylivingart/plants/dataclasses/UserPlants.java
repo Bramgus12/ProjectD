@@ -16,6 +16,9 @@ public class UserPlants {
     private int minTemp;
     private int plantId;
 
+    public UserPlants() {
+    }
+
     public UserPlants(
             int id,
             String deviceId,

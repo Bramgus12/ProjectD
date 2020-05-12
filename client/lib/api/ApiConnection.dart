@@ -11,6 +11,7 @@ import 'package:plantexpert/api/WeatherStation.dart';
 import 'dart:convert';
 
 import 'package:plantexpert/api/ApiConnectionException.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiConnection {
 
@@ -19,17 +20,33 @@ class ApiConnection {
   ApiConnection()
     : baseUrl = 'http://${GlobalConfiguration().getString("server")}:${GlobalConfiguration().getInt("port")}/api/';
 
+  Future<Map<String, String>> _createJsonHeader({Map<String, String> headers, type="GET"}) async {
+    if(headers == null) headers = Map();
+
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String username = sharedPreferences.getString('username');
+    String password = sharedPreferences.getString('password');
+    if( headers['Authorization'] == null && username != null && password != null ){
+      headers['Authorization'] = "Basic " + base64.encode(utf8.encode("$username:$password")).replaceAll("=", "");
+    }
+    headers.putIfAbsent('Accept', () => 'application/json');
+    if(type == "POST") headers['Content-Type'] = "application/json";
+    return headers;
+  }
+
   // Fetch json
   Future<dynamic> _fetchJson(String url, { Map<String, String> headers } ) async {
-    if (headers == null) headers = HashMap();
-    headers.putIfAbsent('Accept', () => 'application/json');
+    headers = await _createJsonHeader( headers: headers);
+
     try {
       http.Response response = await http.get(url, headers: headers);
 
       if (response.statusCode == 401) {
+        print("Status code ${response.statusCode} - Server Response: ${response.body}");
         throw InvalidCredentialsException("Invalid credentials provided while trying to access url: $url");
       }
       else if(response.statusCode != 200){
+        print("Status code ${response.statusCode} - Server Response: ${response.body}");
         throw ApiConnectionException("Received response with status code ${response.statusCode} while fetching url: $url");
       }
       return json.decode(response.body);
@@ -66,18 +83,21 @@ class ApiConnection {
 
   // Post json
   Future<http.Response> _postJson(String url, JsonSerializeable jsonObject, { Map<String, String> headers }) async {
-    if (headers == null) headers = HashMap();
-    headers.putIfAbsent('Accept', () => 'application/json');
+    headers = await _createJsonHeader( headers: headers, type: "POST");
+
     try {
       http.Response response = await http.post(
         url,
+        headers: headers,
         body: json.encode(jsonObject.toJson())
       );
 
       if (response.statusCode == 401) {
+        print("Status code ${response.statusCode} - Server Response: ${response.body}");
         throw InvalidCredentialsException("Invalid credentials provided while trying to post to url: $url");
       }
       else if(response.statusCode != 200){
+        print("Status code ${response.statusCode} - Server Response: ${response.body}");
         throw ApiConnectionException("Received response with status code ${response.statusCode} while fetching url: $url");
       }
       return response;
@@ -114,11 +134,6 @@ class ApiConnection {
     return Plant.fromJson(jsonPlant);
   }
 
-  Future<http.Response> postPlant(Plant plant) async {
-    // TODO: add authentication headers
-    return await _postJson("${baseUrl}admin/plants", plant);
-  }
-
   // User plants
   Future<List<UserPlant>> fetchUserPlants() async {
     Iterable jsonUserPlants = await _fetchJsonList('${baseUrl}userplants');
@@ -130,6 +145,10 @@ class ApiConnection {
   //   Map<String, dynamic> jsonUserPlant = await _fetchJsonObject('${baseUrl}userplants/$id');
   //   return UserPlant.fromJson(jsonUserPlant);
   // }
+
+  Future<http.Response> postUserPlant(UserPlant userPlant) async {
+    return await _postJson("${baseUrl}admin/userplants", userPlant);
+  }
 
   // Login
   Future<bool> verifyCredentials(String username, String password) async {
