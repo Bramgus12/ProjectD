@@ -10,7 +10,7 @@ import 'package:plantexpert/api/UserPlant.dart';
 import 'package:plantexpert/api/WeatherStation.dart';
 import 'dart:convert';
 
-import 'ApiConnectionException.dart';
+import 'package:plantexpert/api/ApiConnectionException.dart';
 
 class ApiConnection {
 
@@ -24,10 +24,12 @@ class ApiConnection {
     if (headers == null) headers = HashMap();
     headers.putIfAbsent('Accept', () => 'application/json');
     try {
-      http.Response response = await http.get(url, headers: headers)
-        .timeout(const Duration(seconds: 15));
+      http.Response response = await http.get(url, headers: headers);
 
-      if(response.statusCode != 200){
+      if (response.statusCode == 401) {
+        throw InvalidCredentialsException("Invalid credentials provided while trying to access url: $url");
+      }
+      else if(response.statusCode != 200){
         throw ApiConnectionException("Received response with status code ${response.statusCode} while fetching url: $url");
       }
       return json.decode(response.body);
@@ -72,7 +74,10 @@ class ApiConnection {
         body: json.encode(jsonObject.toJson())
       );
 
-      if(response.statusCode != 200){
+      if (response.statusCode == 401) {
+        throw InvalidCredentialsException("Invalid credentials provided while trying to post to url: $url");
+      }
+      else if(response.statusCode != 200){
         throw ApiConnectionException("Received response with status code ${response.statusCode} while fetching url: $url");
       }
       return response;
@@ -83,8 +88,7 @@ class ApiConnection {
     } on TimeoutException catch(e) {
       print(e);
       throw ApiConnectionException("Timed out while posting to url: $url");
-    }
-    on FormatException catch(e) {
+    } on FormatException catch(e) {
       print(e);
       throw ApiConnectionException("Invalid json url: $url");
     } catch(e) {
@@ -126,5 +130,22 @@ class ApiConnection {
   //   Map<String, dynamic> jsonUserPlant = await _fetchJsonObject('${baseUrl}userplants/$id');
   //   return UserPlant.fromJson(jsonUserPlant);
   // }
+
+  // Login
+  Future<bool> verifyCredentials(String username, String password) async {
+    // TODO: Change endpoint to verify credentials. /api/users is now used to check if the username and password are correct.
+    // This should later be changed tp a different endpoint. This one does not scale well at all.
+    try{
+      Map<String, String> headers = Map();
+      String base64Authorisation = base64.encode(utf8.encode("$username:$password")).replaceAll("=", "");
+      headers['Authorization'] = "Basic $base64Authorisation";
+      await _fetchJson("${baseUrl}users", headers: headers);
+      return true;
+    }
+    on InvalidCredentialsException catch(e) {
+      print(e);
+      return false;
+    }
+  }
 
 }

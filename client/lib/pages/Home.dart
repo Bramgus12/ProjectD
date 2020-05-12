@@ -6,7 +6,6 @@ import 'package:plantexpert/api/Plant.dart';
 import '../MenuNavigation.dart';
 
 class HomePage extends StatefulWidget {
-  ApiConnection apiConnection = ApiConnection();
 
   HomePage({Key key}) : super(key: key);
 
@@ -15,6 +14,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  ApiConnection apiConnection = ApiConnection();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,7 +64,7 @@ class _HomePageState extends State<HomePage> {
         optimalTemp: 30
       );
 
-      widget.apiConnection.postPlant(newPlant);
+      await apiConnection.postPlant(newPlant);
     } on ApiConnectionException catch(e) {
       print(e);
     }

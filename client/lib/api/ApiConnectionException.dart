@@ -13,3 +13,17 @@ class ApiConnectionException implements IOException {
   }
 
 }
+
+class InvalidCredentialsException implements IOException {
+
+  final String message;
+
+  InvalidCredentialsException([this.message]);
+
+  @override
+  String toString() {
+    if (message == null) return "InvalidCredentialsException";
+    return "InvalidCredentialsException: $message";
+  }
+
+}
