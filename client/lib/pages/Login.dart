@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:plantexpert/Theme.dart';
 import 'package:plantexpert/api/ApiConnection.dart';
 import 'package:plantexpert/api/ApiConnectionException.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,7 +40,7 @@ class _LoginState extends State<Login> {
                     border: OutlineInputBorder(),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: Colors.blue
+                        color: ThemeColors.selected
                       )
                     ),
                     hintText: "Username"
@@ -54,7 +55,7 @@ class _LoginState extends State<Login> {
                     border: OutlineInputBorder(),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: Colors.blue
+                        color: ThemeColors.selected
                       )
                     ),
                     hintText: "Password"
