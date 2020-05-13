@@ -14,6 +14,22 @@ class _LoginState extends State<Login> {
   TextEditingController passwordController = new TextEditingController();
   ApiConnection apiConnection = new ApiConnection();
 
+  String _errorMessage = "";
+  bool _showError = false;
+
+  void showErrorMessage(String errorMessage) {
+    setState(() {
+      _errorMessage = errorMessage;
+      _showError = true;
+    });
+  }
+
+  void hideErrorMessage(){
+    setState(() {
+      _showError = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,6 +79,18 @@ class _LoginState extends State<Login> {
                   obscureText: true,
                 ),
               ),
+              Visibility(
+                visible: _showError,
+                child: Container(
+                  padding: const EdgeInsets.all(15),
+                  margin: const EdgeInsets.only(bottom: 20),
+                  child: Text(
+                      _errorMessage,
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  color: ThemeColors.errorBackground
+                ),
+              ),
               RaisedButton(
                 onPressed: login,
                 child: const Text("Login")
@@ -83,16 +111,17 @@ class _LoginState extends State<Login> {
         SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
         sharedPreferences.setString("username", usernameController.text);
         sharedPreferences.setString("password", passwordController.text);
+        hideErrorMessage();
         Navigator.pop(context);
       }
       else {
         print("Invalid Credentials.");
-        // TODO: handle invalid credentials, maybe display a message notifying the user.
+        showErrorMessage("Incorrect username or password.");
       }
     }
     on ApiConnectionException catch(e) {
       print(e);
-      // TODO: display message to user about connection error.
+      showErrorMessage("Error connecting to server.");
     }
   }
 }

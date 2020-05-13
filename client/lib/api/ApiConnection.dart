@@ -72,7 +72,7 @@ class ApiConnection {
         print("Status code ${response.statusCode} - Server Response: ${response.body}");
         throw InvalidCredentialsException("Invalid credentials provided while trying to access url: $url");
       }
-      else if(response.statusCode != 200){
+      else if(response.statusCode >= 400){
         print("Status code ${response.statusCode} - Server Response: ${response.body}");
         throw StatusCodeException(response);
       }
