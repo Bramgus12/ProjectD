@@ -66,7 +66,14 @@ class _MenuNavigation extends State<MenuNavigation> {
             leading: Icon(Icons.featured_play_list, color: ModalRoute.of(context).settings.name == '/my-plants' ? selectedColor : Colors.black,),
 
           ),
+          ListTile(
+            title: Text('Login'),
+            onTap: (){
+              Navigator.pushNamed(context, '/login');
+            },
+            leading: Icon(Icons.featured_play_list, color: ModalRoute.of(context).settings.name == '/login' ? selectedColor : Colors.black,),
 
+          )
 
         ],
       ),
