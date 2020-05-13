@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -39,5 +40,10 @@ public class HandleException extends ResponseEntityExceptionHandler {
     @ExceptionHandler(SQLException.class)
     private void handleSQLException(SQLException e, HttpServletResponse response) throws IOException {
         response.sendError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+    }
+
+    @ExceptionHandler(FileNotFoundException.class)
+    private void handleFileNotFoundExceptions(FileNotFoundException e, HttpServletResponse response) throws IOException {
+        response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());
     }
 }

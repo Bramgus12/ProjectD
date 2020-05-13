@@ -5,9 +5,8 @@ import com.bylivingart.plants.Exceptions.BadRequestException;
 import com.bylivingart.plants.Exceptions.NotFoundException;
 import com.bylivingart.plants.FileService;
 import com.bylivingart.plants.GetPropertyValues;
-import com.bylivingart.plants.dataclasses.Plants;
+import com.bylivingart.plants.SecurityConfig;
 import com.bylivingart.plants.dataclasses.UserPlants;
-import com.bylivingart.plants.statements.PlantsStatements;
 import com.bylivingart.plants.statements.UserPlantsStatements;
 import io.swagger.annotations.*;
 import org.apache.commons.io.IOUtils;
@@ -17,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -33,16 +33,18 @@ public class UserPlantsController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully gotten the image"),
             @ApiResponse(code = 400, message = "failed to get the image", response = Error.class),
+            @ApiResponse(code = 401, message = "Unauthorized", response = Error.class),
+            @ApiResponse(code = 403, message = "Forbidden", response = Error.class),
             @ApiResponse(code = 404, message = "Image not found", response = Error.class)
     })
-    @GetMapping(value = "/userplants/{deviceId}/{userPlantId}/{imageName}", produces = MediaType.IMAGE_JPEG_VALUE)
+    @GetMapping(value = "/admin/userplants/{userPlantId}/{imageName}", produces = MediaType.IMAGE_JPEG_VALUE)
     private ResponseEntity<byte[]> getImage(
-            @PathVariable String deviceId,
             @PathVariable String userPlantId,
-            @PathVariable String imageName
-
+            @PathVariable String imageName,
+            HttpServletRequest request
     ) throws Exception {
-        File file = GetPropertyValues.getResourcePath(deviceId, imageName, userPlantId,true);
+        int userId = SecurityConfig.getUserIdFromBase64(request);
+        File file = GetPropertyValues.getResourcePath(String.valueOf(userId), imageName, userPlantId,true);
         InputStream in = new FileInputStream(file);
         if (in.available() != 0) {
             ResponseEntity<byte[]> response = new ResponseEntity<>(IOUtils.toByteArray(in), HttpStatus.OK);
@@ -58,12 +60,14 @@ public class UserPlantsController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully gotten the userPlant", response = UserPlants.class, responseContainer = "List"),
             @ApiResponse(code = 400, message = "Something went wrong", response = Error.class),
+            @ApiResponse(code = 401, message = "Unauthorized", response = Error.class),
+            @ApiResponse(code = 403, message = "Forbidden", response = Error.class),
             @ApiResponse(code = 404, message = "Can't find the userPlant", response = Error.class)
     })
-    @GetMapping("/userplants/{deviceId}")
-    private ResponseEntity<ArrayList<UserPlants>> getUserPlant(@PathVariable String deviceId) throws Exception {
+    @GetMapping("/userplants")
+    private ResponseEntity<ArrayList<UserPlants>> getUserPlant(HttpServletRequest request) throws Exception {
         Connection conn = new DatabaseConnection().getConnection();
-        ResponseEntity<ArrayList<UserPlants>> response = new ResponseEntity<>(UserPlantsStatements.getUserPlant(deviceId, conn), HttpStatus.OK);
+        ResponseEntity<ArrayList<UserPlants>> response = new ResponseEntity<>(UserPlantsStatements.getUserPlants(conn, request), HttpStatus.OK);
         conn.close();
         return response;
     }
@@ -72,9 +76,11 @@ public class UserPlantsController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully gotten the userPlants", response = UserPlants.class, responseContainer = "List"),
             @ApiResponse(code = 400, message = "Couldn't get the date from the database", response = Error.class),
+            @ApiResponse(code = 401, message = "Unauthorized", response = Error.class),
+            @ApiResponse(code = 403, message = "forbidden", response = Error.class),
             @ApiResponse(code = 404, message = "Resource not found", response = Error.class)
     })
-    @GetMapping("/userplants")
+    @GetMapping("/get/userplants/")
     private ResponseEntity<ArrayList<UserPlants>> getAllUserPlants() throws Exception {
         Connection conn = new DatabaseConnection().getConnection();
         ResponseEntity<ArrayList<UserPlants>> response = new ResponseEntity<>(UserPlantsStatements.getAllUserPlants(conn), HttpStatus.OK);
@@ -87,15 +93,17 @@ public class UserPlantsController {
             @ApiResponse(code = 201, message = "Created the userPlant successfully in database", response = UserPlants.class),
             @ApiResponse(code = 400, message = "Failed to create userPlant", response = Error.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = Error.class),
+            @ApiResponse(code = 403, message = "forbidden", response = Error.class),
             @ApiResponse(code = 404, message = "UserPlant not found", response = Error.class)
     })
-    @PostMapping("/admin/userplants")
+    @PostMapping("/admin/userplants/")
     @ResponseStatus(HttpStatus.CREATED)
     private ResponseEntity<UserPlants> createUserPlant(
-            @ApiParam(value = "The userPlant you want to create", required = true) @RequestBody UserPlants userPlants
+            @ApiParam(value = "The userPlant you want to create", required = true) @RequestBody UserPlants userPlants,
+            HttpServletRequest request
     ) throws Exception {
         Connection conn = new DatabaseConnection().getConnection();
-        ResponseEntity<UserPlants> response = new ResponseEntity<>(UserPlantsStatements.createUserPlants(userPlants, conn), HttpStatus.CREATED);
+        ResponseEntity<UserPlants> response = new ResponseEntity<>(UserPlantsStatements.createUserPlants(userPlants, conn, request), HttpStatus.CREATED);
         conn.close();
         return response;
     }
@@ -109,12 +117,12 @@ public class UserPlantsController {
     })
     @ResponseStatus(HttpStatus.CREATED)
     @PutMapping("/admin/userplants")
-    private ResponseEntity<Void> updateUserPlant(@RequestBody UserPlants userPlants, @RequestParam int id) throws Exception {
+    private ResponseEntity<Void> updateUserPlant(@RequestBody UserPlants userPlants, @RequestParam int id, HttpServletRequest request) throws Exception {
         if (userPlants.getId() != id) {
             throw new BadRequestException("Id can't be changed and the id's have to be the same");
         } else {
             Connection conn = new DatabaseConnection().getConnection();
-            if (UserPlantsStatements.updateUserPlant(userPlants, conn)) {
+            if (UserPlantsStatements.updateUserPlant(userPlants, conn, request)) {
                 conn.close();
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             } else {
@@ -132,9 +140,9 @@ public class UserPlantsController {
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/admin/userplants")
-    private ResponseEntity<Void> deleteUserPlant(int id) throws Exception {
+    private ResponseEntity<Void> deleteUserPlant(@RequestParam int id, HttpServletRequest request) throws Exception {
         Connection conn = new DatabaseConnection().getConnection();
-        if (UserPlantsStatements.deleteUserPlant(id, conn)) {
+        if (UserPlantsStatements.deleteUserPlant(id, conn, request)) {
             conn.close();
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
@@ -148,17 +156,19 @@ public class UserPlantsController {
             @ApiResponse(code = 201, message = "Image has been uploaded"),
             @ApiResponse(code = 400, message = "Image could not be uploaded", response = Error.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = Error.class),
+            @ApiResponse(code = 403, message = "Forbidden", response = Error.class),
             @ApiResponse(code = 404, message = "Image not found", response = Error.class)
     })
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/admin/userplants/image")
     private ResponseEntity<Void> uploadPlantImage(
             @RequestParam MultipartFile file,
-            @RequestParam String deviceId,
             @RequestParam String imageName,
-            @RequestParam String userPlantId
+            @RequestParam String userPlantId,
+            HttpServletRequest request
     ) throws Exception {
-        if (FileService.uploadImage(file, deviceId, imageName,userPlantId, true)) {
+        int userId = SecurityConfig.getUserIdFromBase64(request);
+        if (FileService.uploadImage(file, String.valueOf(userId), imageName,userPlantId, true)) {
             return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
             throw new BadRequestException("Couldn't upload file");
