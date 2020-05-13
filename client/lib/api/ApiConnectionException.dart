@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:http/http.dart';
+
 class ApiConnectionException implements IOException {
 
   final String message;
@@ -24,6 +26,19 @@ class InvalidCredentialsException implements IOException {
   String toString() {
     if (message == null) return "InvalidCredentialsException";
     return "InvalidCredentialsException: $message";
+  }
+
+}
+
+class StatusCodeException implements IOException {
+
+  final Response reponse;
+
+  StatusCodeException(this.reponse);
+
+  @override
+  String toString() {
+    return "StatusCodeException: ${reponse.statusCode}";
   }
 
 }

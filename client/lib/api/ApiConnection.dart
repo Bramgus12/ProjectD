@@ -13,6 +13,8 @@ import 'dart:convert';
 import 'package:plantexpert/api/ApiConnectionException.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+typedef Future<http.Response> RequestFunction();
+
 class ApiConnection {
 
   final String baseUrl;
@@ -20,6 +22,7 @@ class ApiConnection {
   ApiConnection()
     : baseUrl = 'http://${GlobalConfiguration().getString("server")}:${GlobalConfiguration().getInt("port")}/api/';
 
+  // Basic headers
   Future<Map<String, String>> _createJsonHeader({Map<String, String> headers, type="GET"}) async {
     if(headers == null) headers = Map();
 
@@ -34,22 +37,46 @@ class ApiConnection {
     return headers;
   }
 
-  // Fetch json
-  Future<dynamic> _fetchJson(String url, { Map<String, String> headers } ) async {
+  // Sending requests
+  Future<http.Response> _sendRequest(String url, {Map<String, String> headers, String type="GET", String body=""}) async {
     headers = await _createJsonHeader( headers: headers);
-
     try {
-      http.Response response = await http.get(url, headers: headers);
+      
+      // Send request to server
+      http.Response response;
+      switch(type) {
+        case "GET":
+          response = await http.get(
+            url, 
+            headers: headers
+          );
+          break;
+        case "POST":
+          response = await http.post(
+            url,
+            headers: headers,
+            body: body
+          );
+          break;
+        case "PUT":
+          break;
+        case "DELETE":
+          break;
+        default:
+          throw ApiConnectionException("Unknown request type: $type while requesting url: $url");
+          break;
+      }
 
+      // Handle response code
       if (response.statusCode == 401) {
         print("Status code ${response.statusCode} - Server Response: ${response.body}");
         throw InvalidCredentialsException("Invalid credentials provided while trying to access url: $url");
       }
       else if(response.statusCode != 200){
         print("Status code ${response.statusCode} - Server Response: ${response.body}");
-        throw ApiConnectionException("Received response with status code ${response.statusCode} while fetching url: $url");
+        throw StatusCodeException(response);
       }
-      return json.decode(response.body);
+      return response;
 
     } on SocketException catch(e) {
       print(e);
@@ -58,12 +85,17 @@ class ApiConnection {
       print(e);
       throw ApiConnectionException("Timed out while trying to fetch url: $url");
     }
-    on FormatException catch(e) {
+  }
+
+  // Fetch json
+  Future<dynamic> _fetchJson(String url, { Map<String, String> headers } ) async {
+    http.Response response = await _sendRequest(url, headers: headers, type: "GET");
+
+    try {
+      return json.decode(response.body);
+    } on FormatException catch(e) {
       print(e);
       throw ApiConnectionException("Invalid json received from url: $url");
-    } catch(e) {
-      print(e);
-      throw ApiConnectionException("Exception occured while trying to fetch url: $url");
     }
   }
 
@@ -83,38 +115,7 @@ class ApiConnection {
 
   // Post json
   Future<http.Response> _postJson(String url, JsonSerializeable jsonObject, { Map<String, String> headers }) async {
-    headers = await _createJsonHeader( headers: headers, type: "POST");
-
-    try {
-      http.Response response = await http.post(
-        url,
-        headers: headers,
-        body: json.encode(jsonObject.toJson())
-      );
-
-      if (response.statusCode == 401) {
-        print("Status code ${response.statusCode} - Server Response: ${response.body}");
-        throw InvalidCredentialsException("Invalid credentials provided while trying to post to url: $url");
-      }
-      else if(response.statusCode != 200){
-        print("Status code ${response.statusCode} - Server Response: ${response.body}");
-        throw ApiConnectionException("Received response with status code ${response.statusCode} while fetching url: $url");
-      }
-      return response;
-
-    } on SocketException catch(e) {
-      print(e);
-      throw ApiConnectionException("SocketException occured while posting to url: $url");
-    } on TimeoutException catch(e) {
-      print(e);
-      throw ApiConnectionException("Timed out while posting to url: $url");
-    } on FormatException catch(e) {
-      print(e);
-      throw ApiConnectionException("Invalid json url: $url");
-    } catch(e) {
-      print(e);
-      throw ApiConnectionException("Exception occured while trying to post json to url: $url");
-    }
+    http.Response response = await _sendRequest(url, headers: headers, type: "POST", body: json.encode(jsonObject.toJson()));
   }
   
   // Weather stations
