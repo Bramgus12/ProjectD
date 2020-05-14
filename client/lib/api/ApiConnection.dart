@@ -59,8 +59,17 @@ class ApiConnection {
           );
           break;
         case "PUT":
+          response = await http.put(
+            url,
+            headers: headers,
+            body: body
+          );
           break;
         case "DELETE":
+          response = await http.delete(
+            url,
+            headers: headers
+          );
           break;
         default:
           throw ApiConnectionException("Unknown request type: $type while requesting url: $url");
