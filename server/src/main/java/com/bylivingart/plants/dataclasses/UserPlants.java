@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public class UserPlants {
     private int id;
-    private String deviceId;
+    private int userId;
     private String nickname;
     private double potVolume;
     private double lat;
@@ -21,7 +21,7 @@ public class UserPlants {
 
     public UserPlants(
             int id,
-            String deviceId,
+            int userId,
             String nickname,
             double potVolume,
             double lat,
@@ -34,7 +34,7 @@ public class UserPlants {
             int plantId
     ) {
         this.id = id;
-        this.deviceId = deviceId;
+        this.userId = userId;
         this.nickname = nickname;
         this.potVolume = potVolume;
         this.lat = lat;
@@ -50,15 +50,15 @@ public class UserPlants {
     /**
      * @return the deviceId
      */
-    public String getDeviceId() {
-        return deviceId;
+    public int getUserId() {
+        return userId;
     }
 
     /**
-     * @param deviceId the deviceId to set
+     * @param userId the deviceId to set
      */
-    public void setDeviceId(String deviceId) {
-        this.deviceId = deviceId;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     /**

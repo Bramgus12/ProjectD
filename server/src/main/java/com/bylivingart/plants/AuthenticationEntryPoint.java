@@ -16,11 +16,9 @@ public class AuthenticationEntryPoint extends BasicAuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authEx)
             throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
         response.addHeader("WWW-Authenticate", "Basic realm=" + getRealmName());
         response.addHeader("content-type", "application/json");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        PrintWriter writer = response.getWriter();
         System.out.println("HTTP STATUS 401 - " + authEx.getMessage() + " - URI: " + request.getRequestURI() + " - Host: " + request.getRemoteHost());
         HandleException.handleUnauthorizedException(authEx, response);
     }

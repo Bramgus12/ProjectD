@@ -23,7 +23,6 @@ import java.util.ArrayList;
 
 @Api(value = "Plants controller")
 @RestController
-@RequestMapping("/api")
 public class PlantsController {
     @ApiOperation(value = "Get all the plants")
     @ApiResponses(value = {
@@ -31,7 +30,7 @@ public class PlantsController {
             @ApiResponse(code = 400, message = "Failed to get the plants", response = Error.class),
             @ApiResponse(code = 404, message = "No data in database", response = Error.class)
     })
-    @GetMapping("/plants")
+    @GetMapping("/plants/")
     private ResponseEntity<ArrayList<Plants>> getAllPlants() throws Exception {
         Connection conn = new DatabaseConnection().getConnection();
         ResponseEntity<ArrayList<Plants>> response = new ResponseEntity<>(PlantsStatements.getAllPlants(conn), HttpStatus.OK);
@@ -45,7 +44,7 @@ public class PlantsController {
             @ApiResponse(code = 400, message = "failed to get the image", response = Error.class),
             @ApiResponse(code = 404, message = "Image not found", response = Error.class)
     })
-    @GetMapping(value = "/plants/{plantName}/{imageName}", produces = MediaType.IMAGE_JPEG_VALUE)
+    @GetMapping(value = "/plants/{plantName}/{imageName}/", produces = MediaType.IMAGE_JPEG_VALUE)
     private ResponseEntity<byte[]> getImage(
             @PathVariable String plantName,
             @PathVariable String imageName
@@ -70,7 +69,7 @@ public class PlantsController {
             @ApiResponse(code = 500, message = "Internal server error", response = Error.class)
     })
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/admin/plants/image")
+    @PostMapping("/admin/plants/image/")
     private ResponseEntity<Void> uploadPlantImage(
             @RequestParam MultipartFile file,
             @RequestParam String plantName,
@@ -90,7 +89,7 @@ public class PlantsController {
             @ApiResponse(code = 400, message = "Something went wrong", response = Error.class),
             @ApiResponse(code = 404, message = "Can't find the plant", response = Error.class)
     })
-    @GetMapping("/plants/{id}")
+    @GetMapping("/plants/{id}/")
     private ResponseEntity<Plants> getPlant(@PathVariable int id) throws Exception {
         Connection conn = new DatabaseConnection().getConnection();
         ResponseEntity<Plants> response = new ResponseEntity<>(PlantsStatements.getPlant(id, conn), HttpStatus.OK);
@@ -107,7 +106,7 @@ public class PlantsController {
             @ApiResponse(code = 404, message = "plant not found", response = Error.class)
     })
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/admin/plants")
+    @PostMapping("/admin/plants/")
     private ResponseEntity<Plants> createPlant(
             @ApiParam(value = "The plant you want to create in the database", required = true) @RequestBody Plants plant
     ) throws Exception {
@@ -125,7 +124,7 @@ public class PlantsController {
             @ApiResponse(code = 404, message = "Can't find the plant to delete", response = Error.class)
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/admin/plants/{id}")
+    @DeleteMapping("/admin/plants/{id}/")
     private ResponseEntity<Void> deletePlant(
             @ApiParam(value = "The id of the plant you want to delete", required = true) @PathVariable int id
     ) throws Exception {
@@ -148,7 +147,7 @@ public class PlantsController {
             @ApiResponse(code = 404, message = "Can't find the plant to update", response = Error.class)
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PutMapping("/admin/plants/{id}")
+    @PutMapping("/admin/plants/{id}/")
     private ResponseEntity<Void> updatePlant(
             @ApiParam(value = "The id of the plant you want to update", required = true) @PathVariable int id,
             @ApiParam(value = "The new values of the plant (You can't change the id and id has to be the same as in the path)", required = true) @RequestBody Plants plant
