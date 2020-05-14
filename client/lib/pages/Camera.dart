@@ -31,10 +31,12 @@ class _CameraState extends State<Camera> {
       _recognitions = null;
     });
     var img = await ImagePicker.pickImage(source: ImageSource.gallery);
-    predictImage(img);
-    this.setState((){
-      imageFile = img;
-    });
+    if(img != null){
+      predictImage(img);
+      this.setState((){
+        imageFile = img;
+      });
+    }
     Navigator.of(context).pop();
 
   }
@@ -43,11 +45,13 @@ class _CameraState extends State<Camera> {
       _recognitions = null;
     });
     var img = await ImagePicker.pickImage(source: ImageSource.camera);
-    predictImage(img);
-    this.setState((){
-      imageFile = img;
+    if(img != null){
+      predictImage(img);
+      this.setState((){
+        imageFile = img;
 
-    });
+      });
+    }
     Navigator.of(context).pop();
   }
   Future<void> imageSourceChoiceDialog(BuildContext context) {
@@ -277,8 +281,6 @@ class _CameraState extends State<Camera> {
       sunAmount = 0;
     }
     return plantCardDetails(plantName,  waterAmount,  sunAmount);
-
-
   }
 
 
