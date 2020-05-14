@@ -8,18 +8,14 @@
 
 package com.bylivingart.plants.buienradar;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
+import javax.xml.bind.annotation.*;
 
 
 /**
  * <p>Java class for tekst_langType complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="tekst_langType">
  *   &lt;simpleContent>
@@ -29,12 +25,10 @@ import javax.xml.bind.annotation.XmlValue;
  *   &lt;/simpleContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "tekst_langType", propOrder = {
-    "value"
+        "value"
 })
 public class TekstLangType {
 
@@ -45,11 +39,9 @@ public class TekstLangType {
 
     /**
      * Gets the value of the value property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getValue() {
         return value;
@@ -57,11 +49,9 @@ public class TekstLangType {
 
     /**
      * Sets the value of the value property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setValue(String value) {
         this.value = value;
@@ -69,11 +59,9 @@ public class TekstLangType {
 
     /**
      * Gets the value of the periode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getPeriode() {
         return periode;
@@ -81,11 +69,9 @@ public class TekstLangType {
 
     /**
      * Sets the value of the periode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setPeriode(String value) {
         this.periode = value;
