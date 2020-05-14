@@ -12,6 +12,7 @@ class Plant implements JsonSerializeable {
   String sunText;
   String description;
   int optimalTemp;
+  String imageName;
 
   Plant({
     this.id,
@@ -23,7 +24,8 @@ class Plant implements JsonSerializeable {
     this.sunNumber,
     this.sunText,
     this.description,
-    this.optimalTemp
+    this.optimalTemp,
+    this.imageName
   });
 
   factory Plant.fromJson(Map<String, dynamic> jsonPlant) {
@@ -37,7 +39,8 @@ class Plant implements JsonSerializeable {
       sunNumber: jsonPlant['sunNumber'],
       sunText: jsonPlant['sunText'],
       description: jsonPlant['description'],
-      optimalTemp: jsonPlant['optimumTemp']
+      optimalTemp: jsonPlant['optimumTemp'],
+      imageName: jsonPlant['imageName']
     );
   }
 
@@ -53,7 +56,8 @@ class Plant implements JsonSerializeable {
       "sunNumber" : sunNumber,
       "sunText" : sunText,
       "description" : description,
-      "optimumTemp" : optimalTemp
+      "optimumTemp" : optimalTemp,
+      "imageName" : imageName
     };
   }
 
@@ -70,6 +74,7 @@ sunNumber:\t$sunNumber
 sunText:\t$sunText
 description:\t$description
 optimalTemp:\t$optimalTemp
+imageName:\t$imageName
 ''';
   }
 

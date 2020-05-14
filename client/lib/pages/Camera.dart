@@ -5,14 +5,15 @@ import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
+import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:plantexpert/api/Plant.dart';
+import 'package:plantexpert/MenuNavigation.dart';
 import 'package:tflite/tflite.dart';
 
-import '../MenuNavigation.dart';
-import '../Plants.dart';
 
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Camera extends StatefulWidget {
   @override
@@ -132,21 +133,21 @@ class _CameraState extends State<Camera>
     }else{
       var plantNumber = _recognitions.map((res){ return res["index"];}).toList()[0];
       String plantName = plnts[plantNumber]["plantName"];
-      int waterAmount = plnts[plantNumber]["waterAmount"];
-      int sunAmount = plnts[plantNumber]["sunAmount"];
-
+      double waterAmount = plnts[plantNumber]["waterAmount"];
+      double sunAmount = plnts[plantNumber]["sunAmount"];
 
       return
         GestureDetector(
           onTap: () => {Navigator.pushNamed(context, '/plant-detail',
-          arguments: new PlantInfo(
-              name:plantName,
+          arguments: new Plant(
+              id: 0,
+              name: plantName,
               imageName: 'assets/images/'+_recognitions.map((res){ return res["index"];}).toList()[0].toString()+'.jpg',
-              plantDescription: "Omschrijving van de plant.",
-              waterDescription: "Informatie over hoeveel water de plant nodig heeft.",
-              sunLightDescription: "Informatie over hoeveel zonlicht de plant nodig heeft.",
-              waterAmount: waterAmount,
-              sunLightAmount: sunAmount))},
+              description: "Omschrijving van de plant.",
+              waterText: "Informatie over hoeveel water de plant nodig heeft.",
+              sunText: "Informatie over hoeveel zonlicht de plant nodig heeft.",
+              waterScale: waterAmount,
+              sunScale: sunAmount))},
           child: Container(
             child: predictionCard(_recognitions.map((res){ return res["index"];}).toList()[0]))
           );

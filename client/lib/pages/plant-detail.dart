@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:plantexpert/api/Plant.dart';
 
 import '../MenuNavigation.dart';
-import '../Plants.dart';
 import '../pages/plant-list.dart';
 
 class PlantDetail extends StatelessWidget {
-  final PlantInfo plantInfo;
+  final Plant plantInfo;
 
   PlantDetail({this.plantInfo}) 
     : assert(plantInfo != null);
@@ -46,33 +46,33 @@ class PlantDetail extends StatelessWidget {
                 children: <Widget>[
                   Text('Hoeveelheid zonlight    ', style: TextStyle(color: Colors.grey)),
                   RatingRow(
-                      count: plantInfo.sunLightAmount,
+                      count: plantInfo.sunScale.toInt(),
                       filledIcon: Icons.star,
                       unfilledIcon: Icons.star_border
                   ),
                 ],
               ),
               SizedBox(height: 5),
-              Text(plantInfo.sunLightDescription),
+              Text(plantInfo.sunText),
               SizedBox(height: 20),
 
               Row(
                 children: <Widget>[
                   Text('Hoeveelheid water         ', style: TextStyle(color: Colors.grey)),
                   RatingRow(
-                      count: plantInfo.waterAmount,
+                      count: plantInfo.waterScale.toInt(),
                       filledIcon: Icons.star,
                       unfilledIcon: Icons.star_border
                   ),
                 ],
               ),
               SizedBox(height: 5),
-              Text(plantInfo.waterDescription),
+              Text(plantInfo.waterText),
               SizedBox(height: 20),
 
               Text('Omschrijving', style: TextStyle(color: Colors.grey)),
               SizedBox(height: 5),
-              Text(plantInfo.plantDescription)
+              Text(plantInfo.description)
             ],
           ),
         ),
