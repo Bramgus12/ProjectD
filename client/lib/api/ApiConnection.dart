@@ -164,7 +164,6 @@ class ApiConnection {
 
   // Login
   Future<bool> verifyCredentials(String username, String password) async {
-    // This should later be changed tp a different endpoint. This one does not scale well at all.
     try{
       Map<String, String> headers = Map();
       String base64Authorisation = base64.encode(utf8.encode("$username:$password")).replaceAll("=", "");
