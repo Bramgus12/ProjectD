@@ -26,16 +26,4 @@ class ApiConnection {
     return jsonWeatherStations.map<WeatherStation>((jsonWeatherStation) => WeatherStation.fromJson(jsonWeatherStation)).toList();
   }
 
-  Future<bool> addPlant(UserPlant userPlant) async {
-    if (userPlant == null) {
-      print('userPlant == null');
-      return false;
-    }
-
-    final url = '';
-
-    http.Response response = await http.post(url, body: userPlant.toString());
-    return response.statusCode == 200;
-  } 
-
 }
