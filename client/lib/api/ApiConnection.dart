@@ -20,7 +20,7 @@ class ApiConnection {
   final String baseUrl;
 
   ApiConnection()
-    : baseUrl = 'http://${GlobalConfiguration().getString("server")}:${GlobalConfiguration().getInt("port")}/api/';
+    : baseUrl = 'http://${GlobalConfiguration().getString("server")}:${GlobalConfiguration().getInt("port")}/';
 
   // Basic headers
   Future<Map<String, String>> _createJsonHeader({Map<String, String> headers, type="GET"}) async {
@@ -146,7 +146,7 @@ class ApiConnection {
 
   // User plants
   Future<List<UserPlant>> fetchUserPlants() async {
-    Iterable jsonUserPlants = await _fetchJsonList('${baseUrl}userplants');
+    Iterable jsonUserPlants = await _fetchJsonList('${baseUrl}user/userplants');
     return jsonUserPlants.map<UserPlant>((jsonUserPlant) => UserPlant.fromJson(jsonUserPlant)).toList();
   }
 
@@ -157,7 +157,7 @@ class ApiConnection {
   // }
 
   Future<http.Response> postUserPlant(UserPlant userPlant) async {
-    return await _postJson("${baseUrl}admin/userplants", userPlant);
+    return await _postJson("${baseUrl}user/userplants", userPlant);
   }
 
   // Login
@@ -168,7 +168,7 @@ class ApiConnection {
       Map<String, String> headers = Map();
       String base64Authorisation = base64.encode(utf8.encode("$username:$password")).replaceAll("=", "");
       headers['Authorization'] = "Basic $base64Authorisation";
-      await _fetchJson("${baseUrl}users", headers: headers);
+      await _fetchJson("${baseUrl}users/checkpassword?username=$username&password=$password", headers: headers);
       return true;
     }
     on InvalidCredentialsException catch(e) {

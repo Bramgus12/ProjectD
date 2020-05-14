@@ -52,7 +52,7 @@ class _HomePageState extends State<HomePage> {
     // }
     try{
       UserPlant newUserPlant = UserPlant(
-        deviceId: "1337",
+        userId: 1337,
         distanceToWindow: 5.5,
         id: 0,
         imageName: "testPostPlant.jpg",
@@ -74,5 +74,16 @@ class _HomePageState extends State<HomePage> {
     } on InvalidCredentialsException catch(e) {
       print(e);
     }
+
+    try {
+      apiConnection.fetchPlants();
+    } on StatusCodeException catch(e) {
+      // handle exception
+    }
+    on InvalidCredentialsException catch(e) {
+      // handle exception
+    } catch(e) {
+      // handle exception
+    } 
   }
 }

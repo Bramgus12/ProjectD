@@ -3,7 +3,7 @@ import 'package:plantexpert/api/JsonSerializeable.dart';
 class UserPlant implements JsonSerializeable {
 
   int id;
-  String deviceId;
+  int userId;
   String nickname;
   double potVolume;
   double latitude;
@@ -17,7 +17,7 @@ class UserPlant implements JsonSerializeable {
 
   UserPlant({
     this.id,
-    this.deviceId,
+    this.userId,
     this.nickname,
     this.potVolume,
     this.latitude,
@@ -33,7 +33,7 @@ class UserPlant implements JsonSerializeable {
   factory UserPlant.fromJson(Map<String, dynamic> jsonUserPlant) {
     return UserPlant(
       id: jsonUserPlant['id'],
-      deviceId: jsonUserPlant['deviceId'],
+      userId: jsonUserPlant['deviceId'],
       nickname: jsonUserPlant['nickname'],
       potVolume: jsonUserPlant['potVolume'],
       latitude: jsonUserPlant['lat'],
@@ -51,7 +51,7 @@ class UserPlant implements JsonSerializeable {
   Map<String, dynamic> toJson() {
     return {
       "id" : id,
-      "deviceId" : deviceId,
+      "deviceId" : userId,
       "nickname" : nickname,
       "potVolume" : potVolume,
       "lat" : latitude,
@@ -69,7 +69,7 @@ class UserPlant implements JsonSerializeable {
   String toString() {
   return
 '''[ User Plant $id ]
-deviceId:\t\t$deviceId
+deviceId:\t\t$userId
 nickname:\t\t$nickname
 potVolume:\t\t$potVolume
 latitude:\t\t$latitude
