@@ -1,19 +1,17 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:quiver/collection.dart';
-import '../MenuNavigation.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:tflite/tflite.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../Plants.dart';
-import 'Plant-list.dart';
-import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:tflite/tflite.dart';
+
+import '../MenuNavigation.dart';
+import '../Plants.dart';
 
 
 class Camera extends StatefulWidget {
@@ -33,6 +31,14 @@ class _CameraState extends State<Camera>
   File predictionResultPlantImage;
   final List<String> plantNames = <String>["croton", "dracaena_lemon_lime", "peace_lily", "pothos", "snake_plant"];
   List<CameraDescription> cameras = [];
+  
+  var plnts = [
+    {"plantName":"croton", "waterAmount": 4, "sunAmount": 2},
+    {"plantName":"dracaena lemon lime", "waterAmount": 2, "sunAmount": 0},
+    {"plantName":"peace lily", "waterAmount": 3, "sunAmount": 3},
+    {"plantName":"pothos", "waterAmount": 3, "sunAmount": 2},
+    {"plantName":"snake plant", "waterAmount": 1, "sunAmount": 5},
+  ];
 
   @override
   void initState() {
@@ -91,25 +97,11 @@ class _CameraState extends State<Camera>
         imageFile = img;
       });
     }
-    // Navigator.of(context).pop();
-
   }
-  openCamera(BuildContext context) async{
-    this.setState(() {
-      _recognitions = null;
-    });
-    var img = await ImagePicker.pickImage(source: ImageSource.camera);
-    if(img != null){
-      predictImage(img);
-      this.setState((){
-        imageFile = img;
 
-      });
-    }
-    Navigator.of(context).pop();
-  }
   Future<void> imageSourceChoiceDialog(BuildContext context) {
     openGallery(context);
+    return null;
   }
 
 
@@ -139,38 +131,11 @@ class _CameraState extends State<Camera>
           ),]);
     }else{
       var plantNumber = _recognitions.map((res){ return res["index"];}).toList()[0];
-      String plantName;
-      int waterAmount;
-      int sunAmount;
-      if(plantNumber==0){
-        plantName = "croton";
-        waterAmount = 4;
-        sunAmount = 2;
-      }
-      else if(plantNumber==1){
-        plantName = "dracaena lemon lime";
-        waterAmount = 2;
-      }
-      else if(plantNumber==2){
-        plantName = "peace lily";
-        waterAmount = 3;
-        sunAmount = 3;
-      }
-      else if(plantNumber==3){
-        plantName = "pothos";
-        waterAmount = 3;
-        sunAmount = 2;
-      }
-      else if(plantNumber==4){
-        plantName = "snake plant";
-        waterAmount = 1;
-        sunAmount = 5;
-      }
-      else if(plantNumber==5){
-        plantName = "Name:";
-        waterAmount = 0;
-        sunAmount = 0;
-      }
+      String plantName = plnts[plantNumber]["plantName"];
+      int waterAmount = plnts[plantNumber]["waterAmount"];
+      int sunAmount = plnts[plantNumber]["sunAmount"];
+
+
       return
         GestureDetector(
           onTap: () => {Navigator.pushNamed(context, '/plant-detail',
@@ -185,9 +150,8 @@ class _CameraState extends State<Camera>
           child: Container(
             child: predictionCard(_recognitions.map((res){ return res["index"];}).toList()[0]))
           );
+    }
   }
-  }
-
 
   Future loadModel() async {
     Tflite.close();
@@ -218,7 +182,6 @@ class _CameraState extends State<Camera>
 
   Future plantModelWithBinary(img.Image image) async {
 
-
     Uint8List imageToByteListFloat32(
         img.Image image, int inputSize, double mean, double std) {
       var convertedBytes = Float32List(1 * inputSize * inputSize * 3);
@@ -248,7 +211,6 @@ class _CameraState extends State<Camera>
     });
   }
 
-
   Future predictImage(File image) async {
 
     await plantModel(image);
@@ -256,7 +218,6 @@ class _CameraState extends State<Camera>
 
   Widget getIcon( String title, int numberOfStars, String icon) {
     var res = <Widget>[Container(child: Text(title))];
-    StringBuffer sb = new StringBuffer();
     for (int i = 0; i < numberOfStars; i++) {
       res.add(Container(child: Text(icon)));
     }
@@ -264,45 +225,13 @@ class _CameraState extends State<Camera>
     return Container(child: Row(children: res,));
   }
 
-
-
   Widget getData(int plantNumber) {
-    String plantName;
-    int waterAmount;
-    int sunAmount;
-    if(plantNumber==0){
-      plantName = "croton";
-      waterAmount = 4;
-      sunAmount = 2;
-    }
-    else if(plantNumber==1){
-      plantName = "dracaena lemon lime";
-      waterAmount = 2;
-      sunAmount = 4;
-    }
-    else if(plantNumber==2){
-      plantName = "peace lily";
-      waterAmount = 3;
-      sunAmount = 3;
-    }
-    else if(plantNumber==3){
-      plantName = "pothos";
-      waterAmount = 3;
-      sunAmount = 2;
-    }
-    else if(plantNumber==4){
-      plantName = "snake plant";
-      waterAmount = 1;
-      sunAmount = 5;
-    }
-    else if(plantNumber==5){
-      plantName = "Name:";
-      waterAmount = 0;
-      sunAmount = 0;
-    }
+    String plantName = plnts[plantNumber]["plantName"];
+    int waterAmount = plnts[plantNumber]["waterAmount"];
+    int sunAmount = plnts[plantNumber]["sunAmount"];
+
     return plantCardDetails(plantName,  waterAmount,  sunAmount);
   }
-
 
   Widget plantCardDetails(String plantName, int waterAmount, int sunAmount) {
     return Column(
@@ -352,9 +281,9 @@ class _CameraState extends State<Camera>
               fit: BoxFit.contain,
               alignment: Alignment.topRight,
               image: AssetImage('assets/images/'+plantNumber.toString()+'.jpg'),
-          ),),)
-
-
+            ),
+          ),
+        )
       ],
     );
      return res;
@@ -425,11 +354,6 @@ class _CameraState extends State<Camera>
       ]);
     }
 
-
-
-
-
-
     return new WillPopScope(
         onWillPop: _onWillPop,
         child: Scaffold(
@@ -459,13 +383,6 @@ class _CameraState extends State<Camera>
             ),
           )
         : null,
-
-//          FlatButton(
-//            onPressed: (){imageSourceChoiceDialog(context);},
-//            child: Icon(Icons.image, color: Colors.white,),
-//            color: Colors.blueAccent,
-//            shape: new CircleBorder(),
-//          ),
         ),
     );
   }
@@ -558,6 +475,7 @@ class _CameraState extends State<Camera>
     try {
       await controller.initialize();
     } on CameraException catch (e) {
+      print(e);
     }
 
     if (mounted) {
@@ -603,12 +521,11 @@ class _CameraState extends State<Camera>
     try {
       await controller.takePicture(filePath);
     } on CameraException catch (e) {
+      print(e);
       return null;
     }
     return filePath;
   }
-
-
 }
 
 
