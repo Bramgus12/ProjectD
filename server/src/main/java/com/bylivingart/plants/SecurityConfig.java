@@ -104,7 +104,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         protected void configure(HttpSecurity http) throws Exception {
             http
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                    .csrf().disable().antMatcher("/api/get/userplants/")
+                    .csrf().disable().antMatcher("/admin/**")
                     .authorizeRequests().anyRequest()
                     .hasRole("ADMIN")
                     .and().httpBasic()
@@ -122,7 +122,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             http
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                     .csrf().disable()
-                    .antMatcher("/api/admin/**")
+                    .antMatcher("/user/**")
                     .authorizeRequests().anyRequest()
                     .hasAnyRole("USER", "ADMIN")
                     .and()
@@ -130,39 +130,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         }
     }
 
-    @Configuration
     @Order(3)
-    public static class UserStatementsSecurity1 extends WebSecurityConfigurerAdapter {
-        @Autowired
-        private AuthenticationEntryPoint authEntryPoint;
-
-        protected void configure(HttpSecurity http) throws Exception {
-            http
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                    .csrf().disable().antMatcher("/api/users")
-                    .authorizeRequests().anyRequest()
-                    .permitAll();
-        }
-    }
-
-    @Configuration
-    @Order(4)
-    public static class UserStatementsSecurity2 extends WebSecurityConfigurerAdapter {
-        @Autowired
-        private AuthenticationEntryPoint authEntryPoint;
-
-        protected void configure(HttpSecurity http) throws Exception {
-            http
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                    .csrf().disable().antMatcher("/api/users/**")
-                    .authorizeRequests().anyRequest()
-                    .hasRole("ADMIN")
-                    .and().httpBasic()
-                    .authenticationEntryPoint(authEntryPoint);
-        }
-    }
-
-    @Order(5)
     @Configuration
     public static class FormLoginWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 

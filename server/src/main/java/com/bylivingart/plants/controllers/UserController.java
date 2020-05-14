@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 @Api(value = "User controller")
 @RestController
-@RequestMapping("/api")
+@RequestMapping
 public class UserController {
     @ApiOperation(value = "Get a list of users")
     @ApiResponses(value = {
@@ -27,7 +27,7 @@ public class UserController {
             @ApiResponse(code = 403, message = "forbidden", response = Error.class),
             @ApiResponse(code = 404, message = "No data in database", response = Error.class)
     })
-    @GetMapping("/users/getall")
+    @GetMapping("/admin/users/")
     private ResponseEntity<ArrayList<User>> getAllUsers() throws Exception {
         Connection conn = new DatabaseConnection().getConnection();
         ResponseEntity<ArrayList<User>> response = new ResponseEntity<>(UserStatements.getAllUsers(conn), HttpStatus.OK);
@@ -42,7 +42,7 @@ public class UserController {
             @ApiResponse(code = 404, message = "User not found", response = Error.class)
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @GetMapping("/checkpassword")
+    @GetMapping("/users/checkpassword")
     private ResponseEntity<Void> checkUserPassword(String userName, String password) throws Exception{
         Connection conn = new DatabaseConnection().getConnection();
         if (UserStatements.checkUserPassword(password, userName, conn)) {
@@ -79,7 +79,7 @@ public class UserController {
             @ApiResponse(code = 403, message = "forbidden", response = Error.class),
             @ApiResponse(code = 404, message = "User not found", response = Error.class)
     })
-    @PutMapping("/users/{id}")
+    @PutMapping("/user/users/{id}")
     private ResponseEntity<User> updateUser(
             @ApiParam(value = "Id of the User that you want to update", required = true) @PathVariable Integer id,
             @ApiParam(value = "The object with the User that you want to update", required = true) @RequestBody User user,
@@ -104,7 +104,7 @@ public class UserController {
             @ApiResponse(code = 403, message = "forbidden", response = Error.class),
             @ApiResponse(code = 404, message = "User not found", response = Error.class)
     })
-    @DeleteMapping("/users/")
+    @DeleteMapping("/user/users/")
     private ResponseEntity<User> deleteUser(
             HttpServletRequest request
     ) throws Exception {

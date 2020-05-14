@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 @Api(value = "Weather controller")
 @RestController
-@RequestMapping("/api/weather")
+@RequestMapping("/weather")
 public class WeatherController {
 
     @ApiOperation(value = "Get the full weather object")
@@ -35,7 +35,7 @@ public class WeatherController {
             @ApiResponse(code = 400, message = "Failed to get the weather of the region", response = Error.class),
             @ApiResponse(code = 404, message = "Weather not found", response = Error.class)
     })
-    @GetMapping("/{regio}")
+    @GetMapping("/{regio}/")
     private ResponseEntity<ArrayList<WeerstationType>> getWeatherByRegio(
             @ApiParam(value = "The region you want the weather of", required = true) @PathVariable String regio
     ) throws Exception {
@@ -50,7 +50,7 @@ public class WeatherController {
             @ApiResponse(code = 400, message = "Failed to get the weather station", response = Error.class),
             @ApiResponse(code = 404, message = "Weather not found", response = Error.class)
     })
-    @GetMapping("/latlon")
+    @GetMapping("/latlon/")
     private ResponseEntity<WeerstationType> getWeatherByLatLon(
             @ApiParam(value = "Latitude of your location", required = true) @RequestParam Double lat,
             @ApiParam(value = "Longitude of your location", required = true) @RequestParam Double lon

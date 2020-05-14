@@ -25,7 +25,6 @@ import java.util.ArrayList;
 
 @Api(value = "User Plants controller")
 @RestController
-@RequestMapping("/api")
 public class UserPlantsController {
 
 
@@ -37,7 +36,7 @@ public class UserPlantsController {
             @ApiResponse(code = 403, message = "Forbidden", response = Error.class),
             @ApiResponse(code = 404, message = "Image not found", response = Error.class)
     })
-    @GetMapping(value = "/admin/userplants/{userPlantId}/{imageName}", produces = MediaType.IMAGE_JPEG_VALUE)
+    @GetMapping(value = "/user/userplants/{userPlantId}/{imageName}/", produces = MediaType.IMAGE_JPEG_VALUE)
     private ResponseEntity<byte[]> getImage(
             @PathVariable String userPlantId,
             @PathVariable String imageName,
@@ -64,7 +63,7 @@ public class UserPlantsController {
             @ApiResponse(code = 403, message = "Forbidden", response = Error.class),
             @ApiResponse(code = 404, message = "Can't find the userPlant", response = Error.class)
     })
-    @GetMapping("/userplants")
+    @GetMapping("/user/userplants/")
     private ResponseEntity<ArrayList<UserPlants>> getUserPlant(HttpServletRequest request) throws Exception {
         Connection conn = new DatabaseConnection().getConnection();
         ResponseEntity<ArrayList<UserPlants>> response = new ResponseEntity<>(UserPlantsStatements.getUserPlants(conn, request), HttpStatus.OK);
@@ -80,7 +79,7 @@ public class UserPlantsController {
             @ApiResponse(code = 403, message = "forbidden", response = Error.class),
             @ApiResponse(code = 404, message = "Resource not found", response = Error.class)
     })
-    @GetMapping("/get/userplants/")
+    @GetMapping("/admin/userplants/")
     private ResponseEntity<ArrayList<UserPlants>> getAllUserPlants() throws Exception {
         Connection conn = new DatabaseConnection().getConnection();
         ResponseEntity<ArrayList<UserPlants>> response = new ResponseEntity<>(UserPlantsStatements.getAllUserPlants(conn), HttpStatus.OK);
@@ -96,7 +95,7 @@ public class UserPlantsController {
             @ApiResponse(code = 403, message = "forbidden", response = Error.class),
             @ApiResponse(code = 404, message = "UserPlant not found", response = Error.class)
     })
-    @PostMapping("/admin/userplants/")
+    @PostMapping("/user/userplants/")
     @ResponseStatus(HttpStatus.CREATED)
     private ResponseEntity<UserPlants> createUserPlant(
             @ApiParam(value = "The userPlant you want to create", required = true) @RequestBody UserPlants userPlants,
@@ -116,7 +115,7 @@ public class UserPlantsController {
             @ApiResponse(code = 404, message = "Resource not found", response = Error.class)
     })
     @ResponseStatus(HttpStatus.CREATED)
-    @PutMapping("/admin/userplants")
+    @PutMapping("/user/userplants")
     private ResponseEntity<Void> updateUserPlant(@RequestBody UserPlants userPlants, @RequestParam int id, HttpServletRequest request) throws Exception {
         if (userPlants.getId() != id) {
             throw new BadRequestException("Id can't be changed and the id's have to be the same");
@@ -139,7 +138,7 @@ public class UserPlantsController {
             @ApiResponse(code = 404, message = "Resource not found", response = Error.class)
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/admin/userplants")
+    @DeleteMapping("/user/userplants")
     private ResponseEntity<Void> deleteUserPlant(@RequestParam int id, HttpServletRequest request) throws Exception {
         Connection conn = new DatabaseConnection().getConnection();
         if (UserPlantsStatements.deleteUserPlant(id, conn, request)) {
@@ -160,7 +159,7 @@ public class UserPlantsController {
             @ApiResponse(code = 404, message = "Image not found", response = Error.class)
     })
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/admin/userplants/image")
+    @PostMapping("/user/userplants/image")
     private ResponseEntity<Void> uploadPlantImage(
             @RequestParam MultipartFile file,
             @RequestParam String imageName,
