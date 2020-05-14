@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
 import '../MenuNavigation.dart';
-import 'PlantList.dart';
+import '../Plants.dart';
+import '../pages/plant-list.dart';
 
 class PlantDetail extends StatelessWidget {
   final PlantInfo plantInfo;
 
-  PlantDetail({this.plantInfo}) : assert(plantInfo != null);
+  PlantDetail({this.plantInfo}) 
+    : assert(plantInfo != null);
 
   @override
   Widget build(BuildContext context) {
@@ -24,13 +26,16 @@ class PlantDetail extends StatelessWidget {
           color: Colors.white
         ),
         child: Container(
-          padding: EdgeInsets.all(20.0),
+          padding: EdgeInsets.all(10.0),
           width: MediaQuery.of(context).size.width,
           color: Colors.black,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListView(
             children: <Widget>[
-              Image.asset(plantInfo.imageName),
+              Image.asset(
+                plantInfo.imageName,
+                width: 300,
+                height: 300,
+              ),
               SizedBox(height: 20),
 
               Text('Naam', style: TextStyle(color: Colors.grey)),
@@ -74,6 +79,4 @@ class PlantDetail extends StatelessWidget {
       ),
     );
   }
-
-
 }

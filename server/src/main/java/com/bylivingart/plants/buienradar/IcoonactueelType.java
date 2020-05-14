@@ -8,18 +8,14 @@
 
 package com.bylivingart.plants.buienradar;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
+import javax.xml.bind.annotation.*;
 
 
 /**
  * <p>Java class for icoonactueelType complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="icoonactueelType">
  *   &lt;simpleContent>
@@ -30,12 +26,10 @@ import javax.xml.bind.annotation.XmlValue;
  *   &lt;/simpleContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "icoonactueelType", propOrder = {
-    "value"
+        "value"
 })
 public class IcoonactueelType {
 
@@ -46,9 +40,10 @@ public class IcoonactueelType {
     @XmlAttribute(name = "zin")
     protected String zin;
 
-    public IcoonactueelType(){};
+    public IcoonactueelType() {
+    }
 
-    public IcoonactueelType(String value, String zin, String id){
+    public IcoonactueelType(String value, String zin, String id) {
         this.value = value;
         this.zin = zin;
         this.id = id;
@@ -56,11 +51,9 @@ public class IcoonactueelType {
 
     /**
      * Gets the value of the value property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getValue() {
         return value;
@@ -68,11 +61,9 @@ public class IcoonactueelType {
 
     /**
      * Sets the value of the value property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setValue(String value) {
         this.value = value;
@@ -80,11 +71,9 @@ public class IcoonactueelType {
 
     /**
      * Gets the value of the id property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getID() {
         return id;
@@ -92,11 +81,9 @@ public class IcoonactueelType {
 
     /**
      * Sets the value of the id property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setID(String value) {
         this.id = value;
@@ -104,11 +91,9 @@ public class IcoonactueelType {
 
     /**
      * Gets the value of the zin property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getZin() {
         return zin;
@@ -116,11 +101,9 @@ public class IcoonactueelType {
 
     /**
      * Sets the value of the zin property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setZin(String value) {
         this.zin = value;

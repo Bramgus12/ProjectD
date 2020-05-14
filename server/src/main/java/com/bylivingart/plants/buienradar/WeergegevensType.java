@@ -16,9 +16,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for weergegevensType complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="weergegevensType">
  *   &lt;complexContent>
@@ -39,21 +39,19 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "weergegevensType", propOrder = {
-    "titel",
-    "link",
-    "omschrijving",
-    "language",
-    "copyright",
-    "gebruik",
-    "image",
-    "actueelWeer",
-    "verwachtingMeerdaags",
-    "verwachtingVandaag"
+        "titel",
+        "link",
+        "omschrijving",
+        "language",
+        "copyright",
+        "gebruik",
+        "image",
+        "actueelWeer",
+        "verwachtingMeerdaags",
+        "verwachtingVandaag"
 })
 public class WeergegevensType {
 
@@ -80,11 +78,9 @@ public class WeergegevensType {
 
     /**
      * Gets the value of the titel property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getTitel() {
         return titel;
@@ -92,11 +88,9 @@ public class WeergegevensType {
 
     /**
      * Sets the value of the titel property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setTitel(String value) {
         this.titel = value;
@@ -104,11 +98,9 @@ public class WeergegevensType {
 
     /**
      * Gets the value of the link property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getLink() {
         return link;
@@ -116,11 +108,9 @@ public class WeergegevensType {
 
     /**
      * Sets the value of the link property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setLink(String value) {
         this.link = value;
@@ -128,11 +118,9 @@ public class WeergegevensType {
 
     /**
      * Gets the value of the omschrijving property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getOmschrijving() {
         return omschrijving;
@@ -140,11 +128,9 @@ public class WeergegevensType {
 
     /**
      * Sets the value of the omschrijving property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setOmschrijving(String value) {
         this.omschrijving = value;
@@ -152,11 +138,9 @@ public class WeergegevensType {
 
     /**
      * Gets the value of the language property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getLanguage() {
         return language;
@@ -164,11 +148,9 @@ public class WeergegevensType {
 
     /**
      * Sets the value of the language property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setLanguage(String value) {
         this.language = value;
@@ -176,11 +158,9 @@ public class WeergegevensType {
 
     /**
      * Gets the value of the copyright property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getCopyright() {
         return copyright;
@@ -188,11 +168,9 @@ public class WeergegevensType {
 
     /**
      * Sets the value of the copyright property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setCopyright(String value) {
         this.copyright = value;
@@ -200,11 +178,9 @@ public class WeergegevensType {
 
     /**
      * Gets the value of the gebruik property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getGebruik() {
         return gebruik;
@@ -212,11 +188,9 @@ public class WeergegevensType {
 
     /**
      * Sets the value of the gebruik property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setGebruik(String value) {
         this.gebruik = value;
@@ -224,11 +198,9 @@ public class WeergegevensType {
 
     /**
      * Gets the value of the image property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ImageType }
-     *     
+     *
+     * @return possible object is
+     * {@link ImageType }
      */
     public ImageType getImage() {
         return image;
@@ -236,11 +208,9 @@ public class WeergegevensType {
 
     /**
      * Sets the value of the image property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ImageType }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link ImageType }
      */
     public void setImage(ImageType value) {
         this.image = value;
@@ -248,11 +218,9 @@ public class WeergegevensType {
 
     /**
      * Gets the value of the actueelWeer property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ActueelWeerType }
-     *     
+     *
+     * @return possible object is
+     * {@link ActueelWeerType }
      */
     public ActueelWeerType getActueelWeer() {
         return actueelWeer;
@@ -260,11 +228,9 @@ public class WeergegevensType {
 
     /**
      * Sets the value of the actueelWeer property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ActueelWeerType }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link ActueelWeerType }
      */
     public void setActueelWeer(ActueelWeerType value) {
         this.actueelWeer = value;
@@ -272,11 +238,9 @@ public class WeergegevensType {
 
     /**
      * Gets the value of the verwachtingMeerdaags property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link VerwachtingMeerdaagsType }
-     *     
+     *
+     * @return possible object is
+     * {@link VerwachtingMeerdaagsType }
      */
     public VerwachtingMeerdaagsType getVerwachtingMeerdaags() {
         return verwachtingMeerdaags;
@@ -284,11 +248,9 @@ public class WeergegevensType {
 
     /**
      * Sets the value of the verwachtingMeerdaags property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link VerwachtingMeerdaagsType }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link VerwachtingMeerdaagsType }
      */
     public void setVerwachtingMeerdaags(VerwachtingMeerdaagsType value) {
         this.verwachtingMeerdaags = value;
@@ -296,11 +258,9 @@ public class WeergegevensType {
 
     /**
      * Gets the value of the verwachtingVandaag property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link VerwachtingVandaagType }
-     *     
+     *
+     * @return possible object is
+     * {@link VerwachtingVandaagType }
      */
     public VerwachtingVandaagType getVerwachtingVandaag() {
         return verwachtingVandaag;
@@ -308,11 +268,9 @@ public class WeergegevensType {
 
     /**
      * Sets the value of the verwachtingVandaag property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link VerwachtingVandaagType }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link VerwachtingVandaagType }
      */
     public void setVerwachtingVandaag(VerwachtingVandaagType value) {
         this.verwachtingVandaag = value;
