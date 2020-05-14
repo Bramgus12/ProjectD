@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../MenuNavigation.dart';
+import '../Plants.dart';
 
 class PlantList extends StatelessWidget {
   // plants with images in assets/folder
@@ -42,24 +43,6 @@ class PlantList extends StatelessWidget {
     ),
     );
   }
-}
-
-class PlantInfo {
-  final String name;
-  // the name of the image in the assets/images folder
-  final String imageName;
-  // the wireframes show multiple descriptions
-  final String plantDescription;
-  final String waterDescription;
-  final String sunLightDescription;
-  // amount 1-5
-  final int waterAmount;
-  final int sunLightAmount;
-
-  PlantInfo({
-    this.name, this.imageName, this.plantDescription, this.waterDescription,
-    this.sunLightDescription, this.waterAmount, this.sunLightAmount
-  });
 }
 
 class PlantListItem extends StatelessWidget {

@@ -2,30 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 import '../MenuNavigation.dart';
-
-class UserPlant {
-  Image image;
-  String nickName;
-  int volumeInMM;
-  DateTime lastTimeWater;
-  int sunLightAmount;
-  int minTemp;
-  int maxTemp;
-
-  @override
-  String toString() {
-    return '''
-    {
-        nickname: "$nickName",
-        volume: $volumeInMM,
-        lastTimeWater: "$lastTimeWater",
-        sunLightNeeded: $sunLightAmount,
-        minTempLocation: $maxTemp,
-        maxTempLocation: $maxTemp
-    }
-    ''';
-  }
-}
+import '../Plants.dart';
 
 class AddPlant extends StatefulWidget {
   @override
@@ -97,16 +74,21 @@ class _AddPlant extends State<AddPlant> {
                               newPlant.volumeInMM = int.parse(value);
                             },
                         ),
-                        IconButton(
-                          icon: Icon(Icons.date_range, color: Colors.blue,),
-                          onPressed: () => DatePicker.showDateTimePicker(
-                            context,
-                            minTime: DateTime(DateTime.now().year, 1, 1),
-                            maxTime: DateTime.now(),
-                            onConfirm: (date) {
-                              newPlant.lastTimeWater = date;
-                            }
-                          ),
+                        Row(
+                          children: <Widget>[
+                            Text('Datum laatste keer water'),
+                            IconButton(
+                              icon: Icon(Icons.date_range, color: Colors.blue,),
+                              onPressed: () => DatePicker.showDateTimePicker(
+                                context,
+                                minTime: DateTime(DateTime.now().year, 1, 1),
+                                maxTime: DateTime.now(),
+                                onConfirm: (DateTime date) {
+                                  newPlant.lastTimeWater = date;
+                                }
+                              ),
+                            ),
+                          ],
                         ),
                         AddPlantTextField(
                             label: 'Hoeveelheid zonlicht',

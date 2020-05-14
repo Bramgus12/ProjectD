@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../MenuNavigation.dart';
-import 'plant-list.dart';
+import '../Plants.dart';
 
 class PlantDetail extends StatelessWidget {
   final PlantInfo plantInfo;
