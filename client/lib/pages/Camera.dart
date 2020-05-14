@@ -10,20 +10,74 @@ import 'package:tflite/tflite.dart';
 import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'PlantList.dart';
+import '../Plants.dart';
+import 'Plant-list.dart';
+import 'package:camera/camera.dart';
+import 'package:path_provider/path_provider.dart';
+
+
 class Camera extends StatefulWidget {
   @override
   _CameraState createState() => _CameraState();
 }
 
-class _CameraState extends State<Camera> {
+class _CameraState extends State<Camera>
+    with WidgetsBindingObserver{
+
+  CameraController controller;
+  String imagePath;
 
   File imageFile;
   List _recognitions;
   bool _busy = false;
   File predictionResultPlantImage;
   final List<String> plantNames = <String>["croton", "dracaena_lemon_lime", "peace_lily", "pothos", "snake_plant"];
+  List<CameraDescription> cameras = [];
 
+  @override
+  void initState() {
+    super.initState();
+
+    initCamera();
+
+    _busy = true;
+
+    WidgetsBinding.instance.addObserver(this);
+
+    loadModel().then((val) {
+      setState(() {
+        _busy = false;
+      });
+    });
+  }
+
+  Future<void> initCamera() async {
+    cameras = await availableCameras();
+    onNewCameraSelected(cameras.first);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // App state changed before we got the chance to initialize.
+    if (controller == null || !controller.value.isInitialized) {
+      return;
+    }
+    if (state == AppLifecycleState.inactive) {
+      controller?.dispose();
+    } else if (state == AppLifecycleState.resumed) {
+      if (controller != null) {
+        onNewCameraSelected(controller.description);
+      }
+    }
+  }
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
 
   openGallery( BuildContext context) async {
@@ -37,7 +91,7 @@ class _CameraState extends State<Camera> {
         imageFile = img;
       });
     }
-    Navigator.of(context).pop();
+    // Navigator.of(context).pop();
 
   }
   openCamera(BuildContext context) async{
@@ -55,33 +109,7 @@ class _CameraState extends State<Camera> {
     Navigator.of(context).pop();
   }
   Future<void> imageSourceChoiceDialog(BuildContext context) {
-    return showDialog<void>(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("Make a choice!"),
-            content: SingleChildScrollView(
-              child: ListBody(
-                children: <Widget>[
-                  GestureDetector(
-                    child: Text("Gallary"),
-                    onTap: (){
-                      openGallery(context);
-                    },
-                  ),
-                  Padding(padding: EdgeInsets.all(8.0),),
-                  GestureDetector(
-                    child: Text("Camera"),
-                    onTap: (){
-                      openCamera(context);
-                    },
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
-    );
+    openGallery(context);
   }
 
 
@@ -332,23 +360,10 @@ class _CameraState extends State<Camera> {
      return res;
   }
 
-
-  @override
-  void initState() {
-    super.initState();
-
-    _busy = true;
-
-    loadModel().then((val) {
-      setState(() {
-        _busy = false;
-      });
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     List<Widget> stackChildren = [];
+    List<Widget>  builder = [];
 
     if (_busy) {
       stackChildren.add(const Opacity(
@@ -358,62 +373,242 @@ class _CameraState extends State<Camera> {
       stackChildren.add(const Center(child: CircularProgressIndicator()));
     }
 
-
-
-
-
-    return Scaffold(
-      drawer: MenuNavigation(),
-      bottomNavigationBar: BottomNavigation(),
-      appBar: AppBar(
-        title: Text("Camera", style: TextStyle(fontFamily: 'Libre Baskerville')),
-        centerTitle: true,
-      ),
-      body:
-          ListView(
-              scrollDirection: Axis.vertical,
-              children: <Widget>[
-                Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: selectedImageView()
-                ),
-                Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Text("Predictions", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),)
-                ),
-
-                Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Container(
-                    child: FittedBox(
-
-                      child: Material(
-
-                        color: Colors.white,
-                        elevation: 5.0,
-                        borderRadius: BorderRadius.circular(24.0),
-                        shadowColor: Colors.grey,
-
-                        child: predictionView(),
-
-                      ),
+    if(imageFile == null ){
+      builder.addAll(
+        [
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  child: Padding(
+                    padding: const EdgeInsets.all(1.0),
+                    child: Center(
+                      child: _cameraPreviewWidget(),
                     ),
                   ),
                 ),
-
-
-              ],
+              )
+            ],
           ),
+          _captureControlRowWidget()
+        ]
+      );
+    } else {
+      builder.addAll([
+        Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: selectedImageView()
+        ),
+        Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Text("Predictions", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),)
+        ),
+
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Container(
+            child: FittedBox(
+
+              child: Material(
+
+                color: Colors.white,
+                elevation: 5.0,
+                borderRadius: BorderRadius.circular(24.0),
+                shadowColor: Colors.grey,
+
+                child: predictionView(),
+
+              ),
+            ),
+          ),
+        ),
+      ]);
+    }
 
 
-//
-    floatingActionButton:FloatingActionButton(
-      onPressed: (){imageSourceChoiceDialog(context);},
-      child: Icon(Icons.image, color: Colors.white,),
-      backgroundColor: Colors.blueAccent,
-      ),
+
+
+
+
+    return new WillPopScope(
+        onWillPop: _onWillPop,
+        child: Scaffold(
+          drawer: MenuNavigation(),
+          bottomNavigationBar: BottomNavigation(),
+          appBar: AppBar(
+            title: Text("Camera", style: TextStyle(fontFamily: 'Libre Baskerville')),
+            centerTitle: true,
+          ),
+          body:
+            ListView(
+              scrollDirection: Axis.vertical,
+              children: builder
+              ),
+
+        floatingActionButton:
+          imageFile == null ?
+          ClipOval(
+            child: Material(
+              color: Colors.blue, // button color
+              child: InkWell(
+                splashColor: Colors.green, // inkwell color
+                child: SizedBox(width: 56, height: 56, child: Icon(Icons.image,
+                  color: Colors.white,)),
+                onTap: (){imageSourceChoiceDialog(context);},
+              ),
+            ),
+          )
+        : null,
+
+//          FlatButton(
+//            onPressed: (){imageSourceChoiceDialog(context);},
+//            child: Icon(Icons.image, color: Colors.white,),
+//            color: Colors.blueAccent,
+//            shape: new CircleBorder(),
+//          ),
+        ),
     );
   }
+
+
+  /// Display the preview from the camera (or a message if the preview is not available).
+  Widget _cameraPreviewWidget() {
+    if (controller == null || !controller.value.isInitialized) {
+      return const Text(
+        'Tap a camera',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 24.0,
+          fontWeight: FontWeight.w900,
+        ),
+      );
+    } else {
+      return AspectRatio(
+        aspectRatio: controller.value.aspectRatio,
+        child: CameraPreview(controller),
+      );
+    }
+  }
+
+  /// Check if the user pops the scpe, e.g. when the user uses the back button, if in camera mode, allow the creation/selection of a new image
+  Future<bool> _onWillPop() async {
+    if(imageFile != null){
+      setState(() {
+        imageFile = null;
+      });
+      return false;
+    }
+
+    return true;
+  }
+
+
+
+  /// Display the control bar with buttons to take pictures and record videos.
+  Widget _captureControlRowWidget() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisSize: MainAxisSize.max,
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.all(16.0),
+          child: ClipOval(
+            child: Material(
+              color: Colors.blue, // button color
+              child: InkWell(
+                splashColor: Colors.green, // inkwell color
+                child: SizedBox(width: 56, height: 56, child: Icon(Icons.camera_alt,
+                  color: Colors.white,)),
+                onTap: controller != null &&
+                    controller.value.isInitialized ?
+                onTakePictureButtonPressed
+                    : null,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
+
+  void showInSnackBar(String message) {
+    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  void onNewCameraSelected(CameraDescription cameraDescription) async {
+    if (controller != null) {
+      await controller.dispose();
+    }
+    controller = CameraController(
+      cameraDescription,
+      ResolutionPreset.medium,
+      enableAudio: false,
+    );
+
+    // If the controller is updated then update the UI.
+    controller.addListener(() {
+      if (mounted) setState(() {});
+      if (controller.value.hasError) {
+        showInSnackBar('Camera error ${controller.value.errorDescription}');
+      }
+    });
+
+    try {
+      await controller.initialize();
+    } on CameraException catch (e) {
+    }
+
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void onTakePictureButtonPressed() {
+    takePicture().then((String filePath) {
+      if (mounted) {
+        setState(() {
+          imagePath = filePath;
+        });
+        if (filePath != null) {
+          File img = File(filePath);
+          predictImage(img);
+          setState(() {
+            imageFile = img;
+          });
+
+        }
+      }
+    });
+  }
+
+
+
+  Future<String> takePicture() async {
+    if (!controller.value.isInitialized) {
+      showInSnackBar('Error: select a camera first.');
+      return null;
+    }
+    final Directory extDir = await getApplicationDocumentsDirectory();
+    final String dirPath = '${extDir.path}/Pictures/by_living_arts';
+    await Directory(dirPath).create(recursive: true);
+    final String filePath = '$dirPath/${timestamp()}.jpg';
+
+    if (controller.value.isTakingPicture) {
+      // A capture is already pending, do nothing.
+      return null;
+    }
+
+    try {
+      await controller.takePicture(filePath);
+    } on CameraException catch (e) {
+      return null;
+    }
+    return filePath;
+  }
+
+
 }
 
 
