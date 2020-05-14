@@ -34,11 +34,11 @@ class _CameraState extends State<Camera>
   List<CameraDescription> cameras = [];
   
   var plnts = [
-    {"plantName":"croton", "waterAmount": 4, "sunAmount": 2},
-    {"plantName":"dracaena lemon lime", "waterAmount": 2, "sunAmount": 0},
-    {"plantName":"peace lily", "waterAmount": 3, "sunAmount": 3},
-    {"plantName":"pothos", "waterAmount": 3, "sunAmount": 2},
-    {"plantName":"snake plant", "waterAmount": 1, "sunAmount": 5},
+    {"plantName":"croton", "waterAmount": 4.0, "sunAmount": 2.0},
+    {"plantName":"dracaena lemon lime", "waterAmount": 2.0, "sunAmount": 0.0},
+    {"plantName":"peace lily", "waterAmount": 3.0, "sunAmount": 3.0},
+    {"plantName":"pothos", "waterAmount": 3.0, "sunAmount": 2.0},
+    {"plantName":"snake plant", "waterAmount": 1.0, "sunAmount": 5.0},
   ];
 
   @override
@@ -228,10 +228,10 @@ class _CameraState extends State<Camera>
 
   Widget getData(int plantNumber) {
     String plantName = plnts[plantNumber]["plantName"];
-    int waterAmount = plnts[plantNumber]["waterAmount"];
-    int sunAmount = plnts[plantNumber]["sunAmount"];
+    double waterAmount = plnts[plantNumber]["waterAmount"];
+    double sunAmount = plnts[plantNumber]["sunAmount"];
 
-    return plantCardDetails(plantName,  waterAmount,  sunAmount);
+    return plantCardDetails(plantName,  waterAmount.toInt(),  sunAmount.toInt());
   }
 
   Widget plantCardDetails(String plantName, int waterAmount, int sunAmount) {
