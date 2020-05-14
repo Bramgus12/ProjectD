@@ -87,7 +87,7 @@ class _CameraState extends State<Camera> {
 
   Widget selectedImageView(){
     if(imageFile == null){
-      return Text("No image Selected!", textAlign: TextAlign.center);
+      return Text(" ");
 
     }else{
       return  Image.file(imageFile,width: 150, height: 150,);
@@ -97,25 +97,18 @@ class _CameraState extends State<Camera> {
 
     if(_recognitions == null){
       return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Padding(
             padding: const EdgeInsets.only(left: 16.0),
             child: Container(
-              child: getData(5),
-            ),
-          ),
 
-            Container(
-              width: 250,
-              height: 180,
-              child: ClipRRect(
-                borderRadius: new BorderRadius.circular(24.0),
-                child: Image(
-                  fit: BoxFit.contain,
-                  alignment: Alignment.topRight,
-                  image: AssetImage('assets/images/'+5.toString()+'.jpg'),
-                ),),)]);
+              padding: EdgeInsets.all(16.0),
+              height: 150,
+              child: Text("Select a plant image from your gallery or take a picture \nof a plant by clicking the floating button at the bottom \nleft of your screen.", textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20))
+            ),
+          ),]);
     }else{
       var plantNumber = _recognitions.map((res){ return res["index"];}).toList()[0];
       String plantName;
@@ -233,12 +226,11 @@ class _CameraState extends State<Camera> {
     await plantModel(image);
     }
 
-  Widget getStars( String title, int numberOfStars) {
+  Widget getIcon( String title, int numberOfStars, String icon) {
     var res = <Widget>[Container(child: Text(title))];
     StringBuffer sb = new StringBuffer();
     for (int i = 0; i < numberOfStars; i++) {
-      res.add(Container(child: Icon(
-        FontAwesomeIcons.solidStar, color: Colors.amber, size: 15.0,),));
+      res.add(Container(child: Text(icon)));
     }
 
     return Container(child: Row(children: res,));
@@ -294,14 +286,18 @@ class _CameraState extends State<Camera> {
           child: Container(child: Text(plantName,
             style: TextStyle(color: Color(0xffe6020a), fontSize: 24.0,fontWeight: FontWeight.bold),)),
         ),
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: Text("Confidence : "+_recognitions.map((res){ return res["confidence"];}).toList()[0].toString()),
+        ),
 
         Padding(
           padding: const EdgeInsets.only(left: 8.0),
-          child: getStars("Hoeveelheid water: ",waterAmount),
+          child: getIcon("Hoeveelheid water: ",waterAmount,'💧'),
         ),
         Padding(
           padding: const EdgeInsets.only(left: 8.0),
-          child: getStars("Hoeveelheid zonlicht: ",sunAmount),
+          child: getIcon("Hoeveelheid zonlicht: ",sunAmount,'☀'),
         ),
       ],
     );
