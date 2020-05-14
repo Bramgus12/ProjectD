@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+class User {
+  static List<UserPlant> plants;
+}
 
 class PlantInfo {
   final String name;
@@ -19,7 +21,7 @@ class PlantInfo {
 }
 
 class UserPlant {
-  Image image;
+  String imageName;
   String nickName;
   int volumeInMM;
   DateTime lastTimeWater;
@@ -39,5 +41,18 @@ class UserPlant {
         maxTempLocation: $maxTemp
     }
     ''';
+  }
+
+  PlantInfo toPlantInfo() {
+    return new PlantInfo(
+      name: nickName,
+      imageName: imageName,
+      plantDescription: '',
+      sunLightDescription: '',
+      waterDescription: '',
+      sunLightAmount: sunLightAmount,
+      // ?
+      waterAmount: 2
+    );
   }
 }

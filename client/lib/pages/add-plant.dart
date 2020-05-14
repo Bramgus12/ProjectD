@@ -18,7 +18,7 @@ class _AddPlant extends State<AddPlant> {
   void submit() {
     if (this._formKey.currentState.validate()) {
       _formKey.currentState.save();
-      print(newPlant.toString());
+      User.plants.add(newPlant);
     }
   }
 
