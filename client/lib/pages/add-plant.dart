@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:plantexpert/api/User.dart';
+import 'package:plantexpert/api/UserPlant.dart';
 
 import '../MenuNavigation.dart';
-import '../Plants.dart';
 
 class AddPlant extends StatefulWidget {
   @override
@@ -62,14 +63,14 @@ class _AddPlant extends State<AddPlant> {
                             return null;
                           },
                           onSaved: (String value) {
-                            newPlant.nickName = value;
+                            newPlant.nickname = value;
                           },
                         ),
                         AddPlantTextField(
                             label: 'Inhoud bak',
                             keyboardType: TextInputType.number,
                             validator: (String value) {
-                              int a = int.tryParse(value);
+                              double a = double.tryParse(value);
 
                               if (a == null) {
                                 return 'Moet een getal zijn.';
@@ -78,7 +79,7 @@ class _AddPlant extends State<AddPlant> {
                               return null;
                             },
                             onSaved: (String value) {
-                              newPlant.volumeInMM = int.parse(value);
+                              newPlant.potVolume = double.parse(value);
                             },
                         ),
                         Row(
@@ -91,7 +92,7 @@ class _AddPlant extends State<AddPlant> {
                                 minTime: DateTime(DateTime.now().year, 1, 1),
                                 maxTime: DateTime.now(),
                                 onConfirm: (DateTime date) {
-                                  newPlant.lastTimeWater = date;
+                                  newPlant.lastWaterDate = date;
                                 }
                               ),
                             ),
@@ -101,7 +102,7 @@ class _AddPlant extends State<AddPlant> {
                             label: 'Hoeveelheid zonlicht',
                             keyboardType: TextInputType.number,
                             validator: (String value) {
-                              int temp = int.tryParse(value);
+                              double temp = double.tryParse(value);
 
                               if (temp == null) {
                                 return 'Moet een getal zijn.';
@@ -110,7 +111,7 @@ class _AddPlant extends State<AddPlant> {
                               return null;
                             },
                             onSaved: (String value) {
-                              newPlant.sunLightAmount = int.parse(value);
+                              newPlant.distanceToWindow = double.parse(value);
                             },
                         ),
                         Row(

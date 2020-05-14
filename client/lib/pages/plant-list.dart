@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:plantexpert/api/Plant.dart';
+import 'package:plantexpert/api/User.dart';
 
 import '../MenuNavigation.dart';
-import '../Plants.dart';
 
 class PlantList extends StatelessWidget {
   @override
@@ -18,10 +19,22 @@ class PlantList extends StatelessWidget {
         child: ListView.builder(
           itemBuilder: (_, index) {
             return PlantListItem(
-              plantInfo: User.plants.elementAt(index).toPlantInfo()
+              plant: Plant(
+                id: 0,
+                name: "Test Plant",
+                waterScale: 2.0,
+                waterNumber: 2.0,
+                waterText: "Plant needs water.",
+                sunScale: 2.0,
+                sunNumber: 2.0,
+                sunText: "Plant needs sun.",
+                description: "This is a plant.",
+                optimalTemp: 2,
+                imageName: "assets/images/croton.jpg"
+              )
             );
           },
-          itemCount: User.plants.length,
+          itemCount: 1,
         )
       ),
       floatingActionButton: FloatingActionButton(
@@ -36,18 +49,18 @@ class PlantList extends StatelessWidget {
 }
 
 class PlantListItem extends StatelessWidget {
-  final PlantInfo plantInfo;
+  final Plant plant;
 
   final double _imageWidth = 150.0;
   final double _imageHeight = 150.0;
 
-  PlantListItem({this.plantInfo});
+  PlantListItem({this.plant});
 
   @override
   Widget build(BuildContext context) {
     return DefaultTextStyle(
       child: GestureDetector(
-        onTap: () => Navigator.pushNamed(context, '/plant-detail', arguments: plantInfo),
+        onTap: () => Navigator.pushNamed(context, '/plant-detail', arguments: plant),
         child: Container(
           padding: EdgeInsets.all(10.0),
           height: _imageHeight * 1.2,
@@ -65,7 +78,7 @@ class PlantListItem extends StatelessWidget {
               Expanded(
                 flex: 4,
                 child: Image.asset(
-                  plantInfo.imageName,
+                  plant.imageName,
                   width: _imageWidth,
                   height: _imageHeight,
                 ),
@@ -84,7 +97,7 @@ class PlantListItem extends StatelessWidget {
                         'Naam',
                         style: TextStyle(color: Colors.grey)
                       ),
-                      Text(plantInfo.name),
+                      Text(plant.name),
                       SizedBox(height: 10),
 
                       Text(
@@ -92,7 +105,7 @@ class PlantListItem extends StatelessWidget {
                           style: TextStyle(color: Colors.grey)
                       ),
                       RatingRow(
-                        count: plantInfo.sunLightAmount,
+                        count: plant.sunScale.toInt(),
                         // TODO: find better icons for sunlight
                         filledIcon: Icons.star,
                         unfilledIcon: Icons.star_border,
@@ -104,7 +117,7 @@ class PlantListItem extends StatelessWidget {
                           style: TextStyle(color: Colors.grey)
                       ),
                       RatingRow(
-                          count: plantInfo.waterAmount,
+                          count: plant.waterScale.toInt(),
                           // TODO: find better icons for water
                           filledIcon: Icons.star,
                           unfilledIcon: Icons.star_border,
