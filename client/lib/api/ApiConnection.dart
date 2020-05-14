@@ -115,7 +115,7 @@ class ApiConnection {
 
   // Post json
   Future<http.Response> _postJson(String url, JsonSerializeable jsonObject, { Map<String, String> headers }) async {
-    http.Response response = await _sendRequest(url, headers: headers, type: "POST", body: json.encode(jsonObject.toJson()));
+    return await _sendRequest(url, headers: headers, type: "POST", body: json.encode(jsonObject.toJson()));
   }
   
   // Weather stations
