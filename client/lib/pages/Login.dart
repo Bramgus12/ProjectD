@@ -123,5 +123,9 @@ class _LoginState extends State<Login> {
       print(e);
       showErrorMessage("Error connecting to server.");
     }
+    on StatusCodeException catch(e) {
+      print(e);
+      showErrorMessage("Server responded with status code: ${e.reponse.statusCode}");
+    }
   }
 }

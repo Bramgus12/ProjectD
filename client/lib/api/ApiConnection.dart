@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:collection';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
@@ -101,6 +100,9 @@ class ApiConnection {
     http.Response response = await _sendRequest(url, headers: headers, type: "GET");
 
     try {
+      if (response.statusCode == 204) {
+        return {};
+      }
       return json.decode(response.body);
     } on FormatException catch(e) {
       print(e);
@@ -162,13 +164,12 @@ class ApiConnection {
 
   // Login
   Future<bool> verifyCredentials(String username, String password) async {
-    // TODO: Change endpoint to verify credentials. /api/users is now used to check if the username and password are correct.
     // This should later be changed tp a different endpoint. This one does not scale well at all.
     try{
       Map<String, String> headers = Map();
       String base64Authorisation = base64.encode(utf8.encode("$username:$password")).replaceAll("=", "");
       headers['Authorization'] = "Basic $base64Authorisation";
-      await _fetchJson("${baseUrl}users/checkpassword?username=$username&password=$password", headers: headers);
+      await _fetchJson("${baseUrl}users/checkpassword?userName=$username&password=$password", headers: headers);
       return true;
     }
     on InvalidCredentialsException catch(e) {
