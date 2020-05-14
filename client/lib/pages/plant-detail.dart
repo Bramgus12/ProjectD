@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../MenuNavigation.dart';
 import '../Plants.dart';
+import '../pages/plant-list.dart';
 
 class PlantDetail extends StatelessWidget {
   final PlantInfo plantInfo;
 
-  PlantDetail({this.plantInfo}) : assert(plantInfo != null);
+  PlantDetail({this.plantInfo}) 
+    : assert(plantInfo != null);
 
   @override
   Widget build(BuildContext context) {

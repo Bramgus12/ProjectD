@@ -45,6 +45,13 @@ class _AddPlant extends State<AddPlant> {
                     key: _formKey,
                     child: ListView(
                       children: <Widget>[
+                        Text('Afbeelding'),
+                        IconButton(
+                          icon: Icon(Icons.image),
+                          onPressed: () => {},
+                          color: Colors.blue,
+                        ),
+                        SizedBox(height: 5),
                         AddPlantTextField(
                           label: 'Naam',
                           validator: (String value) {

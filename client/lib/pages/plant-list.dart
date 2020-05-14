@@ -4,9 +4,6 @@ import '../MenuNavigation.dart';
 import '../Plants.dart';
 
 class PlantList extends StatelessWidget {
-  // plants with images in assets/folder
-  final List<String> plantNames = <String>["croton", "dracaena_lemon_lime", "peace_lily", "pothos", "snake_plant"];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,18 +17,11 @@ class PlantList extends StatelessWidget {
         width: MediaQuery.of(context).size.width,
         child: ListView.builder(
           itemBuilder: (_, index) {
-            final PlantInfo plantInfo = new PlantInfo(
-              name: plantNames[index % plantNames.length],
-              imageName: 'assets/images/' + plantNames[index % plantNames.length] + '.jpg',
-              plantDescription: "Omschrijving van de plant.",
-              waterDescription: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque varius dui venenatis eros dictum, sit amet fringilla lorem iaculis. Vivamus porttitor lacus ante, nec rhoncus nisi vestibulum ut. Nam interdum, purus condimentum sagittis vulputate, libero tortor viverra velit, et mollis leo ipsum quis tellus. Aenean tristique felis sapien, sed faucibus augue fringilla at. Nunc efficitur nibh id mollis mattis. Donec neque risus, molestie eget urna a, pellentesque feugiat magna. Curabitur facilisis id libero nec aliquam. Ut sit amet sollicitudin sapien, iaculis condimentum nulla. Donec consequat placerat venenatis.",
-              sunLightDescription: "Informatie over hoeveel zonlicht de plant nodig heeft.",
-              waterAmount: (index % plantNames.length) + 1,
-              sunLightAmount: (index % plantNames.length) + 1,
+            return PlantListItem(
+              plantInfo: User.plants.elementAt(index).toPlantInfo()
             );
-            return PlantListItem(plantInfo: plantInfo);
           },
-          itemCount: 5,
+          itemCount: User.plants.length,
         )
       ),
       floatingActionButton: FloatingActionButton(
