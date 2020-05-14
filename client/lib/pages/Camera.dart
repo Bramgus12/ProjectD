@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:plantexpert/api/Plant.dart';
 import 'package:quiver/collection.dart';
 import '../MenuNavigation.dart';
 import 'package:image_picker/image_picker.dart';
@@ -10,7 +11,6 @@ import 'package:tflite/tflite.dart';
 import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'PlantList.dart';
 class Camera extends StatefulWidget {
   @override
   _CameraState createState() => _CameraState();
@@ -112,8 +112,8 @@ class _CameraState extends State<Camera> {
     }else{
       var plantNumber = _recognitions.map((res){ return res["index"];}).toList()[0];
       String plantName;
-      int waterAmount;
-      int sunAmount;
+      double waterAmount;
+      double sunAmount;
       if(plantNumber==0){
         plantName = "croton";
         waterAmount = 4;
@@ -146,14 +146,15 @@ class _CameraState extends State<Camera> {
       return
         GestureDetector(
           onTap: () => {Navigator.pushNamed(context, '/plant-detail',
-          arguments: new PlantInfo(
-              name:plantName,
+          arguments: new Plant(
+              id: 0,
+              name: plantName,
               imageName: 'assets/images/'+_recognitions.map((res){ return res["index"];}).toList()[0].toString()+'.jpg',
-              plantDescription: "Omschrijving van de plant.",
-              waterDescription: "Informatie over hoeveel water de plant nodig heeft.",
-              sunLightDescription: "Informatie over hoeveel zonlicht de plant nodig heeft.",
-              waterAmount: waterAmount,
-              sunLightAmount: sunAmount))},
+              description: "Omschrijving van de plant.",
+              waterText: "Informatie over hoeveel water de plant nodig heeft.",
+              sunText: "Informatie over hoeveel zonlicht de plant nodig heeft.",
+              waterScale: waterAmount,
+              sunScale: sunAmount))},
           child: Container(
             child: predictionCard(_recognitions.map((res){ return res["index"];}).toList()[0]))
           );

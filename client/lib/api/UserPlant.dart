@@ -1,4 +1,7 @@
+import 'package:plantexpert/api/ApiConnection.dart';
 import 'package:plantexpert/api/JsonSerializeable.dart';
+
+import 'Plant.dart';
 
 class UserPlant implements JsonSerializeable {
 
@@ -63,6 +66,12 @@ class UserPlant implements JsonSerializeable {
       "minTemp" : minTemp,
       "plantId" : plantId
     };
+  }
+
+  Future<Plant> getPlant() async {
+    ApiConnection apiConnection = ApiConnection();
+
+    return await apiConnection.fetchPlant(plantId);
   }
 
   @override
