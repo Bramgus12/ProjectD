@@ -8,18 +8,14 @@
 
 package com.bylivingart.plants.buienradar;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 
 
 /**
  * <p>Java class for weerstationType complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="weerstationType">
  *   &lt;complexContent>
@@ -74,32 +70,30 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "weerstationType", propOrder = {
-    "stationcode",
-    "stationnaam",
-    "lat",
-    "lon",
-    "datum",
-    "luchtvochtigheid",
-    "temperatuurGC",
-    "windsnelheidMS",
-    "windsnelheidBF",
-    "windrichtingGR",
-    "windrichting",
-    "luchtdruk",
-    "zichtmeters",
-    "windstotenMS",
-    "regenMMPU",
-    "zonintensiteitWM2",
-    "icoonactueel",
-    "temperatuur10Cm",
-    "url",
-    "latGraden",
-    "lonGraden"
+        "stationcode",
+        "stationnaam",
+        "lat",
+        "lon",
+        "datum",
+        "luchtvochtigheid",
+        "temperatuurGC",
+        "windsnelheidMS",
+        "windsnelheidBF",
+        "windrichtingGR",
+        "windrichting",
+        "luchtdruk",
+        "zichtmeters",
+        "windstotenMS",
+        "regenMMPU",
+        "zonintensiteitWM2",
+        "icoonactueel",
+        "temperatuur10Cm",
+        "url",
+        "latGraden",
+        "lonGraden"
 })
 public class WeerstationType {
 
@@ -148,62 +142,61 @@ public class WeerstationType {
     @XmlAttribute(name = "id")
     protected String id;
 
-    public WeerstationType(){};
+    public WeerstationType() {
+    }
 
     public WeerstationType(
-        String stationcode, 
-        StationnaamType stationnaam, 
-        String lat, 
-        String lon, 
-        String datum, 
-        String luchtvochtigheid, 
-        String temperatuurGC, 
-        String windsnelheidMS, 
-        String windsnelheidBF, 
-        String windrichtingGR, 
-        String windrichting, 
-        String luchtdruk, 
-        String zichtmeters, 
-        String windstotenMS,
-        String regenMMPU, 
-        String zonintensiteitWM2, 
-        IcoonactueelType icoonactueel, 
-        String temperatuur10Cm, 
-        String url, 
-        String latGraden, 
-        String lonGraden, 
-        String id){
-            this.stationcode = stationcode;
-            this.stationnaam = stationnaam;
-            this.lat = lat;
-            this.lon = lon;
-            this.datum = datum;
-            this.luchtvochtigheid = luchtvochtigheid;
-            this.temperatuurGC = temperatuurGC;
-            this.windsnelheidMS = windsnelheidMS;
-            this.windsnelheidBF = windsnelheidBF;
-            this.windrichtingGR = windrichtingGR;
-            this.windrichting = windrichting;
-            this.luchtdruk = luchtdruk;
-            this.zichtmeters = zichtmeters;
-            this.windstotenMS = windstotenMS;
-            this.regenMMPU = regenMMPU;
-            this.zonintensiteitWM2 = zonintensiteitWM2;
-            this.icoonactueel = icoonactueel;
-            this.temperatuur10Cm = temperatuur10Cm;
-            this.url = url;
-            this.latGraden = latGraden;
-            this.lonGraden = lonGraden;
-            this.id = id;
+            String stationcode,
+            StationnaamType stationnaam,
+            String lat,
+            String lon,
+            String datum,
+            String luchtvochtigheid,
+            String temperatuurGC,
+            String windsnelheidMS,
+            String windsnelheidBF,
+            String windrichtingGR,
+            String windrichting,
+            String luchtdruk,
+            String zichtmeters,
+            String windstotenMS,
+            String regenMMPU,
+            String zonintensiteitWM2,
+            IcoonactueelType icoonactueel,
+            String temperatuur10Cm,
+            String url,
+            String latGraden,
+            String lonGraden,
+            String id) {
+        this.stationcode = stationcode;
+        this.stationnaam = stationnaam;
+        this.lat = lat;
+        this.lon = lon;
+        this.datum = datum;
+        this.luchtvochtigheid = luchtvochtigheid;
+        this.temperatuurGC = temperatuurGC;
+        this.windsnelheidMS = windsnelheidMS;
+        this.windsnelheidBF = windsnelheidBF;
+        this.windrichtingGR = windrichtingGR;
+        this.windrichting = windrichting;
+        this.luchtdruk = luchtdruk;
+        this.zichtmeters = zichtmeters;
+        this.windstotenMS = windstotenMS;
+        this.regenMMPU = regenMMPU;
+        this.zonintensiteitWM2 = zonintensiteitWM2;
+        this.icoonactueel = icoonactueel;
+        this.temperatuur10Cm = temperatuur10Cm;
+        this.url = url;
+        this.latGraden = latGraden;
+        this.lonGraden = lonGraden;
+        this.id = id;
     }
 
     /**
      * Gets the value of the stationcode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getStationcode() {
         return stationcode;
@@ -211,11 +204,9 @@ public class WeerstationType {
 
     /**
      * Sets the value of the stationcode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setStationcode(String value) {
         this.stationcode = value;
@@ -223,11 +214,9 @@ public class WeerstationType {
 
     /**
      * Gets the value of the stationnaam property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link StationnaamType }
-     *     
+     *
+     * @return possible object is
+     * {@link StationnaamType }
      */
     public StationnaamType getStationnaam() {
         return stationnaam;
@@ -235,11 +224,9 @@ public class WeerstationType {
 
     /**
      * Sets the value of the stationnaam property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link StationnaamType }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link StationnaamType }
      */
     public void setStationnaam(StationnaamType value) {
         this.stationnaam = value;
@@ -247,11 +234,9 @@ public class WeerstationType {
 
     /**
      * Gets the value of the lat property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getLat() {
         return lat;
@@ -259,11 +244,9 @@ public class WeerstationType {
 
     /**
      * Sets the value of the lat property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setLat(String value) {
         this.lat = value;
@@ -271,11 +254,9 @@ public class WeerstationType {
 
     /**
      * Gets the value of the lon property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getLon() {
         return lon;
@@ -283,11 +264,9 @@ public class WeerstationType {
 
     /**
      * Sets the value of the lon property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setLon(String value) {
         this.lon = value;
@@ -295,11 +274,9 @@ public class WeerstationType {
 
     /**
      * Gets the value of the datum property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getDatum() {
         return datum;
@@ -307,11 +284,9 @@ public class WeerstationType {
 
     /**
      * Sets the value of the datum property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setDatum(String value) {
         this.datum = value;
@@ -319,11 +294,9 @@ public class WeerstationType {
 
     /**
      * Gets the value of the luchtvochtigheid property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getLuchtvochtigheid() {
         return luchtvochtigheid;
@@ -331,11 +304,9 @@ public class WeerstationType {
 
     /**
      * Sets the value of the luchtvochtigheid property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setLuchtvochtigheid(String value) {
         this.luchtvochtigheid = value;
@@ -343,11 +314,9 @@ public class WeerstationType {
 
     /**
      * Gets the value of the temperatuurGC property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getTemperatuurGC() {
         return temperatuurGC;
@@ -355,11 +324,9 @@ public class WeerstationType {
 
     /**
      * Sets the value of the temperatuurGC property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setTemperatuurGC(String value) {
         this.temperatuurGC = value;
@@ -367,11 +334,9 @@ public class WeerstationType {
 
     /**
      * Gets the value of the windsnelheidMS property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getWindsnelheidMS() {
         return windsnelheidMS;
@@ -379,11 +344,9 @@ public class WeerstationType {
 
     /**
      * Sets the value of the windsnelheidMS property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setWindsnelheidMS(String value) {
         this.windsnelheidMS = value;
@@ -391,11 +354,9 @@ public class WeerstationType {
 
     /**
      * Gets the value of the windsnelheidBF property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getWindsnelheidBF() {
         return windsnelheidBF;
@@ -403,11 +364,9 @@ public class WeerstationType {
 
     /**
      * Sets the value of the windsnelheidBF property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setWindsnelheidBF(String value) {
         this.windsnelheidBF = value;
@@ -415,11 +374,9 @@ public class WeerstationType {
 
     /**
      * Gets the value of the windrichtingGR property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getWindrichtingGR() {
         return windrichtingGR;
@@ -427,11 +384,9 @@ public class WeerstationType {
 
     /**
      * Sets the value of the windrichtingGR property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setWindrichtingGR(String value) {
         this.windrichtingGR = value;
@@ -439,11 +394,9 @@ public class WeerstationType {
 
     /**
      * Gets the value of the windrichting property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getWindrichting() {
         return windrichting;
@@ -451,11 +404,9 @@ public class WeerstationType {
 
     /**
      * Sets the value of the windrichting property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setWindrichting(String value) {
         this.windrichting = value;
@@ -463,11 +414,9 @@ public class WeerstationType {
 
     /**
      * Gets the value of the luchtdruk property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getLuchtdruk() {
         return luchtdruk;
@@ -475,11 +424,9 @@ public class WeerstationType {
 
     /**
      * Sets the value of the luchtdruk property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setLuchtdruk(String value) {
         this.luchtdruk = value;
@@ -487,11 +434,9 @@ public class WeerstationType {
 
     /**
      * Gets the value of the zichtmeters property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getZichtmeters() {
         return zichtmeters;
@@ -499,11 +444,9 @@ public class WeerstationType {
 
     /**
      * Sets the value of the zichtmeters property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setZichtmeters(String value) {
         this.zichtmeters = value;
@@ -511,11 +454,9 @@ public class WeerstationType {
 
     /**
      * Gets the value of the windstotenMS property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getWindstotenMS() {
         return windstotenMS;
@@ -523,11 +464,9 @@ public class WeerstationType {
 
     /**
      * Sets the value of the windstotenMS property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setWindstotenMS(String value) {
         this.windstotenMS = value;
@@ -535,11 +474,9 @@ public class WeerstationType {
 
     /**
      * Gets the value of the regenMMPU property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getRegenMMPU() {
         return regenMMPU;
@@ -547,11 +484,9 @@ public class WeerstationType {
 
     /**
      * Sets the value of the regenMMPU property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setRegenMMPU(String value) {
         this.regenMMPU = value;
@@ -559,11 +494,9 @@ public class WeerstationType {
 
     /**
      * Gets the value of the zonintensiteitWM2 property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getZonintensiteitWM2() {
         return zonintensiteitWM2;
@@ -571,11 +504,9 @@ public class WeerstationType {
 
     /**
      * Sets the value of the zonintensiteitWM2 property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setZonintensiteitWM2(String value) {
         this.zonintensiteitWM2 = value;
@@ -583,11 +514,9 @@ public class WeerstationType {
 
     /**
      * Gets the value of the icoonactueel property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link IcoonactueelType }
-     *     
+     *
+     * @return possible object is
+     * {@link IcoonactueelType }
      */
     public IcoonactueelType getIcoonactueel() {
         return icoonactueel;
@@ -595,11 +524,9 @@ public class WeerstationType {
 
     /**
      * Sets the value of the icoonactueel property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link IcoonactueelType }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link IcoonactueelType }
      */
     public void setIcoonactueel(IcoonactueelType value) {
         this.icoonactueel = value;
@@ -607,11 +534,9 @@ public class WeerstationType {
 
     /**
      * Gets the value of the temperatuur10Cm property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getTemperatuur10Cm() {
         return temperatuur10Cm;
@@ -619,11 +544,9 @@ public class WeerstationType {
 
     /**
      * Sets the value of the temperatuur10Cm property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setTemperatuur10Cm(String value) {
         this.temperatuur10Cm = value;
@@ -631,11 +554,9 @@ public class WeerstationType {
 
     /**
      * Gets the value of the url property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getUrl() {
         return url;
@@ -643,11 +564,9 @@ public class WeerstationType {
 
     /**
      * Sets the value of the url property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setUrl(String value) {
         this.url = value;
@@ -655,11 +574,9 @@ public class WeerstationType {
 
     /**
      * Gets the value of the latGraden property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getLatGraden() {
         return latGraden;
@@ -667,11 +584,9 @@ public class WeerstationType {
 
     /**
      * Sets the value of the latGraden property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setLatGraden(String value) {
         this.latGraden = value;
@@ -679,11 +594,9 @@ public class WeerstationType {
 
     /**
      * Gets the value of the lonGraden property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getLonGraden() {
         return lonGraden;
@@ -691,11 +604,9 @@ public class WeerstationType {
 
     /**
      * Sets the value of the lonGraden property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setLonGraden(String value) {
         this.lonGraden = value;
@@ -703,11 +614,9 @@ public class WeerstationType {
 
     /**
      * Gets the value of the id property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getId() {
         return id;
@@ -715,11 +624,9 @@ public class WeerstationType {
 
     /**
      * Sets the value of the id property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setId(String value) {
         this.id = value;

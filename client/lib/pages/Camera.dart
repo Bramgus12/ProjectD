@@ -1,16 +1,18 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:plantexpert/api/Plant.dart';
+import 'package:quiver/collection.dart';
 import '../MenuNavigation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tflite/tflite.dart';
 import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;
 import 'package:localstorage/localstorage.dart';
-import 'dart:developer' as developer;
 
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Camera extends StatefulWidget {
   @override
@@ -24,6 +26,8 @@ class _CameraState extends State<Camera> {
   int activeCameraItem = 0;
   bool storageReady = false;
   final LocalStorage storage = new LocalStorage('by_living_art.json');
+  File predictionResultPlantImage;
+  final List<String> plantNames = <String>["croton", "dracaena_lemon_lime", "peace_lily", "pothos", "snake_plant"];
 
 
   openGallery(BuildContext context) async {
@@ -31,10 +35,13 @@ class _CameraState extends State<Camera> {
       _recognitions = null;
     });
     var img = await ImagePicker.pickImage(source: ImageSource.gallery);
-    predictImage(img);
-    this.setState(() {
-      imageFile = img;
-    });
+    if(img != null){
+      predictImage(img);
+      this.setState((){
+        imageFile = img;
+      });
+    }
+
     Navigator.of(context).pop();
   }
 
@@ -43,10 +50,14 @@ class _CameraState extends State<Camera> {
       _recognitions = null;
     });
     var img = await ImagePicker.pickImage(source: ImageSource.camera);
-    predictImage(img);
-    this.setState(() {
-      imageFile = img;
-    });
+    if(img != null){
+      predictImage(img);
+      this.setState((){
+        imageFile = img;
+
+      });
+    }
+
     Navigator.of(context).pop();
   }
 
@@ -81,37 +92,82 @@ class _CameraState extends State<Camera> {
         });
   }
 
-  Widget selectedImageView() {
-    if (imageFile == null) {
-      return Text("No image Selected!", textAlign: TextAlign.center);
-    } else {
-      return Image.file(
-        imageFile,
-        width: 400,
-        height: 400,
-      );
+
+  Widget selectedImageView(){
+    if(imageFile == null){
+      return Text(" ");
+
+    }else{
+      return  Image.file(imageFile,width: 150, height: 150,);
     }
   }
+  Widget predictionView(){
 
-  Widget predictionView() {
-    if (_recognitions == null) {
-      return Text("", textAlign: TextAlign.center);
-    } else {
-      return Text(
-        _recognitions
-            .map((res) {
-              return "Prediction: ${res["label"]}: Confidence: ${res["confidence"].toStringAsFixed(3)}";
-            })
-            .toList()[0]
-            .toString(),
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          color: Colors.black,
-          fontSize: 20.0,
-          background: Paint()..color = Colors.white,
-        ),
-      );
+    if(_recognitions == null){
+      return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Padding(
+            padding: const EdgeInsets.only(left: 16.0),
+            child: Container(
+
+              padding: EdgeInsets.all(16.0),
+              height: 150,
+              child: Text("Select a plant image from your gallery or take a picture \nof a plant by clicking the floating button at the bottom \nleft of your screen.", textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20))
+            ),
+          ),]);
+    }else{
+      var plantNumber = _recognitions.map((res){ return res["index"];}).toList()[0];
+      String plantName;
+      double waterAmount;
+      double sunAmount;
+      if(plantNumber==0){
+        plantName = "croton";
+        waterAmount = 4;
+        sunAmount = 2;
+      }
+      else if(plantNumber==1){
+        plantName = "dracaena lemon lime";
+        waterAmount = 2;
+      }
+      else if(plantNumber==2){
+        plantName = "peace lily";
+        waterAmount = 3;
+        sunAmount = 3;
+      }
+      else if(plantNumber==3){
+        plantName = "pothos";
+        waterAmount = 3;
+        sunAmount = 2;
+      }
+      else if(plantNumber==4){
+        plantName = "snake plant";
+        waterAmount = 1;
+        sunAmount = 5;
+      }
+      else if(plantNumber==5){
+        plantName = "Name:";
+        waterAmount = 0;
+        sunAmount = 0;
+      }
+      return
+        GestureDetector(
+          onTap: () => {Navigator.pushNamed(context, '/plant-detail',
+          arguments: new Plant(
+              id: 0,
+              name: plantName,
+              imageName: 'assets/images/'+_recognitions.map((res){ return res["index"];}).toList()[0].toString()+'.jpg',
+              description: "Omschrijving van de plant.",
+              waterText: "Informatie over hoeveel water de plant nodig heeft.",
+              sunText: "Informatie over hoeveel zonlicht de plant nodig heeft.",
+              waterScale: waterAmount,
+              sunScale: sunAmount))},
+          child: Container(
+            child: predictionCard(_recognitions.map((res){ return res["index"];}).toList()[0]))
+          );
     }
+
   }
 
   Future loadModel() async {
@@ -391,6 +447,112 @@ class _CameraState extends State<Camera> {
         ));
   }
 
+  Widget getIcon( String title, int numberOfStars, String icon) {
+    var res = <Widget>[Container(child: Text(title))];
+    StringBuffer sb = new StringBuffer();
+    for (int i = 0; i < numberOfStars; i++) {
+      res.add(Container(child: Text(icon)));
+    }
+
+    return Container(child: Row(children: res,));
+  }
+
+
+
+  Widget getData(int plantNumber) {
+    String plantName;
+    int waterAmount;
+    int sunAmount;
+    if(plantNumber==0){
+      plantName = "croton";
+      waterAmount = 4;
+      sunAmount = 2;
+    }
+    else if(plantNumber==1){
+      plantName = "dracaena lemon lime";
+      waterAmount = 2;
+      sunAmount = 4;
+    }
+    else if(plantNumber==2){
+      plantName = "peace lily";
+      waterAmount = 3;
+      sunAmount = 3;
+    }
+    else if(plantNumber==3){
+      plantName = "pothos";
+      waterAmount = 3;
+      sunAmount = 2;
+    }
+    else if(plantNumber==4){
+      plantName = "snake plant";
+      waterAmount = 1;
+      sunAmount = 5;
+    }
+    else if(plantNumber==5){
+      plantName = "Name:";
+      waterAmount = 0;
+      sunAmount = 0;
+    }
+    return plantCardDetails(plantName,  waterAmount,  sunAmount);
+  }
+
+
+  Widget plantCardDetails(String plantName, int waterAmount, int sunAmount) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.fromLTRB( 8.0,0,0,9.0),
+          child: Container(child: Text(plantName,
+            style: TextStyle(color: Color(0xffe6020a), fontSize: 24.0,fontWeight: FontWeight.bold),)),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: Text("Confidence : "+_recognitions.map((res){ return res["confidence"];}).toList()[0].toString()),
+        ),
+
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: getIcon("Hoeveelheid water: ",waterAmount,'💧'),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: getIcon("Hoeveelheid zonlicht: ",sunAmount,'☀'),
+        ),
+      ],
+    );
+  }
+
+  Widget predictionCard(int plantNumber){
+     var res = Row(
+
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.only(left: 16.0),
+          child: Container(
+            child: getData(plantNumber),
+          ),
+        ),
+
+        Container(
+          width: 250,
+          height: 180,
+          child: ClipRRect(
+            borderRadius: new BorderRadius.circular(24.0),
+            child: Image(
+              fit: BoxFit.contain,
+              alignment: Alignment.topRight,
+              image: AssetImage('assets/images/'+plantNumber.toString()+'.jpg'),
+          ),),)
+
+
+      ],
+    );
+     return res;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -427,7 +589,31 @@ class _CameraState extends State<Camera> {
     }
 
     if(imageFile != null) {
-      stackChildren.addAll([selectedImageView(), predictionView()]);
+      stackChildren.addAll([
+        Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: selectedImageView()
+        ),
+        Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Text("Predictions", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),)
+        ),
+
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Container(
+            child: FittedBox(
+              child: Material(
+                color: Colors.white,
+                elevation: 5.0,
+                borderRadius: BorderRadius.circular(24.0),
+                shadowColor: Colors.grey,
+                child: predictionView(),
+              ),
+            ),
+          ),
+        ),
+      ]);
     }
 
     return Scaffold(
@@ -440,12 +626,11 @@ class _CameraState extends State<Camera> {
       ),
       body: Container(
         child: Column(
-          mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: stackChildren,
         ),
       ),
+
 
 //
       floatingActionButton: FloatingActionButton(

@@ -16,9 +16,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for verwachting_meerdaagsType complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="verwachting_meerdaagsType">
  *   &lt;complexContent>
@@ -38,20 +38,18 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "verwachting_meerdaagsType", propOrder = {
-    "url",
-    "urlbackup",
-    "tekstMiddellang",
-    "tekstLang",
-    "dagPlus1",
-    "dagPlus2",
-    "dagPlus3",
-    "dagPlus4",
-    "dagPlus5"
+        "url",
+        "urlbackup",
+        "tekstMiddellang",
+        "tekstLang",
+        "dagPlus1",
+        "dagPlus2",
+        "dagPlus3",
+        "dagPlus4",
+        "dagPlus5"
 })
 public class VerwachtingMeerdaagsType {
 
@@ -76,11 +74,9 @@ public class VerwachtingMeerdaagsType {
 
     /**
      * Gets the value of the url property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getUrl() {
         return url;
@@ -88,11 +84,9 @@ public class VerwachtingMeerdaagsType {
 
     /**
      * Sets the value of the url property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setUrl(String value) {
         this.url = value;
@@ -100,11 +94,9 @@ public class VerwachtingMeerdaagsType {
 
     /**
      * Gets the value of the urlbackup property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getUrlbackup() {
         return urlbackup;
@@ -112,11 +104,9 @@ public class VerwachtingMeerdaagsType {
 
     /**
      * Sets the value of the urlbackup property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setUrlbackup(String value) {
         this.urlbackup = value;
@@ -124,11 +114,9 @@ public class VerwachtingMeerdaagsType {
 
     /**
      * Gets the value of the tekstMiddellang property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link TekstMiddellangType }
-     *     
+     *
+     * @return possible object is
+     * {@link TekstMiddellangType }
      */
     public TekstMiddellangType getTekstMiddellang() {
         return tekstMiddellang;
@@ -136,11 +124,9 @@ public class VerwachtingMeerdaagsType {
 
     /**
      * Sets the value of the tekstMiddellang property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link TekstMiddellangType }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link TekstMiddellangType }
      */
     public void setTekstMiddellang(TekstMiddellangType value) {
         this.tekstMiddellang = value;
@@ -148,11 +134,9 @@ public class VerwachtingMeerdaagsType {
 
     /**
      * Gets the value of the tekstLang property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link TekstLangType }
-     *     
+     *
+     * @return possible object is
+     * {@link TekstLangType }
      */
     public TekstLangType getTekstLang() {
         return tekstLang;
@@ -160,11 +144,9 @@ public class VerwachtingMeerdaagsType {
 
     /**
      * Sets the value of the tekstLang property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link TekstLangType }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link TekstLangType }
      */
     public void setTekstLang(TekstLangType value) {
         this.tekstLang = value;
@@ -172,11 +154,9 @@ public class VerwachtingMeerdaagsType {
 
     /**
      * Gets the value of the dagPlus1 property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link DagPlus1Type }
-     *     
+     *
+     * @return possible object is
+     * {@link DagPlus1Type }
      */
     public DagPlus1Type getDagPlus1() {
         return dagPlus1;
@@ -184,11 +164,9 @@ public class VerwachtingMeerdaagsType {
 
     /**
      * Sets the value of the dagPlus1 property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link DagPlus1Type }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link DagPlus1Type }
      */
     public void setDagPlus1(DagPlus1Type value) {
         this.dagPlus1 = value;
@@ -196,11 +174,9 @@ public class VerwachtingMeerdaagsType {
 
     /**
      * Gets the value of the dagPlus2 property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link DagPlus2Type }
-     *     
+     *
+     * @return possible object is
+     * {@link DagPlus2Type }
      */
     public DagPlus2Type getDagPlus2() {
         return dagPlus2;
@@ -208,11 +184,9 @@ public class VerwachtingMeerdaagsType {
 
     /**
      * Sets the value of the dagPlus2 property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link DagPlus2Type }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link DagPlus2Type }
      */
     public void setDagPlus2(DagPlus2Type value) {
         this.dagPlus2 = value;
@@ -220,11 +194,9 @@ public class VerwachtingMeerdaagsType {
 
     /**
      * Gets the value of the dagPlus3 property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link DagPlus3Type }
-     *     
+     *
+     * @return possible object is
+     * {@link DagPlus3Type }
      */
     public DagPlus3Type getDagPlus3() {
         return dagPlus3;
@@ -232,11 +204,9 @@ public class VerwachtingMeerdaagsType {
 
     /**
      * Sets the value of the dagPlus3 property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link DagPlus3Type }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link DagPlus3Type }
      */
     public void setDagPlus3(DagPlus3Type value) {
         this.dagPlus3 = value;
@@ -244,11 +214,9 @@ public class VerwachtingMeerdaagsType {
 
     /**
      * Gets the value of the dagPlus4 property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link DagPlus4Type }
-     *     
+     *
+     * @return possible object is
+     * {@link DagPlus4Type }
      */
     public DagPlus4Type getDagPlus4() {
         return dagPlus4;
@@ -256,11 +224,9 @@ public class VerwachtingMeerdaagsType {
 
     /**
      * Sets the value of the dagPlus4 property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link DagPlus4Type }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link DagPlus4Type }
      */
     public void setDagPlus4(DagPlus4Type value) {
         this.dagPlus4 = value;
@@ -268,11 +234,9 @@ public class VerwachtingMeerdaagsType {
 
     /**
      * Gets the value of the dagPlus5 property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link DagPlus5Type }
-     *     
+     *
+     * @return possible object is
+     * {@link DagPlus5Type }
      */
     public DagPlus5Type getDagPlus5() {
         return dagPlus5;
@@ -280,11 +244,9 @@ public class VerwachtingMeerdaagsType {
 
     /**
      * Sets the value of the dagPlus5 property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link DagPlus5Type }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link DagPlus5Type }
      */
     public void setDagPlus5(DagPlus5Type value) {
         this.dagPlus5 = value;

@@ -1,9 +1,14 @@
 package com.bylivingart.plants;
 
+import com.bylivingart.plants.Exceptions.BadRequestException;
+import com.bylivingart.plants.Exceptions.NotFoundException;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 public class GetPropertyValues {
@@ -13,7 +18,7 @@ public class GetPropertyValues {
      * Get values from properties file
      * Resource: https://crunchify.com/java-properties-file-how-to-read-config-properties-values-in-java/
      */
-    public static String[] getDatabasePropValues(String propFileName) {
+    public static String[] getDatabasePropValues(String propFileName) throws Exception {
         String[] result = {"", "", "", "", ""};
         try {
             Properties prop = new Properties();
@@ -21,7 +26,7 @@ public class GetPropertyValues {
             if (inputStream != null) {
                 prop.load(inputStream);
             } else {
-                throw new FileNotFoundException("Property file " + propFileName + " found.");
+                throw new NotFoundException("Property file " + propFileName + " found.");
             }
             String db_url = prop.getProperty("db_url");
             String db_username = prop.getProperty("db_username");
@@ -34,33 +39,37 @@ public class GetPropertyValues {
             result[3] = db_url_short;
             result[4] = db_name;
         } catch (Exception e) {
-            System.out.println("Exception: " + e);
+            throw new BadRequestException(e.getMessage());
         } finally {
             try {
                 if (inputStream != null) {
                     inputStream.close();
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new BadRequestException(e.getMessage());
             }
         }
         return result;
     }
 
-    public static File getResourcePath(String FolderName, String fileName) throws IOException {
+    public static File getResourcePath(String folderName, String fileName, boolean forUsers) throws Exception {
+        return getResourcePath(folderName, fileName, null, forUsers);
+    }
+
+    public static File getResourcePath(String FolderName, String fileName, String userPlantId, boolean forUsers) throws Exception {
         Properties properties = new Properties();
         inputStream = GetPropertyValues.class.getClassLoader().getResourceAsStream("file_path.properties");
         if (inputStream != null) {
             properties.load(inputStream);
         } else {
-            throw new IOException("Property file file_path.properties not found");
+            throw new NotFoundException("Property file file_path.properties not found");
         }
-        if (!fileName.isEmpty()) {
-            String file_path = properties.getProperty("file_path") + FolderName + "/" + fileName;
-            return new File(file_path);
+        Path path;
+        if (forUsers && userPlantId != null) {
+            path = Paths.get(properties.getProperty("file_path"), "photos", FolderName, userPlantId, fileName);
         } else {
-            String file_path = properties.getProperty("file_path") + FolderName;
-            return new File(file_path);
+            path = Paths.get(properties.getProperty("file_path"), "plants", FolderName, fileName);
         }
+        return path.toFile();
     }
 }
