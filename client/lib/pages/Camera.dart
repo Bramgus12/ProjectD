@@ -581,7 +581,18 @@ class _CameraState extends State<Camera> {
       stackChildren.add(Dismissible(
         key: UniqueKey(),
         child: cameraUsage(),
-        onDismissed: (DismissDirection dir) {
+        onDismissed: (dir) {
+          if(DismissDirection.startToEnd == dir && activeCameraItem > 0 ){
+            setState(() {
+              activeCameraItem -= activeCameraItem == 0 ? 0 : 1;
+            });
+          }
+          if(DismissDirection.endToStart == dir && activeCameraItem < 4 ){
+            setState(() {
+              activeCameraItem += activeCameraItem == 5 ? 0 : 1;
+            });
+          }
+
           var storage = new LocalStorage('by_living_art');
           storage.setItem("first_time_usage", true);
         },
