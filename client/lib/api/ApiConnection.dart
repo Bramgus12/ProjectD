@@ -131,7 +131,7 @@ class ApiConnection {
   
   // Weather stations
   Future<List<WeatherStation>> fetchWeatherStations(String region) async {
-    Iterable jsonWeatherStations = await _fetchJsonList('${baseUrl}weather/$region');
+    Iterable jsonWeatherStations = await _fetchJsonList('${baseUrl}weather/$region/');
     return jsonWeatherStations.map<WeatherStation>((jsonWeatherStation) => WeatherStation.fromJson(jsonWeatherStation)).toList();
   }
 
@@ -142,13 +142,13 @@ class ApiConnection {
   }
 
   Future<Plant> fetchPlant(int id) async {
-    Map<String, dynamic> jsonPlant = await _fetchJsonObject('${baseUrl}plants/$id');
+    Map<String, dynamic> jsonPlant = await _fetchJsonObject('${baseUrl}plants/$id/');
     return Plant.fromJson(jsonPlant);
   }
 
   // User plants
   Future<List<UserPlant>> fetchUserPlants() async {
-    Iterable jsonUserPlants = await _fetchJsonList('${baseUrl}user/userplants');
+    Iterable jsonUserPlants = await _fetchJsonList('${baseUrl}user/userplants/');
     return jsonUserPlants.map<UserPlant>((jsonUserPlant) => UserPlant.fromJson(jsonUserPlant)).toList();
   }
 
@@ -159,7 +159,7 @@ class ApiConnection {
   // }
 
   Future<http.Response> postUserPlant(UserPlant userPlant) async {
-    return await _postJson("${baseUrl}user/userplants", userPlant);
+    return await _postJson("${baseUrl}user/userplants/", userPlant);
   }
 
   // Login
