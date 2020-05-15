@@ -311,8 +311,7 @@ class _CameraState extends State<Camera>
                                           maxLines: 6,
                                         )
                                       : Text(
-                                          "Veeg deze pop-up naar links of naar "
-                                              "rechts of druk op de volgende "
+                                          "Druk op de volgende "
                                               "cirkel om de uitleg af te "
                                               "sluitern. ",
                                           overflow: TextOverflow.ellipsis,
