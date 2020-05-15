@@ -74,20 +74,20 @@ class _AddPlant extends State<AddPlant> {
                         Row(
                           children: <Widget>[
                             Expanded(
-                              flex: 5,
+                              flex: 6,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Image.file(
                                     File(newPlant.imageName ?? ''),
-                                    width: 250,
-                                    height: 250,
+                                    width: 150,
+                                    height: 150,
                                   ),
                                 ],
                               ),
                             ),
                             Expanded(
-                              flex: 5,
+                              flex: 4,
                               child: Row(
                                 children: <Widget>[
                                   IconButton(
