@@ -369,21 +369,6 @@ class _CameraState extends State<Camera>
               scrollDirection: Axis.vertical,
               children: builder
               ),
-
-        floatingActionButton:
-          imageFile == null ?
-          ClipOval(
-            child: Material(
-              color: Colors.blue, // button color
-              child: InkWell(
-                splashColor: Colors.green, // inkwell color
-                child: SizedBox(width: 56, height: 56, child: Icon(Icons.image,
-                  color: Colors.white,)),
-                onTap: (){imageSourceChoiceDialog(context);},
-              ),
-            ),
-          )
-        : null,
         ),
     );
   }
@@ -424,13 +409,16 @@ class _CameraState extends State<Camera>
 
   /// Display the control bar with buttons to take pictures and record videos.
   Widget _captureControlRowWidget() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      mainAxisSize: MainAxisSize.max,
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.all(16.0),
-          child: ClipOval(
+    return Padding(
+      padding: EdgeInsets.all(16.0),
+      child:  Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+
+          Row(),
+          Row(),
+          Row(),
+           ClipOval(
             child: Material(
               color: Colors.blue, // button color
               child: InkWell(
@@ -444,8 +432,20 @@ class _CameraState extends State<Camera>
               ),
             ),
           ),
-        ),
-      ],
+          Row(),
+          ClipOval(
+            child: Material(
+              color: Colors.blue, // button color
+              child: InkWell(
+                splashColor: Colors.green, // inkwell color
+                child: SizedBox(width: 56, height: 56, child: Icon(Icons.image,
+                  color: Colors.white,)),
+                onTap: (){imageSourceChoiceDialog(context);},
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 
