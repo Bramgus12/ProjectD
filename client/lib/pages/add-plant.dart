@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:plantexpert/api/User.dart';
 import 'package:plantexpert/api/UserPlant.dart';
 
@@ -16,10 +19,32 @@ class _AddPlant extends State<AddPlant> {
   int minTemp;
   int maxTemp;
 
+  // dd-MM-yyyy HH:mm
+  String formatDate(DateTime date) {
+    if (date == null) {
+      throw new ArgumentError('date is null');
+    }
+    
+    return '${newPlant.lastWaterDate.month.toString().padLeft(2, '0')}-${newPlant.lastWaterDate.day.toString().padLeft(2, '0')}-${newPlant.lastWaterDate.year} ${newPlant.lastWaterDate.hour.toString().padLeft(2, '0')}:${newPlant.lastWaterDate.minute.toString().padLeft(2, '0')}';
+  }
+
+  void selectFromSource(BuildContext context, ImageSource source) async {
+    setState(() {
+      newPlant.imageName = null;
+    });
+
+    var pickedImage = await ImagePicker.pickImage(source: source);
+
+    setState(() {
+      newPlant.imageName = pickedImage.path;
+    });
+  }
+
   void submit() {
     if (this._formKey.currentState.validate()) {
       _formKey.currentState.save();
-      User.plants.add(newPlant);
+      // User.plants.add(newPlant);
+      print(newPlant);
     }
   }
 
@@ -40,19 +65,47 @@ class _AddPlant extends State<AddPlant> {
                 TextStyle(fontFamily: 'Libre Baskerville', color: Colors.white),
             child: Padding(
               padding: EdgeInsets.all(15.0),
-              child: ListView(
-                children: <Widget>[
-                  Form(
+              child: Form(
                     key: _formKey,
                     child: ListView(
                       children: <Widget>[
                         Text('Afbeelding'),
-                        IconButton(
-                          icon: Icon(Icons.image),
-                          onPressed: () => {},
-                          color: Colors.blue,
+                        SizedBox(height: 10),
+                        
+                        Row(
+                          children: <Widget>[
+                            Expanded(
+                              flex: 5,
+                              child: Column(
+                                children: <Widget>[
+                                  Image.file(
+                                    File(newPlant.imageName ?? ''),
+                                    width: 100,
+                                    height: 100,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              flex: 5,
+                              child: Row(
+                                children: <Widget>[
+                                  IconButton(
+                                    icon: Icon(Icons.image),
+                                    onPressed: () => selectFromSource(context, ImageSource.gallery),
+                                    color: Colors.blue,
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.camera),
+                                    onPressed: () => selectFromSource(context, ImageSource.camera),
+                                    color: Colors.blue,
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
                         ),
-                        SizedBox(height: 5),
+                        SizedBox(height: 20),
                         AddPlantTextField(
                           label: 'Naam',
                           validator: (String value) {
@@ -70,9 +123,9 @@ class _AddPlant extends State<AddPlant> {
                             label: 'Inhoud bak',
                             keyboardType: TextInputType.number,
                             validator: (String value) {
-                              double a = double.tryParse(value);
+                              double temp = double.tryParse(value);
 
-                              if (a == null) {
+                              if (temp == null) {
                                 return 'Moet een getal zijn.';
                               }
 
@@ -82,22 +135,26 @@ class _AddPlant extends State<AddPlant> {
                               newPlant.potVolume = double.parse(value);
                             },
                         ),
-                        Row(
-                          children: <Widget>[
                             Text('Datum laatste keer water'),
+                            SizedBox(height: 10),
+                            Text(
+                              newPlant.lastWaterDate != null 
+                                ? formatDate(newPlant.lastWaterDate) 
+                                : ''
+                            ),
                             IconButton(
                               icon: Icon(Icons.date_range, color: Colors.blue,),
                               onPressed: () => DatePicker.showDateTimePicker(
                                 context,
                                 minTime: DateTime(DateTime.now().year, 1, 1),
                                 maxTime: DateTime.now(),
+                                currentTime: newPlant.lastWaterDate ?? DateTime.now(),
                                 onConfirm: (DateTime date) {
                                   newPlant.lastWaterDate = date;
-                                }
+                                  setState(() {});
+                                },
                               ),
                             ),
-                          ],
-                        ),
                         AddPlantTextField(
                             label: 'Hoeveelheid zonlicht',
                             keyboardType: TextInputType.number,
@@ -171,10 +228,9 @@ class _AddPlant extends State<AddPlant> {
                         )
                       ],
                     ),
-                  ),
-                ],
               )
-            )),
+            )
+            ),
       ),
     );
   }
