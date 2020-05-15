@@ -79,11 +79,14 @@ class _HomePageState extends State<HomePage> {
       apiConnection.fetchPlants();
     } on StatusCodeException catch(e) {
       // handle exception
+      print(e);
     }
     on InvalidCredentialsException catch(e) {
       // handle exception
+      print(e);
     } catch(e) {
       // handle exception
+      print(e);
     } 
   }
 }
