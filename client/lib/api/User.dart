@@ -6,5 +6,5 @@ class User {
   String password;
   String authority;
   String enabled;
-  static List<UserPlant> plants;
+  static List<UserPlant> plants = <UserPlant>[];
 }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:plantexpert/api/Plant.dart';
 
@@ -31,8 +33,8 @@ class PlantDetail extends StatelessWidget {
           color: Colors.black,
           child: ListView(
             children: <Widget>[
-              Image.asset(
-                plantInfo.imageName,
+              Image.file(
+                File(plantInfo.imageName),
                 width: 300,
                 height: 300,
               ),

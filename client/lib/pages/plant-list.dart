@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:plantexpert/api/Plant.dart';
 import 'package:plantexpert/api/User.dart';
@@ -19,22 +21,23 @@ class PlantList extends StatelessWidget {
         child: ListView.builder(
           itemBuilder: (_, index) {
             return PlantListItem(
-              plant: Plant(
-                id: 0,
-                name: "Test Plant",
-                waterScale: 2.0,
-                waterNumber: 2.0,
-                waterText: "Plant needs water.",
-                sunScale: 2.0,
-                sunNumber: 2.0,
-                sunText: "Plant needs sun.",
-                description: "This is a plant.",
-                optimalTemp: 2,
-                imageName: "assets/images/croton.jpg"
-              )
+              // plant: Plant(
+              //   id: 0,
+              //   name: "Test Plant",
+              //   waterScale: 2.0,
+              //   waterNumber: 2.0,
+              //   waterText: "Plant needs water.",
+              //   sunScale: 2.0,
+              //   sunNumber: 2.0,
+              //   sunText: "Plant needs sun.",
+              //   description: "This is a plant.",
+              //   optimalTemp: 2,
+              //   imageName: "assets/images/croton.jpg"
+              // )
+              plant: User.plants[index].toPlant()
             );
           },
-          itemCount: 1,
+          itemCount: User.plants.length,
         )
       ),
       floatingActionButton: FloatingActionButton(
@@ -77,8 +80,8 @@ class PlantListItem extends StatelessWidget {
             children: <Widget>[
               Expanded(
                 flex: 4,
-                child: Image.asset(
-                  plant.imageName,
+                child: Image.file(
+                  File(plant.imageName),
                   width: _imageWidth,
                   height: _imageHeight,
                 ),
