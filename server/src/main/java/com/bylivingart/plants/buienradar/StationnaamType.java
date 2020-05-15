@@ -8,18 +8,14 @@
 
 package com.bylivingart.plants.buienradar;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
+import javax.xml.bind.annotation.*;
 
 
 /**
  * <p>Java class for stationnaamType complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="stationnaamType">
  *   &lt;simpleContent>
@@ -29,12 +25,10 @@ import javax.xml.bind.annotation.XmlValue;
  *   &lt;/simpleContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "stationnaamType", propOrder = {
-    "value"
+        "value"
 })
 public class StationnaamType {
 
@@ -45,9 +39,10 @@ public class StationnaamType {
     @XmlAttribute
     protected int id;
 
-    public StationnaamType(){};
+    public StationnaamType() {
+    }
 
-    public StationnaamType(String value, String regio, int id){
+    public StationnaamType(String value, String regio, int id) {
         this.value = value;
         this.regio = regio;
         this.id = id;
@@ -64,11 +59,9 @@ public class StationnaamType {
 
     /**
      * Gets the value of the value property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getValue() {
         return value;
@@ -76,11 +69,9 @@ public class StationnaamType {
 
     /**
      * Sets the value of the value property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setValue(String value) {
         this.value = value;
@@ -88,11 +79,9 @@ public class StationnaamType {
 
     /**
      * Gets the value of the regio property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getRegio() {
         return regio;
@@ -100,11 +89,9 @@ public class StationnaamType {
 
     /**
      * Sets the value of the regio property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setRegio(String value) {
         this.regio = value;

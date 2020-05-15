@@ -1,11 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
+import 'package:plantexpert/pages/Login.dart';
 
 import 'pages/Camera.dart';
 import 'pages/Home.dart';
-import 'pages/PlantList.dart';
+import 'pages/plant-list.dart';
 import 'pages/plant-detail.dart';
+import 'pages/add-plant.dart';
 
 Future<void> main() async {
   // Load configuration
@@ -27,34 +29,23 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Plant Expert',
       theme: ThemeData(
-        primarySwatch: const MaterialColor(
-          0xFFFFFFFF,
-          const <int, Color>{
-            50: const Color(0xFFFFFFFF),
-            100: const Color(0xFFFFFFFF),
-            200: const Color(0xFFFFFFFF),
-            300: const Color(0xFFFFFFFF),
-            400: const Color(0xFFFFFFFF),
-            500: const Color(0xFFFFFFFF),
-            600: const Color(0xFFFFFFFF),
-            700: const Color(0xFFFFFFFF),
-            800: const Color(0xFFFFFFFF),
-            900: const Color(0xFFFFFFFF),
-          },
-        ),
+        primaryColor: Colors.white,
       ),
       initialRoute: '/',
       routes: {
         '/plant-detail': (context) => PlantDetail(plantInfo: ModalRoute.of(context).settings.arguments),
+        '/login' : (context) => Login(),
       },
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {
           case '/':
-            return SlideRightRoute(widget:HomePage(), settings:settings);
+            return SlideRightRoute(widget: HomePage(), settings:settings);
           case '/camera':
-            return SlideRightRoute(widget:Camera(), settings:settings);
+            return SlideRightRoute(widget: Camera(), settings:settings);
           case '/my-plants':
-            return SlideRightRoute(widget:PlantList(), settings:settings);
+            return SlideRightRoute(widget: PlantList(), settings:settings);
+          case '/add-plant':
+            return SlideRightRoute(widget: AddPlant(), settings:settings);
           default:
             return null;
         }

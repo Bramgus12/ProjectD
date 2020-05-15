@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:plantexpert/api/Plant.dart';
 
 import '../MenuNavigation.dart';
-import 'PlantList.dart';
+import '../pages/plant-list.dart';
 
 class PlantDetail extends StatelessWidget {
-  final PlantInfo plantInfo;
+  final Plant plantInfo;
 
-  PlantDetail({this.plantInfo}) : assert(plantInfo != null);
+  PlantDetail({this.plantInfo}) 
+    : assert(plantInfo != null);
 
   @override
   Widget build(BuildContext context) {
@@ -24,13 +26,16 @@ class PlantDetail extends StatelessWidget {
           color: Colors.white
         ),
         child: Container(
-          padding: EdgeInsets.all(20.0),
+          padding: EdgeInsets.all(10.0),
           width: MediaQuery.of(context).size.width,
           color: Colors.black,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListView(
             children: <Widget>[
-              Image.asset(plantInfo.imageName),
+              Image.asset(
+                plantInfo.imageName,
+                width: 300,
+                height: 300,
+              ),
               SizedBox(height: 20),
 
               Text('Naam', style: TextStyle(color: Colors.grey)),
@@ -41,39 +46,37 @@ class PlantDetail extends StatelessWidget {
                 children: <Widget>[
                   Text('Hoeveelheid zonlight    ', style: TextStyle(color: Colors.grey)),
                   RatingRow(
-                      count: plantInfo.sunLightAmount,
+                      count: plantInfo.sunScale.toInt(),
                       filledIcon: Icons.star,
                       unfilledIcon: Icons.star_border
                   ),
                 ],
               ),
               SizedBox(height: 5),
-              Text(plantInfo.sunLightDescription),
+              Text(plantInfo.sunText),
               SizedBox(height: 20),
 
               Row(
                 children: <Widget>[
                   Text('Hoeveelheid water         ', style: TextStyle(color: Colors.grey)),
                   RatingRow(
-                      count: plantInfo.waterAmount,
+                      count: plantInfo.waterScale.toInt(),
                       filledIcon: Icons.star,
                       unfilledIcon: Icons.star_border
                   ),
                 ],
               ),
               SizedBox(height: 5),
-              Text(plantInfo.waterDescription),
+              Text(plantInfo.waterText),
               SizedBox(height: 20),
 
               Text('Omschrijving', style: TextStyle(color: Colors.grey)),
               SizedBox(height: 5),
-              Text(plantInfo.plantDescription)
+              Text(plantInfo.description)
             ],
           ),
         ),
       ),
     );
   }
-
-
 }
