@@ -71,17 +71,17 @@ class _AddPlant extends State<AddPlant> {
                       children: <Widget>[
                         Text('Afbeelding'),
                         SizedBox(height: 10),
-                        
                         Row(
                           children: <Widget>[
                             Expanded(
                               flex: 5,
                               child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Image.file(
                                     File(newPlant.imageName ?? ''),
-                                    width: 100,
-                                    height: 100,
+                                    width: 250,
+                                    height: 250,
                                   ),
                                 ],
                               ),
@@ -96,7 +96,7 @@ class _AddPlant extends State<AddPlant> {
                                     color: Colors.blue,
                                   ),
                                   IconButton(
-                                    icon: Icon(Icons.camera),
+                                    icon: Icon(Icons.camera_alt),
                                     onPressed: () => selectFromSource(context, ImageSource.camera),
                                     color: Colors.blue,
                                   ),
