@@ -137,7 +137,7 @@ class ApiConnection {
 
   // Plants
   Future<List<Plant>> fetchPlants() async {
-    Iterable jsonPlants = await _fetchJsonList('${baseUrl}plants');
+    Iterable jsonPlants = await _fetchJsonList('${baseUrl}plants/');
     return jsonPlants.map<Plant>((jsonPlant) => Plant.fromJson(jsonPlant)).toList();
   }
 
