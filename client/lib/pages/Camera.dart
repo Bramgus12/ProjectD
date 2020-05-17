@@ -673,19 +673,37 @@ class _CameraState extends State<Camera>
     );
   }
 
-                      child: Material(
 
-                        color: Colors.white,
-                        elevation: 5.0,
-                        borderRadius: BorderRadius.circular(24.0),
-                        shadowColor: Colors.grey,
+  /// Display the preview from the camera (or a message if the preview is not available).
+  Widget _cameraPreviewWidget() {
+    if (controller == null || !controller.value.isInitialized) {
+      return const Text(
+        'Tap a camera',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 24.0,
+          fontWeight: FontWeight.w900,
+        ),
+      );
+    } else {
+      return AspectRatio(
+        aspectRatio: controller.value.aspectRatio,
+        child: CameraPreview(controller),
+      );
+    }
+  }
 
-                        child: predictionView(),
+  /// Check if the user pops the scpe, e.g. when the user uses the back button, if in camera mode, allow the creation/selection of a new image
+  Future<bool> _onWillPop() async {
+    if(imageFile != null){
+      setState(() {
+        imageFile = null;
+      });
+      return false;
+    }
 
-                      ),
-                    ),
-                  ),
-                ),
+    return true;
+  }
 
 
 
