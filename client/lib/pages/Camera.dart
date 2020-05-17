@@ -29,13 +29,17 @@ class _CameraState extends State<Camera>
   File imageFile;
   List _recognitions;
   bool _busy = false;
-  int activeCameraItem = 0;
   bool storageReady = false;
   final LocalStorage storage = new LocalStorage('by_living_art.json');
   File predictionResultPlantImage;
   final List<String> plantNames = <String>["croton", "dracaena_lemon_lime", "peace_lily", "pothos", "snake_plant"];
   List<CameraDescription> cameras = [];
-  
+  int activeCameraItem = 0;
+
+  PageController _controller = PageController(
+    initialPage: 0,
+  );
+
   var plnts = [
     {"plantName":"croton", "waterAmount": 4.0, "sunAmount": 2.0},
     {"plantName":"dracaena lemon lime", "waterAmount": 2.0, "sunAmount": 0.0},
@@ -220,115 +224,15 @@ class _CameraState extends State<Camera>
     await plantModel(image);
   }
 
-  Widget cameraUsage() {
-    return AlertDialog(
-        title: Text("Camera gebruik"),
-        content: Column(
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.all(24.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Expanded(
-                      child: activeCameraItem == 0
-                          ? Image.asset(
-                              "assets/images/camera/usage-of-camera.jpg",
-                              height: 250,
-                              fit: BoxFit.scaleDown,
-                            )
-                          : activeCameraItem == 1
-                              ? Image.asset(
-                                  "assets/images/camera/probable-plants.jpg",
-                                  height: 250,
-                                  fit: BoxFit.scaleDown,
-                                )
-                              : activeCameraItem == 2
-                                  ? Image.asset(
-                                      "assets/images/camera/add-plant.jpg",
-                                      height: 250,
-                                      fit: BoxFit.scaleDown,
-                                    )
-                                  : activeCameraItem == 3
-                                      ? Image.asset(
-                                          "assets/images/camera/custom-plant.jpg",
-                                          height: 250,
-                                          fit: BoxFit.scaleDown,
-                                        )
-                                      : Image.asset(
-                                          "assets/images/camera/swipe-to-hide.jpg",
-                                          height: 250,
-                                          fit: BoxFit.scaleDown,
-                                        )),
-                ],
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(24.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Expanded(
-                      child: activeCameraItem == 0
-                          ? Text(
-                              "De eerste stap is het maken van een foto die "
-                                  "gebruikt kan worden voor het toevoegen van "
-                                  "een plant aan de gebruikers plantenlijst. "
-                                  "Dit kan gedaan worden vanuit de gallerij of "
-                                  "door direct een foto te maken.",
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 6,
-                            )
-                          : activeCameraItem == 1
-                              ? Text(
-                                  "De tweede stap is de plant die de gebruiker "
-                                      "heeft uit de lijst van planten "
-                                      "selecteren, deze lijst heeft de meest "
-                                      "overeenkomende planten van de plant van "
-                                      "de gebruiker. ",
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 6,
-                                )
-                              : activeCameraItem == 2
-                                  ? Text(
-                                      "De derde stap is kijken naar meer "
-                                          "informatie over de plant die in de "
-                                          "eerste stap geselecteerd is, bij "
-                                          "dit scherm kan de plant ook "
-                                          "geselecteerd worden om toe te voegen"
-                                          " aan de gebruikers plantenlijst. ",
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 6,
-                                    )
-                                  : activeCameraItem == 3
-                                      ? Text(
-                                          "De vierde stap is het toevoegen van "
-                                              "planten aan de plantenlijst, dit"
-                                              " wordt gedaan door een aantal "
-                                              "gegevens die van belang voor de "
-                                              "plant zijn in te vullen. ",
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 6,
-                                        )
-                                      : Text(
-                                          "Druk op de volgende "
-                                              "cirkel om de uitleg af te "
-                                              "sluitern. ",
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 6,
-                                        )),
-                ],
-              ),
-            ),
-
-            //Dotted lines
+  Widget _dottedLines() {
+    return
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 InkWell(
                   onTap: () => {
                     setState(() {
-                      activeCameraItem = 0;
+                      _controller.jumpToPage(0);
                     })
                   },
                   child: new Container(
@@ -336,7 +240,7 @@ class _CameraState extends State<Camera>
                     padding: const EdgeInsets.all(8.0),
                     decoration: new BoxDecoration(
                       shape: BoxShape.circle,
-                      color: activeCameraItem == 0
+                      color: _controller.page == 0
                           ? Colors.grey[850]
                           : Colors.grey[600],
                     ),
@@ -345,7 +249,7 @@ class _CameraState extends State<Camera>
                 InkWell(
                   onTap: () => {
                     setState(() {
-                      activeCameraItem = 1;
+                      _controller.jumpToPage(1);
                     })
                   },
                   child: new Container(
@@ -362,7 +266,7 @@ class _CameraState extends State<Camera>
                 InkWell(
                   onTap: () => {
                     setState(() {
-                      activeCameraItem = 2;
+                      _controller.jumpToPage(2);
                     })
                   },
                   child: new Container(
@@ -379,7 +283,7 @@ class _CameraState extends State<Camera>
                 InkWell(
                   onTap: () => {
                     setState(() {
-                      activeCameraItem = 3;
+                      _controller.jumpToPage(3);
                     })
                   },
                   child: new Container(
@@ -396,7 +300,7 @@ class _CameraState extends State<Camera>
                 InkWell(
                   onTap: () => {
                     setState(() {
-                      activeCameraItem = 4;
+                      _controller.jumpToPage(4);
                     })
                   },
                   child: new Container(
@@ -413,10 +317,10 @@ class _CameraState extends State<Camera>
                 InkWell(
                   onTap: (() {
                     setState(() {
-                      activeCameraItem = 5;
+                      _controller.jumpToPage(5);
+                      storage.setItem("first_time_usage", true);
                     });
 
-                    storage.setItem("first_time_usage", true);
                   }),
                   child: new Container(
                     margin: const EdgeInsets.all(2.0),
@@ -428,9 +332,177 @@ class _CameraState extends State<Camera>
                   ),
                 ),
               ],
-            )
+            );
+  }
+
+  List<Widget> cameraUsage() {
+    return [
+      AlertDialog(
+        title: Text("Camera gebruik"),
+        content: Column(
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.all(24.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Expanded(
+                      child: Image.asset(
+                        "assets/images/camera/usage-of-camera.jpg",
+                        height: 250,
+                        fit: BoxFit.scaleDown,
+                      )),
+                ],
+              ),
+            ),
+            Expanded (
+              child: Text(
+                "De eerste stap is het maken van een foto die "
+                  "gebruikt kan worden voor het toevoegen van "
+                  "een plant aan de gebruikers plantenlijst. "
+                  "Dit kan gedaan worden vanuit de gallerij of "
+                  "door direct een foto te maken.",
+                overflow: TextOverflow.ellipsis,
+                maxLines: 6,
+              ),
+            ),
+            _dottedLines()
           ],
-        ));
+        ),
+      ),
+      AlertDialog(
+        title: Text("Camera gebruik"),
+        content: Column(
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.all(24.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Expanded(
+                      child: Image.asset(
+                        "assets/images/camera/probable-plants.jpg",
+                        height: 250,
+                        fit: BoxFit.scaleDown,
+                      )),
+                ],
+              ),
+            ),
+            Expanded (
+              child: Text(
+                "De tweede stap is de plant die de gebruiker "
+                  "heeft uit de lijst van planten "
+                  "selecteren, deze lijst heeft de meest "
+                  "overeenkomende planten van de plant van "
+                  "de gebruiker. ",
+                overflow: TextOverflow.ellipsis,
+                maxLines: 6,
+              ),
+            ),
+            _dottedLines()
+          ],
+        ),
+      ),
+      AlertDialog(
+        title: Text("Camera gebruik"),
+        content: Column(
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.all(24.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Expanded(
+                      child: Image.asset(
+                        "assets/images/camera/add-plant.jpg",
+                        height: 250,
+                        fit: BoxFit.scaleDown,
+                      )),
+                ],
+              ),
+            ),
+            Expanded (
+              child: Text(
+                "De derde stap is kijken naar meer "
+                  "informatie over de plant die in de "
+                  "eerste stap geselecteerd is, bij "
+                  "dit scherm kan de plant ook "
+                  "geselecteerd worden om toe te voegen"
+                  " aan de gebruikers plantenlijst. "
+                    "de gebruiker. ",
+                overflow: TextOverflow.ellipsis,
+                maxLines: 6,
+              ),
+            ),
+            _dottedLines()
+          ],
+        ),
+      ),
+      AlertDialog(
+        title: Text("Camera gebruik"),
+        content: Column(
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.all(24.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Expanded(
+                      child: Image.asset(
+                        "assets/images/camera/custom-plant.jpg",
+                        height: 250,
+                        fit: BoxFit.scaleDown,
+                      )),
+                ],
+              ),
+            ),
+            Expanded (
+              child: Text(
+                "De vierde stap is het toevoegen van "
+                  "planten aan de plantenlijst, dit"
+                  " wordt gedaan door een aantal "
+                  "gegevens die van belang voor de "
+                  "plant zijn in te vullen. ",
+                overflow: TextOverflow.ellipsis,
+                maxLines: 6,
+              ),
+            ),
+            _dottedLines()
+          ],
+        ),
+      ),
+      AlertDialog(
+        title: Text("Camera gebruik"),
+        content: Column(
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.all(24.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Expanded(
+                      child: Image.asset(
+                        "assets/images/camera/swipe-to-hide.jpg",
+                        height: 250,
+                        fit: BoxFit.scaleDown,
+                      )),
+                ],
+              ),
+            ),
+            Expanded (
+              child: Text(
+                "Swipe naar links of druk op de laatste "
+                  "cirkel om de uitleg af te sluitern. ",
+                overflow: TextOverflow.ellipsis,
+                maxLines: 6,
+              ),
+            ),
+            _dottedLines()
+          ],
+        ),
+      ),
+      Row()
+    ];
   }
 
   Widget getIcon( String title, int numberOfStars, String icon) {
@@ -512,76 +584,67 @@ class _CameraState extends State<Camera>
 
     if(storageReady && storage.getItem("first_time_usage") == null ){
       print(storage.getItem("first_time_usage") );
-      builder.add(Dismissible(
-        key: UniqueKey(),
-        child: cameraUsage(),
-        onDismissed: (dir) {
-          if(DismissDirection.startToEnd == dir && activeCameraItem > 0 ){
-            setState(() {
-              activeCameraItem -= activeCameraItem == 0 ? 0 : 1;
-            });
-          }
-          if(DismissDirection.endToStart == dir && activeCameraItem < 4 ){
-            setState(() {
-              activeCameraItem += activeCameraItem == 5 ? 0 : 1;
-            });
-          }
-
-          setState(() {
-            storage.setItem("first_time_usage", true);
-          });
-        },
-      ));
+      builder.addAll(cameraUsage());
     }
 
     if(storageReady && imageFile == null && storage.getItem("first_time_usage") == true){
-      builder.addAll(
-        [
-          Row(
-            children: [
-              Expanded(
+      builder.add(
+        Container(
+          child: Column(
+            children: <Widget>[
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      child: Padding(
+                        padding: const EdgeInsets.all(1.0),
+                        child: Center(
+                          child: _cameraPreviewWidget(),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              _captureControlRowWidget()
+            ],
+          ),
+        )
+      );
+    } else if(storageReady && imageFile != null && storage.getItem("first_time_usage") == true) {
+      builder.add(
+        Container(
+          child: Column(
+            children: <Widget>[
+              Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: selectedImageView()
+              ),
+              Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Text("Predictions", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),)
+              ),
+
+              Padding(
+                padding: const EdgeInsets.all(12.0),
                 child: Container(
-                  child: Padding(
-                    padding: const EdgeInsets.all(1.0),
-                    child: Center(
-                      child: _cameraPreviewWidget(),
+                  child: FittedBox(
+
+                    child: Material(
+
+                      color: Colors.white,
+                      elevation: 5.0,
+                      borderRadius: BorderRadius.circular(24.0),
+                      shadowColor: Colors.grey,
+                      child: predictionView(),
                     ),
                   ),
                 ),
-              )
+              ),
             ],
           ),
-          _captureControlRowWidget()
-        ]
+        ),
       );
-    } else if(storageReady && imageFile != null && storage.getItem("first_time_usage") == true) {
-      builder.addAll([
-        Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: selectedImageView()
-        ),
-        Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Text("Predictions", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),)
-        ),
-
-        Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Container(
-            child: FittedBox(
-
-              child: Material(
-
-                color: Colors.white,
-                elevation: 5.0,
-                borderRadius: BorderRadius.circular(24.0),
-                shadowColor: Colors.grey,
-                child: predictionView(),
-              ),
-            ),
-          ),
-        ),
-      ]);
     }
 
     return new WillPopScope(
@@ -593,11 +656,19 @@ class _CameraState extends State<Camera>
             title: Text("Camera", style: TextStyle(fontFamily: 'Libre Baskerville')),
             centerTitle: true,
           ),
-          body:
-            ListView(
-              scrollDirection: Axis.vertical,
-              children: storageReady ? builder : <Widget>[],
-              ),
+          body: PageView(
+            controller: _controller,
+            onPageChanged: (int page) {
+              setState(() {
+                activeCameraItem = page;
+
+                if(page == 5)
+                  storage.setItem("first_time_usage", true);
+
+              });
+            },
+            children: storageReady ? builder : <Widget>[],
+          ),
         ),
     );
   }
