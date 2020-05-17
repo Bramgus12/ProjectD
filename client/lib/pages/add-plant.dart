@@ -78,11 +78,17 @@ class _AddPlant extends State<AddPlant> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  Image.file(
-                                    File(newPlant.imageName ?? ''),
-                                    width: 150,
-                                    height: 150,
-                                  ),
+                                  (){ 
+                                      if(newPlant.imageName != null){
+                                        return Image.file(
+                                          File(newPlant.imageName ?? ''),
+                                          width: 150,
+                                          height: 150,
+                                        );
+                                      } else {
+                                        return SizedBox();
+                                      }
+                                    }()
                                 ],
                               ),
                             ),
