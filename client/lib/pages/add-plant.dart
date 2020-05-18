@@ -16,6 +16,10 @@ class AddPlant extends StatefulWidget {
 class _AddPlant extends State<AddPlant> {
   final _formKey = GlobalKey<FormState>();
   final UserPlant newPlant = new UserPlant();
+  String selectedImagePath;
+  bool hideDatePicker = false;
+  DateTime selectedDate;
+  TimeOfDay selectedTime;
   int minTemp;
   int maxTemp;
 
@@ -24,26 +28,34 @@ class _AddPlant extends State<AddPlant> {
     if (date == null) {
       throw new ArgumentError('date is null');
     }
-    
-    return '${newPlant.lastWaterDate.month.toString().padLeft(2, '0')}-${newPlant.lastWaterDate.day.toString().padLeft(2, '0')}-${newPlant.lastWaterDate.year} ${newPlant.lastWaterDate.hour.toString().padLeft(2, '0')}:${newPlant.lastWaterDate.minute.toString().padLeft(2, '0')}';
+
+    var year = newPlant.lastWaterDate.year;
+    var month = newPlant.lastWaterDate.month.toString().padLeft(2, '0');
+    var day = newPlant.lastWaterDate.day.toString().padLeft(2, '0');
+    var hour = newPlant.lastWaterDate.hour.toString().padLeft(2, '0');
+    var minute = newPlant.lastWaterDate.minute.toString().padLeft(2, '0');
+
+    return '$day-$month-$year $hour:$minute';
   }
 
-  void selectFromSource(BuildContext context, ImageSource source) async {
-    setState(() {
-      newPlant.imageName = null;
-    });
-
+  void selectImageFromSource(BuildContext context, ImageSource source) async {
     var pickedImage = await ImagePicker.pickImage(source: source);
-
+    Navigator.of(context).pop();
+    
     setState(() {
-      newPlant.imageName = pickedImage != null ? pickedImage.path : null;
+      // keep the previous image if no image is selected
+      if (pickedImage == null && selectedImagePath != null) {
+        return;
+      }
+
+      selectedImagePath = pickedImage != null ? pickedImage.path : null;
     });
   }
 
   void submit() {
     if (this._formKey.currentState.validate()) {
       _formKey.currentState.save();
-      print(newPlant);
+      newPlant.imageName = selectedImagePath;
       User.plants.add(newPlant);
       Navigator.pushNamed(context, '/my-plants');
     }
@@ -65,184 +77,236 @@ class _AddPlant extends State<AddPlant> {
             style:
                 TextStyle(fontFamily: 'Libre Baskerville', color: Colors.white),
             child: Padding(
-              padding: EdgeInsets.all(15.0),
-              child: Form(
-                    key: _formKey,
-                    child: ListView(
-                      children: <Widget>[
-                        Text('Afbeelding'),
-                        SizedBox(height: 10),
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              flex: 6,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  () { 
-                                      if(newPlant.imageName != null){
-                                        return Image.file(
-                                          File(newPlant.imageName),
-                                          width: 150,
-                                          height: 150,
-                                        );
-                                      } 
-                                      else {
-                                        return SizedBox();
-                                      }
-                                    }()
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                              flex: 4,
-                              child: Row(
-                                children: <Widget>[
-                                  IconButton(
-                                    icon: Icon(Icons.image),
-                                    onPressed: () => selectFromSource(context, ImageSource.gallery),
-                                    color: Colors.blue,
-                                  ),
-                                  IconButton(
-                                    icon: Icon(Icons.camera_alt),
-                                    onPressed: () => selectFromSource(context, ImageSource.camera),
-                                    color: Colors.blue,
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                        SizedBox(height: 20),
-                        AddPlantTextField(
-                          label: 'Bijnaam',
-                          validator: (String value) {
-                            if (value.isEmpty) {
-                              return 'Mag niet leeg zijn.';
-                            }
-
-                            return null;
-                          },
-                          onSaved: (String value) {
-                            newPlant.nickname = value;
-                          },
-                        ),
-                        AddPlantTextField(
-                            label: 'Inhoud bak',
-                            keyboardType: TextInputType.number,
-                            validator: (String value) {
-                              double temp = double.tryParse(value);
-
-                              if (temp == null) {
-                                return 'Moet een getal zijn.';
-                              }
-
-                              return null;
-                            },
-                            onSaved: (String value) {
-                              newPlant.potVolume = double.parse(value);
-                            },
-                        ),
-                            Text('Wanneer heeft de plant voor\nhetlaatst water gekregen?'),
-                            SizedBox(height: 10),
-                            Text(
-                              newPlant.lastWaterDate != null 
-                                ? formatDate(newPlant.lastWaterDate) 
-                                : ''
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.date_range, color: Colors.blue,),
-                              onPressed: () => DatePicker.showDateTimePicker(
-                                context,
-                                minTime: DateTime(DateTime.now().year, 1, 1),
-                                maxTime: DateTime.now(),
-                                currentTime: newPlant.lastWaterDate ?? DateTime.now(),
-                                onConfirm: (DateTime date) {
-                                  newPlant.lastWaterDate = date;
-                                  setState(() {});
-                                },
-                              ),
-                            ),
-                        AddPlantTextField(
-                            label: 'Hoeveelheid zonlicht',
-                            keyboardType: TextInputType.number,
-                            validator: (String value) {
-                              double temp = double.tryParse(value);
-
-                              if (temp == null) {
-                                return 'Moet een getal zijn.';
-                              }
-
-                              return null;
-                            },
-                            onSaved: (String value) {
-                              newPlant.distanceToWindow = double.parse(value);
-                            },
-                        ),
-                        Row(
+                padding: EdgeInsets.all(15.0),
+                child: Form(
+                  key: _formKey,
+                  child: ListView(
+                    children: <Widget>[
+                      Text('Afbeelding'),
+                      SizedBox(height: 10),
+                      Row(
                         children: <Widget>[
                           Expanded(
                             flex: 4,
-                            child: AddPlantTextField(
-                                label: 'Minimale temperatuur kamer',
-                                keyboardType: TextInputType.number,
-                                validator: (String value) {
-                                  int temp = int.tryParse(value);
-
-                                  if (temp == null) {
-                                    return 'Moet een getal zijn.';
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                () {
+                                  if (selectedImagePath != null) {
+                                    return Image.file(
+                                      File(selectedImagePath),
+                                      width: 150,
+                                      height: 150,
+                                    );
+                                  } else {
+                                    return SizedBox.shrink();
                                   }
-
-                                  if (maxTemp != null && maxTemp < temp) {
-                                    return 'Mag niet hoger zijn\n dan max temp.';
-                                  }
-
-                                  minTemp = temp;
-                                  return null;
-                                },
-                                onSaved: (String value) {
-                                  newPlant.minTemp = minTemp;
-                                },
-                            )
+                                }()
+                              ],
+                            ),
                           ),
                           Expanded(
-                            flex: 2,
-                            child: SizedBox(),
+                            flex: 6,
+                            child: FloatingActionButton(
+                              child: Icon(Icons.image),
+                              onPressed: () => showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text("Maak een keuze"),
+                                      content: SingleChildScrollView(
+                                        child: ListBody(
+                                          children: <Widget>[
+                                            GestureDetector(
+                                              child: Text("Camera"),
+                                              onTap: () => selectImageFromSource(context, ImageSource.camera),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.all(10.0),
+                                            ),
+                                            GestureDetector(
+                                              child: Text("Galerij"),
+                                              onTap: () => selectImageFromSource(context, ImageSource.gallery),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    );
+                                  }
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                      AddPlantTextField(
+                        label: 'Bijnaam',
+                        validator: (String value) {
+                          if (value.isEmpty) {
+                            return 'Mag niet leeg zijn.';
+                          }
+
+                          return null;
+                        },
+                        onSaved: (String value) {
+                          newPlant.nickname = value;
+                        },
+                      ),
+                      AddPlantTextField(
+                        label: 'Inhoud bak',
+                        keyboardType: TextInputType.number,
+                        validator: (String value) {
+                          double temp = double.tryParse(value);
+
+                          if (temp == null) {
+                            return 'Moet een getal zijn.';
+                          }
+
+                          return null;
+                        },
+                        onSaved: (String value) {
+                          newPlant.potVolume = double.parse(value);
+                        },
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Expanded(
+                            flex: 5,
+                            child:  Text('Wanneer heeft de plant voor het laatst water gekregen?'),
                           ),
                           Expanded(
+                            flex: 5,
+                            child: Row(
+                              children: <Widget>[
+                                Text("Weet ik niet"),
+                                Checkbox(
+                                  value: hideDatePicker,
+                                  onChanged: (bool value) {
+                                    print(value);
+                                    hideDatePicker = value;
+                                    setState(() {});
+                                  },
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+
+                      () {
+                        if (!hideDatePicker) {
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              SizedBox(height: 20),
+                              Text(newPlant.lastWaterDate != null
+                                  ? formatDate(newPlant.lastWaterDate)
+                                  : ''),
+
+                              // TODO: make 2 fields, date and time
+                              // TODO: make a checkbox when date + time is not needed
+                              IconButton(
+                                icon: Icon(
+                                  Icons.date_range,
+                                  color: Colors.blue,
+                                ),
+                                onPressed: () => DatePicker.showDateTimePicker(
+                                  context,
+                                  minTime: DateTime(DateTime.now().year, 1, 1),
+                                  maxTime: DateTime.now(),
+                                  currentTime: newPlant.lastWaterDate ?? DateTime.now(),
+                                  onConfirm: (DateTime date) {
+                                    newPlant.lastWaterDate = date;
+                                    setState(() {});
+                                  },
+                                ),
+                              ),
+                            ],
+                          );
+                        }
+                        else {
+                          return SizedBox.shrink();
+                        }
+                      }(),
+                      
+
+                      // TODO: make a slider (1-5) to make it user-friendly
+                      AddPlantTextField(
+                        label: 'Hoeveelheid zonlicht',
+                        keyboardType: TextInputType.number,
+                        validator: (String value) {
+                          double temp = double.tryParse(value);
+
+                          if (temp == null) {
+                            return 'Moet een getal zijn.';
+                          }
+
+                          return null;
+                        },
+                        onSaved: (String value) {
+                          newPlant.distanceToWindow = double.parse(value);
+                        },
+                      ),
+                      // TODO: add space between the fields
+                      Row(children: <Widget>[
+                        Expanded(
                             flex: 4,
                             child: AddPlantTextField(
-                                label: 'Maximale temperatuur kamer',
-                                keyboardType: TextInputType.number,
-                                validator: (String value) {
-                                  int temp = int.tryParse(value);
+                              label: 'Minimale temperatuur kamer',
+                              keyboardType: TextInputType.number,
+                              validator: (String value) {
+                                int temp = int.tryParse(value);
 
-                                  if (temp == null) {
-                                    return 'NaN';
-                                  }
+                                if (temp == null) {
+                                  return 'Moet een getal zijn.';
+                                }
 
-                                  if (minTemp != null && minTemp > temp) {
-                                    return 'Mag niet lager zijn\n dan min temp.';
-                                  }
+                                if (maxTemp != null && maxTemp < temp) {
+                                  return 'Mag niet hoger zijn\n dan de maximale temperatuur.';
+                                }
 
-                                  maxTemp = temp;
-                                  return null;
-                                },
-                                onSaved: (String value) {
-                                  newPlant.maxTemp = maxTemp;
-                                },
-                            )
-                          )
-                        ]),
-                        RaisedButton(
-                          child: Text('Voeg toe'),
-                          onPressed: submit,
-                        )
-                      ],
-                    ),
-              )
-            )
-            ),
+                                minTemp = temp;
+                                return null;
+                              },
+                              onSaved: (String value) {
+                                newPlant.minTemp = minTemp;
+                              },
+                            )),
+                        Expanded(
+                          flex: 2,
+                          child: SizedBox.shrink(),
+                        ),
+                        Expanded(
+                            flex: 4,
+                            child: AddPlantTextField(
+                              label: 'Maximale temperatuur kamer',
+                              keyboardType: TextInputType.number,
+                              validator: (String value) {
+                                int temp = int.tryParse(value);
+
+                                if (temp == null) {
+                                  return 'Moet een getal zijn.';
+                                }
+
+                                if (minTemp != null && minTemp > temp) {
+                                  return 'Mag niet lager zijn\n dan de minimale temperatuur';
+                                }
+
+                                maxTemp = temp;
+                                return null;
+                              },
+                              onSaved: (String value) {
+                                newPlant.maxTemp = maxTemp;
+                              },
+                            ))
+                      ]),
+                      RaisedButton(
+                        child: Text('Voeg toe'),
+                        onPressed: submit,
+                      )
+                    ],
+                  ),
+                ))),
       ),
     );
   }
@@ -254,7 +318,8 @@ class AddPlantTextField extends StatelessWidget {
   final Function(String) validator;
   final Function(String) onSaved;
 
-  AddPlantTextField({this.label, this.keyboardType, this.validator, this.onSaved});
+  AddPlantTextField(
+      {this.label, this.keyboardType, this.validator, this.onSaved});
 
   @override
   Widget build(BuildContext context) {
@@ -271,12 +336,10 @@ class AddPlantTextField extends StatelessWidget {
               focusedBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.white),
               ),
-              enabledBorder:
-                OutlineInputBorder(borderSide: BorderSide(color: Colors.white)
-              ),
-              errorBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.red)
-              ),
+              enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white)),
+              errorBorder:
+                  OutlineInputBorder(borderSide: BorderSide(color: Colors.red)),
               filled: true,
               fillColor: Colors.white,
             ),
@@ -284,7 +347,9 @@ class AddPlantTextField extends StatelessWidget {
             validator: this.validator,
             onSaved: this.onSaved,
           ),
-          SizedBox(height: 10,)
+          SizedBox(
+            height: 10,
+          )
         ],
       ),
     );
