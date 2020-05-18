@@ -36,7 +36,7 @@ class _AddPlant extends State<AddPlant> {
     var pickedImage = await ImagePicker.pickImage(source: source);
 
     setState(() {
-      newPlant.imageName = pickedImage.path;
+      newPlant.imageName = pickedImage != null ? pickedImage.path : null;
     });
   }
 
@@ -45,6 +45,7 @@ class _AddPlant extends State<AddPlant> {
       _formKey.currentState.save();
       print(newPlant);
       User.plants.add(newPlant);
+      Navigator.pushNamed(context, '/my-plants');
     }
   }
 
@@ -59,7 +60,7 @@ class _AddPlant extends State<AddPlant> {
         centerTitle: true,
       ),
       body: Container(
-        color: Colors.black,
+        color: Colors.grey[900],
         child: DefaultTextStyle(
             style:
                 TextStyle(fontFamily: 'Libre Baskerville', color: Colors.white),
@@ -78,14 +79,15 @@ class _AddPlant extends State<AddPlant> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  (){ 
+                                  () { 
                                       if(newPlant.imageName != null){
                                         return Image.file(
-                                          File(newPlant.imageName ?? ''),
+                                          File(newPlant.imageName),
                                           width: 150,
                                           height: 150,
                                         );
-                                      } else {
+                                      } 
+                                      else {
                                         return SizedBox();
                                       }
                                     }()
@@ -113,7 +115,7 @@ class _AddPlant extends State<AddPlant> {
                         ),
                         SizedBox(height: 20),
                         AddPlantTextField(
-                          label: 'Naam',
+                          label: 'Bijnaam',
                           validator: (String value) {
                             if (value.isEmpty) {
                               return 'Mag niet leeg zijn.';
@@ -141,7 +143,7 @@ class _AddPlant extends State<AddPlant> {
                               newPlant.potVolume = double.parse(value);
                             },
                         ),
-                            Text('Datum laatste keer water'),
+                            Text('Wanneer heeft de plant voor\nhetlaatst water gekregen?'),
                             SizedBox(height: 10),
                             Text(
                               newPlant.lastWaterDate != null 
@@ -182,7 +184,7 @@ class _AddPlant extends State<AddPlant> {
                           Expanded(
                             flex: 4,
                             child: AddPlantTextField(
-                                label: 'Min temperatuur',
+                                label: 'Minimale temperatuur kamer',
                                 keyboardType: TextInputType.number,
                                 validator: (String value) {
                                   int temp = int.tryParse(value);
@@ -204,9 +206,13 @@ class _AddPlant extends State<AddPlant> {
                             )
                           ),
                           Expanded(
+                            flex: 2,
+                            child: SizedBox(),
+                          ),
+                          Expanded(
                             flex: 4,
                             child: AddPlantTextField(
-                                label: 'Max temperatuur',
+                                label: 'Maximale temperatuur kamer',
                                 keyboardType: TextInputType.number,
                                 validator: (String value) {
                                   int temp = int.tryParse(value);
@@ -258,9 +264,9 @@ class AddPlantTextField extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(label),
-          SizedBox(height: 5),
+          SizedBox(height: 10),
           TextFormField(
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.black),
             decoration: InputDecoration(
               focusedBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.white),
@@ -270,10 +276,11 @@ class AddPlantTextField extends StatelessWidget {
               ),
               errorBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.red)
-              )
+              ),
+              filled: true,
+              fillColor: Colors.white,
             ),
-            keyboardType:
-            this.keyboardType == null ? TextInputType.text : this.keyboardType,
+            keyboardType: this.keyboardType ?? TextInputType.text,
             validator: this.validator,
             onSaved: this.onSaved,
           ),
