@@ -23,6 +23,8 @@ class _AddPlant extends State<AddPlant> {
   int minTemp;
   int maxTemp;
 
+  bool showFutureTimeWarning = false;
+
   // dd-MM-yyyy HH:mm
   String formatDate(DateTime date) {
     if (date == null) {
@@ -58,6 +60,54 @@ class _AddPlant extends State<AddPlant> {
       newPlant.imageName = selectedImagePath;
       User.plants.add(newPlant);
       Navigator.pushNamed(context, '/my-plants');
+    }
+  }
+
+  void pickDate(BuildContext context) {
+    showDatePicker(
+      context: context,
+      initialDate: selectedDate ?? DateTime.now(),
+      firstDate: DateTime(DateTime.now().year - 1, 1, 1),
+      lastDate: DateTime.now()
+    ).then((DateTime picked) {
+      if (picked != null) {
+        setState(() => {
+          selectedDate = picked
+        });
+        _combinePickedDateAndTime();
+      }
+    });
+  }
+
+  void pickTime(BuildContext context) {
+    showTimePicker(
+      context: context,
+      initialTime: selectedTime ?? TimeOfDay.now(),
+    ).then((TimeOfDay picked) {
+      if (picked != null) {
+        setState(() => {
+          selectedTime = picked
+        });
+        _combinePickedDateAndTime();
+      }
+    });
+  }
+
+  void _combinePickedDateAndTime() {
+    if (selectedDate != null && selectedTime != null) {
+      var pickedDateTime = new DateTime(
+          selectedDate.year, selectedDate.month, selectedDate.day, 
+          selectedTime.hour, selectedTime.minute, 0
+      );
+
+     if(pickedDateTime.isAfter(DateTime.now())) {
+       print('can\'t select future date');
+       showFutureTimeWarning = true;
+       return;
+     } 
+      showFutureTimeWarning = false;
+      newPlant.lastWaterDate = pickedDateTime;
+      print('lastTimeWater = ${formatDate(newPlant.lastWaterDate)}');
     }
   }
 
@@ -171,11 +221,11 @@ class _AddPlant extends State<AddPlant> {
                       Row(
                         children: <Widget>[
                           Expanded(
-                            flex: 5,
+                            flex: 6,
                             child:  Text('Wanneer heeft de plant voor het laatst water gekregen?'),
                           ),
                           Expanded(
-                            flex: 5,
+                            flex: 4,
                             child: Row(
                               children: <Widget>[
                                 Text("Weet ik niet"),
@@ -193,60 +243,85 @@ class _AddPlant extends State<AddPlant> {
                         ],
                       ),
 
+                      SizedBox(height: 20),
+                      // TODO: make layout more user-friendly
                       () {
                         if (!hideDatePicker) {
                           return Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              SizedBox(height: 20),
-                              Text(newPlant.lastWaterDate != null
-                                  ? formatDate(newPlant.lastWaterDate)
-                                  : ''),
-
-                              // TODO: make 2 fields, date and time
-                              // TODO: make a checkbox when date + time is not needed
-                              IconButton(
-                                icon: Icon(
-                                  Icons.date_range,
-                                  color: Colors.blue,
-                                ),
-                                onPressed: () => DatePicker.showDateTimePicker(
-                                  context,
-                                  minTime: DateTime(DateTime.now().year, 1, 1),
-                                  maxTime: DateTime.now(),
-                                  currentTime: newPlant.lastWaterDate ?? DateTime.now(),
-                                  onConfirm: (DateTime date) {
-                                    newPlant.lastWaterDate = date;
-                                    setState(() {});
-                                  },
-                                ),
+                              Expanded(
+                                flex: 8,
+                                child: () {
+                                  if (showFutureTimeWarning) {
+                                    return Text(
+                                      'De gekozen tijd is in de toekomst.',
+                                      style: TextStyle(color: Colors.red),
+                                    );
+                                  }
+                                  else {
+                                    return Text(newPlant.lastWaterDate != null
+                                    ? formatDate(newPlant.lastWaterDate)
+                                    : '');
+                                  }
+                                }(),
                               ),
+                              Expanded(
+                                flex: 2,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      // TODO: show picked time + date to make it more user-friendly
+                                      FlatButton(
+                                        child: Icon(Icons.timer),
+                                        onPressed: () => pickTime(context),
+                                        color: Colors.blue,
+                                      ),
+                                      FlatButton(
+                                        child: Icon(Icons.date_range),
+                                        onPressed: () => pickDate(context),
+                                        color: Colors.blue,
+                                      ),   
+                                    ],
+                                  ),
+                              ),
+                              SizedBox(height: 20),
                             ],
                           );
                         }
                         else {
-                          return SizedBox.shrink();
+                          return SizedBox(height: 20);
                         }
                       }(),
                       
 
                       // TODO: make a slider (1-5) to make it user-friendly
-                      AddPlantTextField(
-                        label: 'Hoeveelheid zonlicht',
-                        keyboardType: TextInputType.number,
-                        validator: (String value) {
-                          double temp = double.tryParse(value);
-
-                          if (temp == null) {
-                            return 'Moet een getal zijn.';
-                          }
-
-                          return null;
-                        },
-                        onSaved: (String value) {
-                          newPlant.distanceToWindow = double.parse(value);
-                        },
+                      // AddPlantTextField(
+                      Text('Afstand tot het raam'),
+                      SizedBox(height: 10),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text('Tekst met informatie over de afstand.'),
+                          // TODO: make the purpose of the slider clear
+                          Slider(
+                            value: newPlant.distanceToWindow ?? 0,
+                            onChanged: (double value) {
+                              setState(() {
+                                newPlant.distanceToWindow = value;
+                              });
+                              print(newPlant.distanceToWindow);
+                            },
+                            min: 0,
+                            max: 5,
+                            // label: newPlant.distanceToWindow.toString(),
+                            activeColor: Colors.blue,
+                            divisions: 5,
+                          ),
+                        ],
                       ),
+
                       // TODO: add space between the fields
                       Row(children: <Widget>[
                         Expanded(
@@ -348,7 +423,7 @@ class AddPlantTextField extends StatelessWidget {
             onSaved: this.onSaved,
           ),
           SizedBox(
-            height: 10,
+            height: 20,
           )
         ],
       ),
