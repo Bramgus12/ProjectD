@@ -1,6 +1,7 @@
 package com.bylivingart.plants.statements;
 
 import com.bylivingart.plants.Exceptions.NotFoundException;
+import com.bylivingart.plants.FileService;
 import com.bylivingart.plants.dataclasses.Plants;
 
 import java.sql.Connection;
@@ -52,17 +53,20 @@ public class PlantsStatements {
         }
     }
 
-    public static boolean deletePlant(int id, Connection conn) throws Exception {
+    public static void deletePlant(int id, Connection conn) throws Exception {
         PreparedStatement ps2 = conn.prepareStatement("SELECT * FROM plants WHERE id=?");
         ps2.setInt(1, id);
         ResultSet rs = ps2.executeQuery();
 
-        PreparedStatement ps = conn.prepareStatement("DELETE FROM plants WHERE id=?;");
-        ps.setInt(1, id);
-        ps.execute();
-
-
-        return rs.next();
+        if (rs.next()) {
+            PreparedStatement ps = conn.prepareStatement("DELETE FROM plants WHERE id=?;");
+            ps.setInt(1, id);
+            ps.execute();
+            Plants plant = createObjectFromResultSet(rs);
+            FileService.deleteImage(plant.getName(), plant.getImageName(), false);
+        } else {
+            throw new NotFoundException("Plant not found");
+        }
     }
 
     public static boolean updatePlant(Plants plant, Connection conn) throws Exception {
