@@ -54,7 +54,7 @@ class UserPlant implements JsonSerializeable {
   Map<String, dynamic> toJson() {
     return {
       "id" : id,
-      "deviceId" : userId,
+      "userId" : userId,
       "nickname" : nickname,
       "potVolume" : potVolume,
       "lat" : latitude,
@@ -78,7 +78,7 @@ class UserPlant implements JsonSerializeable {
   String toString() {
   return
 '''[ User Plant $id ]
-deviceId:\t\t$userId
+userId:\t\t$userId
 nickname:\t\t$nickname
 potVolume:\t\t$potVolume
 latitude:\t\t$latitude

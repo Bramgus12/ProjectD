@@ -3,10 +3,13 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:global_configuration/global_configuration.dart';
+import 'package:plantexpert/Utility.dart';
 import 'package:plantexpert/api/JsonSerializeable.dart';
 import 'package:plantexpert/api/Plant.dart';
 import 'package:plantexpert/api/UserPlant.dart';
 import 'package:plantexpert/api/WeatherStation.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:intl/intl.dart';
 import 'dart:convert';
 
 import 'package:plantexpert/api/ApiConnectionException.dart';
@@ -36,9 +39,9 @@ class ApiConnection {
     return headers;
   }
 
-  // Sending requests
-  Future<http.Response> _sendRequest(String url, {Map<String, String> headers, String type="GET", String body=""}) async {
-    headers = await _createJsonHeader( headers: headers);
+  // Sending basic requests
+  Future<http.Response> _sendRequest(String url, {Map<String, String> headers, String type="GET", dynamic body="", File file}) async {
+    headers = await _createJsonHeader( headers: headers, type: type);
     try {
       
       // Send request to server
@@ -70,6 +73,17 @@ class ApiConnection {
             headers: headers
           );
           break;
+        case "MULTIPART":
+          http.MultipartRequest request = new http.MultipartRequest("POST", Uri.parse(url));
+          request.headers.addAll(headers);
+          request.files.add(await http.MultipartFile.fromPath(
+            "file", 
+            file.path,
+            contentType: MediaType('image', 'jpeg')
+          ));
+          http.StreamedResponse streamedResponse = await request.send();
+          response = await http.Response.fromStream(streamedResponse);
+          break;
         default:
           throw ApiConnectionException("Unknown request type: $type while requesting url: $url");
           break;
@@ -95,10 +109,8 @@ class ApiConnection {
     }
   }
 
-  // Fetch json
-  Future<dynamic> _fetchJson(String url, { Map<String, String> headers } ) async {
-    http.Response response = await _sendRequest(url, headers: headers, type: "GET");
-
+  // Convert http response body to json with error handling.
+  dynamic _jsonFromResponse(http.Response response) {
     try {
       if (response.statusCode == 204) {
         return {};
@@ -106,8 +118,14 @@ class ApiConnection {
       return json.decode(response.body);
     } on FormatException catch(e) {
       print(e);
-      throw ApiConnectionException("Invalid json received from url: $url");
+      throw ApiConnectionException("Invalid json received from url: ${response.request.url}");
     }
+  }
+
+  // Fetch json
+  Future<dynamic> _fetchJson(String url, { Map<String, String> headers } ) async {
+    http.Response response = await _sendRequest(url, headers: headers, type: "GET");
+    return _jsonFromResponse(response);
   }
 
   Future<Map<String, dynamic>> _fetchJsonObject(String url) async {
@@ -173,8 +191,19 @@ class ApiConnection {
   //   return UserPlant.fromJson(jsonUserPlant);
   // }
 
-  Future<http.Response> postUserPlant(UserPlant userPlant) async {
-    return await _postJson("${baseUrl}user/userplants/", userPlant);
+  String _generateImageFileName() {
+    return DateFormat("yyyy-MM-dd-HHmmss-").format(DateTime.now()) + randomString(8) + ".jpg";
+  }
+
+  Future<UserPlant> postUserPlant(UserPlant userPlant, File imageFile) async {
+    userPlant.imageName = _generateImageFileName();
+    http.Response response = await _postJson("${baseUrl}user/userplants/", userPlant);
+    Map<String, dynamic> jsonUserPlant = _jsonFromResponse(response);
+    UserPlant responseUserPlant = UserPlant.fromJson(jsonUserPlant);
+    // Copy the user plant id created by the server to the local user plant object
+    userPlant.id = responseUserPlant.id;
+    uploadUserPlantImage(userPlant, imageFile);
+    return userPlant;
   }
 
   Future<http.Response> putUserPlant(UserPlant userPlant) async {
@@ -183,6 +212,12 @@ class ApiConnection {
 
   Future<http.Response> deleteUserPlant(UserPlant userPlant) async {
     return await _deleteJson("${baseUrl}user/userplants?id=${userPlant.id}");
+  }
+
+  // Upload image of userplant
+  Future<http.Response> uploadUserPlantImage(UserPlant userPlant, File imageFile) async {
+    String imageName = userPlant.imageName == null ? _generateImageFileName() : userPlant.imageName;
+    return await _sendRequest("${baseUrl}user/userplants/image?imageName=$imageName&userPlantId=${userPlant.id}", type: "MULTIPART", file: imageFile);
   }
 
   // Login
