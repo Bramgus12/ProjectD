@@ -128,11 +128,26 @@ class ApiConnection {
   Future<http.Response> _postJson(String url, JsonSerializeable jsonObject, { Map<String, String> headers }) async {
     return await _sendRequest(url, headers: headers, type: "POST", body: json.encode(jsonObject.toJson()));
   }
+
+  // Put json
+  Future<http.Response> _putJson(String url, JsonSerializeable jsonObject, { Map<String, String> headers }) async {
+    return await _sendRequest(url, headers: headers, type: "PUT", body: json.encode(jsonObject.toJson()));
+  }
+
+  // Delete json
+  Future<http.Response> _deleteJson(String url, { Map<String, String> headers } ) async {
+    return await _sendRequest(url, headers: headers, type: "DELETE");
+  }
   
   // Weather stations
   Future<List<WeatherStation>> fetchWeatherStations(String region) async {
     Iterable jsonWeatherStations = await _fetchJsonList('${baseUrl}weather/$region/');
     return jsonWeatherStations.map<WeatherStation>((jsonWeatherStation) => WeatherStation.fromJson(jsonWeatherStation)).toList();
+  }
+
+  Future<WeatherStation> fetchWeatherStation(double latitude, double longitude) async {
+    Map<String, dynamic> jsonWeatherStation = await _fetchJson('${baseUrl}weather/latlon/?lat=$latitude&lon=$longitude');
+    return WeatherStation.fromJson(jsonWeatherStation);
   }
 
   // Plants
@@ -160,6 +175,14 @@ class ApiConnection {
 
   Future<http.Response> postUserPlant(UserPlant userPlant) async {
     return await _postJson("${baseUrl}user/userplants/", userPlant);
+  }
+
+  Future<http.Response> putUserPlant(UserPlant userPlant) async {
+    return await _putJson("${baseUrl}user/userplants?id=${userPlant.id}", userPlant);
+  }
+
+  Future<http.Response> deleteUserPlant(UserPlant userPlant) async {
+    return await _deleteJson("${baseUrl}user/userplants?id=${userPlant.id}");
   }
 
   // Login
