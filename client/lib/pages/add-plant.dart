@@ -248,6 +248,9 @@ class _AddPlant extends State<AddPlant> {
                                     if (hideDatePicker) {
                                       allowedToSubmit = true;
                                     }
+                                    else {
+                                      allowedToSubmit = false;
+                                    }
                                     setState(() {});
                                   },
                                 ),
