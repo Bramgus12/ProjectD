@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:plantexpert/Theme.dart';
 import 'package:plantexpert/api/ApiConnection.dart';
 import 'package:plantexpert/api/ApiConnectionException.dart';
+import 'package:plantexpert/pages/account/LoginInputField.dart';
+import 'package:plantexpert/widgets/StatusBox.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget{
@@ -14,19 +15,19 @@ class _LoginState extends State<Login> {
   TextEditingController passwordController = new TextEditingController();
   ApiConnection apiConnection = new ApiConnection();
 
-  String _errorMessage = "";
-  bool _showError = false;
+  Status _status = Status.none;
+  String _statusMessage = "";
 
   void showErrorMessage(String errorMessage) {
     setState(() {
-      _errorMessage = errorMessage;
-      _showError = true;
+      _statusMessage = errorMessage;
+      _status = Status.error;
     });
   }
 
   void hideErrorMessage(){
     setState(() {
-      _showError = false;
+      _status = Status.none;
     });
   }
 
@@ -48,49 +49,9 @@ class _LoginState extends State<Login> {
                 padding: const EdgeInsets.all(20),
                 child: Text("Login", style: TextStyle(fontSize: 18)),
               ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: TextField(
-                  controller: usernameController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: ThemeColors.selected
-                      )
-                    ),
-                    hintText: "Username"
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: TextField(
-                  controller: passwordController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: ThemeColors.selected
-                      )
-                    ),
-                    hintText: "Password"
-                  ),
-                  obscureText: true,
-                ),
-              ),
-              Visibility(
-                visible: _showError,
-                child: Container(
-                  padding: const EdgeInsets.all(15),
-                  margin: const EdgeInsets.only(bottom: 20),
-                  child: Text(
-                      _errorMessage,
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  color: ThemeColors.errorBackground
-                ),
-              ),
+              LoginInputField(usernameController, hintText: "Username", enabled: _status != Status.loading),
+              LoginInputField(passwordController, hintText: "Password", enabled: _status != Status.loading, obfuscated: true),
+              StatusBox(status: _status, message: _statusMessage),
               RaisedButton(
                 onPressed: login,
                 child: const Text("Login")
@@ -104,6 +65,9 @@ class _LoginState extends State<Login> {
 
   Future<void> login() async {
     try{
+      setState(() {
+        _status = Status.loading;
+      });
       bool validCredentials = await apiConnection.verifyCredentials(usernameController.text, passwordController.text);
       if (validCredentials) {
         print("Credentials are valid.");
@@ -116,7 +80,7 @@ class _LoginState extends State<Login> {
       }
       else {
         print("Invalid Credentials.");
-        showErrorMessage("Incorrect username or password.");
+        showErrorMessage("Incorrect password.");
       }
     }
     on ApiConnectionException catch(e) {
@@ -125,7 +89,11 @@ class _LoginState extends State<Login> {
     }
     on StatusCodeException catch(e) {
       print(e);
-      showErrorMessage("Server responded with status code: ${e.reponse.statusCode}");
+      if(e.reponse.statusCode == 404) {
+        showErrorMessage("User '${usernameController.text}' does not exist.");
+      } else {
+        showErrorMessage("Server error: ${e.reponse.statusCode}");
+      }
     }
   }
 }

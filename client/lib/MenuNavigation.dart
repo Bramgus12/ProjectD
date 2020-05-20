@@ -71,7 +71,7 @@ class _MenuNavigation extends State<MenuNavigation> {
             onTap: (){
               Navigator.pushNamed(context, '/login');
             },
-            leading: Icon(Icons.featured_play_list, color: ModalRoute.of(context).settings.name == '/login' ? ThemeColors.selected : Colors.black,),
+            leading: Icon(Icons.account_box, color: ModalRoute.of(context).settings.name == '/login' ? ThemeColors.selected : Colors.black,),
 
           )
 

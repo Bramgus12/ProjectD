@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
-import 'package:plantexpert/pages/Login.dart';
+import 'package:plantexpert/pages/account/Login.dart';
 
 import 'pages/Camera.dart';
 import 'pages/Home.dart';
