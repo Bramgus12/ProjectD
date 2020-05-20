@@ -30,7 +30,8 @@ class MyApp extends StatelessWidget {
       title: 'Plant Expert',
       theme: ThemeData(
         primaryColor: Colors.white,
-        accentColor: Color(0xff119543)
+        accentColor: Color(0xff119543),
+        disabledColor: Color(0xfff5f5f5)
       ),
       initialRoute: '/',
       routes: {

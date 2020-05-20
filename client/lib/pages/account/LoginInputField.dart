@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:plantexpert/AppColors.dart';
 
 class LoginInputField extends StatelessWidget {
   final TextEditingController controller;
@@ -11,6 +10,7 @@ class LoginInputField extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: TextField(
@@ -18,11 +18,11 @@ class LoginInputField extends StatelessWidget {
         controller: controller,
         decoration: InputDecoration(
           filled: !enabled,
-          fillColor: AppColors.disabledInputField,
+          fillColor: theme.disabledColor,
           border: OutlineInputBorder(),
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: Theme.of(context).accentColor
+              color: theme.accentColor
             )
           ),
           hintText: hintText
