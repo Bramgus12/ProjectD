@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:plantexpert/api/User.dart';
 import 'package:plantexpert/api/UserPlant.dart';
@@ -16,13 +15,17 @@ class AddPlant extends StatefulWidget {
 class _AddPlant extends State<AddPlant> {
   final _formKey = GlobalKey<FormState>();
   final UserPlant newPlant = new UserPlant();
+  // TODO: add text
+  final _distanceToWindowText = <String>['Verweg', '2', '3', '4', 'Dichtbij'];
+
   String selectedImagePath;
-  bool hideDatePicker = false;
   DateTime selectedDate;
   TimeOfDay selectedTime;
   int minTemp;
   int maxTemp;
 
+  // make date + time picker optional
+  bool hideDatePicker = false;
   bool showFutureTimeWarning = false;
 
   // dd-MM-yyyy HH:mm
@@ -43,7 +46,7 @@ class _AddPlant extends State<AddPlant> {
   void selectImageFromSource(BuildContext context, ImageSource source) async {
     var pickedImage = await ImagePicker.pickImage(source: source);
     Navigator.of(context).pop();
-    
+
     setState(() {
       // keep the previous image if no image is selected
       if (pickedImage == null && selectedImagePath != null) {
@@ -55,6 +58,7 @@ class _AddPlant extends State<AddPlant> {
   }
 
   void submit() {
+    // TODO: invalidate if given lastWaterDate is null and showFutureTimeWarning is true
     if (this._formKey.currentState.validate()) {
       _formKey.currentState.save();
       newPlant.imageName = selectedImagePath;
@@ -63,52 +67,51 @@ class _AddPlant extends State<AddPlant> {
     }
   }
 
-  void pickDate(BuildContext context) {
-    showDatePicker(
-      context: context,
-      initialDate: selectedDate ?? DateTime.now(),
-      firstDate: DateTime(DateTime.now().year - 1, 1, 1),
-      lastDate: DateTime.now()
-    ).then((DateTime picked) {
-      if (picked != null) {
-        setState(() => {
-          selectedDate = picked
-        });
-        _combinePickedDateAndTime();
-      }
-    });
+  void pickDate(BuildContext context) async {
+    DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDate ?? DateTime.now(),
+        firstDate: DateTime(DateTime.now().year - 1, 1, 1),
+        lastDate: DateTime.now());
+
+    if (picked != null) {
+      setState(() => {selectedDate = picked});
+      print('picked date: $selectedDate');
+      _combinePickedDateAndTime();
+    }
   }
 
-  void pickTime(BuildContext context) {
-    showTimePicker(
+  void pickTime(BuildContext context) async {
+    TimeOfDay picked = await showTimePicker(
       context: context,
       initialTime: selectedTime ?? TimeOfDay.now(),
-    ).then((TimeOfDay picked) {
-      if (picked != null) {
-        setState(() => {
-          selectedTime = picked
-        });
-        _combinePickedDateAndTime();
-      }
-    });
+    );
+
+    if (picked != null) {
+      setState(() => {selectedTime = picked});
+      print('picked time: $selectedTime');
+      _combinePickedDateAndTime();
+    }
   }
 
   void _combinePickedDateAndTime() {
-    if (selectedDate != null && selectedTime != null) {
-      var pickedDateTime = new DateTime(
-          selectedDate.year, selectedDate.month, selectedDate.day, 
-          selectedTime.hour, selectedTime.minute, 0
-      );
-
-     if(pickedDateTime.isAfter(DateTime.now())) {
-       print('can\'t select future date');
-       showFutureTimeWarning = true;
-       return;
-     } 
-      showFutureTimeWarning = false;
-      newPlant.lastWaterDate = pickedDateTime;
-      print('lastTimeWater = ${formatDate(newPlant.lastWaterDate)}');
+    if (selectedDate == null || selectedTime == null) {
+      return;
     }
+
+    var pickedDateTime = new DateTime(selectedDate.year, selectedDate.month,
+        selectedDate.day, selectedTime.hour, selectedTime.minute, 0);
+
+    if (pickedDateTime.isAfter(DateTime.now())) {
+      print('can\'t select future date');
+      newPlant.lastWaterDate = null;
+      showFutureTimeWarning = true;
+      return;
+    }
+
+    showFutureTimeWarning = false;
+    newPlant.lastWaterDate = pickedDateTime;
+    print('lastTimeWater = ${formatDate(newPlant.lastWaterDate)}');
   }
 
   @override
@@ -163,27 +166,31 @@ class _AddPlant extends State<AddPlant> {
                                   context: context,
                                   builder: (BuildContext context) {
                                     return AlertDialog(
-                                      title: Text("Maak een keuze"),
-                                      content: SingleChildScrollView(
-                                        child: ListBody(
-                                          children: <Widget>[
-                                            GestureDetector(
-                                              child: Text("Camera"),
-                                              onTap: () => selectImageFromSource(context, ImageSource.camera),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.all(10.0),
-                                            ),
-                                            GestureDetector(
-                                              child: Text("Galerij"),
-                                              onTap: () => selectImageFromSource(context, ImageSource.gallery),
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                                    );
-                                  }
-                              ),
+                                        title: Text("Maak een keuze"),
+                                        content: SingleChildScrollView(
+                                          child: ListBody(
+                                            children: <Widget>[
+                                              GestureDetector(
+                                                child: Text("Camera"),
+                                                onTap: () =>
+                                                    selectImageFromSource(
+                                                        context,
+                                                        ImageSource.camera),
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsets.all(10.0),
+                                              ),
+                                              GestureDetector(
+                                                child: Text("Galerij"),
+                                                onTap: () =>
+                                                    selectImageFromSource(
+                                                        context,
+                                                        ImageSource.gallery),
+                                              ),
+                                            ],
+                                          ),
+                                        ));
+                                  }),
                             ),
                           )
                         ],
@@ -203,7 +210,7 @@ class _AddPlant extends State<AddPlant> {
                         },
                       ),
                       AddPlantTextField(
-                        label: 'Inhoud bak',
+                        label: 'Inhoud pot',
                         keyboardType: TextInputType.number,
                         validator: (String value) {
                           double temp = double.tryParse(value);
@@ -222,7 +229,8 @@ class _AddPlant extends State<AddPlant> {
                         children: <Widget>[
                           Expanded(
                             flex: 6,
-                            child:  Text('Wanneer heeft de plant voor het laatst water gekregen?'),
+                            child: Text(
+                                'Wanneer heeft de plant voor het laatst water gekregen?'),
                           ),
                           Expanded(
                             flex: 4,
@@ -244,85 +252,94 @@ class _AddPlant extends State<AddPlant> {
                       ),
 
                       SizedBox(height: 20),
-                      // TODO: make layout more user-friendly
+                      // TODO: make layout more 'user-friendly'
                       () {
                         if (!hideDatePicker) {
                           return Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Expanded(
-                                flex: 8,
-                                child: () {
-                                  if (showFutureTimeWarning) {
-                                    return Text(
-                                      'De gekozen tijd is in de toekomst.',
-                                      style: TextStyle(color: Colors.red),
-                                    );
-                                  }
-                                  else {
-                                    return Text(newPlant.lastWaterDate != null
-                                    ? formatDate(newPlant.lastWaterDate)
-                                    : '');
-                                  }
-                                }(),
-                              ),
-                              Expanded(
-                                flex: 2,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Expanded(
+                                  flex: 5,
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: <Widget>[
-                                      // TODO: show picked time + date to make it more user-friendly
+                                      FlatButton(
+                                        child: Icon(Icons.date_range),
+                                        onPressed: () => pickDate(context),
+                                        color: Colors.blue,
+                                      ),
+                                      SizedBox(height: 10),
+                                      Text(selectedDate != null
+                                          ? '${selectedDate.day.toString().padLeft(2, '0')}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.year}'
+                                          : '')
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 5,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
                                       FlatButton(
                                         child: Icon(Icons.timer),
                                         onPressed: () => pickTime(context),
                                         color: Colors.blue,
                                       ),
-                                      FlatButton(
-                                        child: Icon(Icons.date_range),
-                                        onPressed: () => pickDate(context),
-                                        color: Colors.blue,
-                                      ),   
+                                      SizedBox(height: 10),
+                                      () {
+                                        if (!showFutureTimeWarning) {
+                                          return Text(selectedTime != null
+                                              ? '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}'
+                                              : '');
+                                        }
+
+                                        return Text(
+                                            '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}'
+                                            '\n\nDe gekozen tijd is in de toekomst.',
+                                            style:
+                                                TextStyle(color: Colors.red));
+                                      }()
                                     ],
                                   ),
-                              ),
-                              SizedBox(height: 20),
-                            ],
-                          );
-                        }
-                        else {
+                                ),
+                              ]);
+                        } else {
                           return SizedBox(height: 20);
                         }
                       }(),
-                      
 
-                      // TODO: make a slider (1-5) to make it user-friendly
                       // AddPlantTextField(
+                      SizedBox(height: 50),
                       Text('Afstand tot het raam'),
                       SizedBox(height: 10),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text('Tekst met informatie over de afstand.'),
-                          // TODO: make the purpose of the slider clear
+                          Text(_distanceToWindowText[
+                              (newPlant.distanceToWindow != null &&
+                                      newPlant.distanceToWindow > 0)
+                                  ? newPlant.distanceToWindow.toInt() - 1
+                                  : 0]),
                           Slider(
-                            value: newPlant.distanceToWindow ?? 0,
+                            value: newPlant.distanceToWindow ?? 1,
                             onChanged: (double value) {
                               setState(() {
                                 newPlant.distanceToWindow = value;
                               });
                               print(newPlant.distanceToWindow);
                             },
-                            min: 0,
+                            min: 1,
                             max: 5,
                             // label: newPlant.distanceToWindow.toString(),
                             activeColor: Colors.blue,
-                            divisions: 5,
+                            divisions: 4,
                           ),
                         ],
                       ),
+                      SizedBox(height: 25),
 
-                      // TODO: add space between the fields
                       Row(children: <Widget>[
                         Expanded(
                             flex: 4,
