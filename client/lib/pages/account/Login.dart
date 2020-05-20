@@ -33,6 +33,7 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Login', style: TextStyle(fontFamily: 'Libre Baskerville')),
@@ -53,8 +54,12 @@ class _LoginState extends State<Login> {
               LoginInputField(passwordController, hintText: "Password", enabled: _status != Status.loading, obfuscated: true),
               StatusBox(status: _status, message: _statusMessage),
               RaisedButton(
+                color: theme.accentColor,
                 onPressed: login,
-                child: const Text("Login")
+                child: Text(
+                  "Login",
+                  style: theme.accentTextTheme.button
+                  )
               )
             ],
           ),

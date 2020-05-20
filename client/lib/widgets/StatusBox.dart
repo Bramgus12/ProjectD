@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:plantexpert/Theme.dart';
+import 'package:plantexpert/AppColors.dart';
 
 enum Status {
   none,
@@ -31,7 +31,7 @@ class StatusBox extends StatelessWidget {
         return Container(
           padding: EdgeInsets.all(_padding),
           margin: EdgeInsets.symmetric(vertical: 10),
-          color: status == Status.error ? ThemeColors.errorBackground : null,
+          color: status == Status.error ? AppColors.errorBackground : null,
           child: Text(
             message,
             style: TextStyle(color: status == Status.error ? Colors.white : null),
