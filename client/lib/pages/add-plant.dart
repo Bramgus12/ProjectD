@@ -27,6 +27,7 @@ class _AddPlant extends State<AddPlant> {
   // make date + time picker optional
   bool hideDatePicker = false;
   bool showFutureTimeWarning = false;
+  bool allowedToSubmit = false;
 
   // dd-MM-yyyy HH:mm
   String formatDate(DateTime date) {
@@ -59,7 +60,7 @@ class _AddPlant extends State<AddPlant> {
 
   void submit() {
     // TODO: invalidate if given lastWaterDate is null and showFutureTimeWarning is true
-    if (this._formKey.currentState.validate()) {
+    if (this._formKey.currentState.validate() && allowedToSubmit) {
       _formKey.currentState.save();
       newPlant.imageName = selectedImagePath;
       User.plants.add(newPlant);
@@ -106,10 +107,12 @@ class _AddPlant extends State<AddPlant> {
       print('can\'t select future date');
       newPlant.lastWaterDate = null;
       showFutureTimeWarning = true;
+      allowedToSubmit = false;
       return;
     }
 
     showFutureTimeWarning = false;
+    allowedToSubmit = true;
     newPlant.lastWaterDate = pickedDateTime;
     print('lastTimeWater = ${formatDate(newPlant.lastWaterDate)}');
   }
@@ -242,6 +245,9 @@ class _AddPlant extends State<AddPlant> {
                                   onChanged: (bool value) {
                                     print(value);
                                     hideDatePicker = value;
+                                    if (hideDatePicker) {
+                                      allowedToSubmit = true;
+                                    }
                                     setState(() {});
                                   },
                                 ),
@@ -394,7 +400,9 @@ class _AddPlant extends State<AddPlant> {
                       ]),
                       RaisedButton(
                         child: Text('Voeg toe'),
-                        onPressed: submit,
+                        onPressed: allowedToSubmit ? submit : null,
+                        disabledColor: Colors.grey[700],
+                        disabledTextColor: Colors.black,
                       )
                     ],
                   ),
