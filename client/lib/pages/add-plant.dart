@@ -245,6 +245,7 @@ class _AddPlant extends State<AddPlant> {
                                   onChanged: (bool value) {
                                     print(value);
                                     hideDatePicker = value;
+                                    // FIXME: find a more maintainable way to enable/disable the submit button
                                     if (hideDatePicker) {
                                       allowedToSubmit = true;
                                     }
@@ -401,6 +402,7 @@ class _AddPlant extends State<AddPlant> {
                               },
                             ))
                       ]),
+                      // TODO: allow submission if all required fields are filled
                       RaisedButton(
                         child: Text('Voeg toe'),
                         onPressed: allowedToSubmit ? submit : null,
