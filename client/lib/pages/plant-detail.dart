@@ -7,13 +7,14 @@ import '../MenuNavigation.dart';
 import '../pages/plant-list.dart';
 
 class PlantDetail extends StatelessWidget {
-  final Plant plantInfo;
+  final Plant plant;
 
-  PlantDetail({this.plantInfo}) 
-    : assert(plantInfo != null);
+  PlantDetail({this.plant})
+    : assert(plant != null);
 
   @override
   Widget build(BuildContext context) {
+    print(plant);
     return Scaffold(
       drawer: MenuNavigation(),
       // FIXME: Failed assertion: line 196 pos 15: '0 <= currentIndex && currentIndex < items.length': is not true.
@@ -34,47 +35,47 @@ class PlantDetail extends StatelessWidget {
           child: ListView(
             children: <Widget>[
               Image.file(
-                File(plantInfo.imageName),
+                File(plant.imageName),
                 width: 300,
                 height: 300,
               ),
               SizedBox(height: 20),
 
               Text('Naam', style: TextStyle(color: Colors.grey)),
-              Text(plantInfo.name),
+              Text(plant.name),
               SizedBox(height: 20),
 
               Row(
                 children: <Widget>[
                   Text('Hoeveelheid zonlight    ', style: TextStyle(color: Colors.grey)),
                   RatingRow(
-                      count: plantInfo.sunScale.toInt(),
+                      count: plant.sunScale.toInt(),
                       filledIcon: Icons.star,
                       unfilledIcon: Icons.star_border
                   ),
                 ],
               ),
               SizedBox(height: 5),
-              Text(plantInfo.sunText),
+              Text(plant.sunText),
               SizedBox(height: 20),
 
               Row(
                 children: <Widget>[
                   Text('Hoeveelheid water         ', style: TextStyle(color: Colors.grey)),
                   RatingRow(
-                      count: plantInfo.waterScale.toInt(),
+                      count: plant.waterScale.toInt(),
                       filledIcon: Icons.star,
                       unfilledIcon: Icons.star_border
                   ),
                 ],
               ),
               SizedBox(height: 5),
-              Text(plantInfo.waterText),
+              Text(plant.waterText),
               SizedBox(height: 20),
 
               Text('Omschrijving', style: TextStyle(color: Colors.grey)),
               SizedBox(height: 5),
-              Text(plantInfo.description)
+              Text(plant.description)
             ],
           ),
         ),
