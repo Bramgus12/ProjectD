@@ -10,9 +10,11 @@ import 'package:localstorage/localstorage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:plantexpert/api/ApiConnection.dart';
+import 'package:plantexpert/api/ApiConnectionException.dart';
 import 'package:plantexpert/api/Plant.dart';
 import 'package:plantexpert/MenuNavigation.dart';
 import 'package:tflite/tflite.dart';
+import 'package:data_connection_checker/data_connection_checker.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -37,6 +39,7 @@ class _CameraState extends State<Camera>
   final List<String> plantNames = <String>["croton", "dracaena_lemon_lime", "peace_lily", "pothos", "snake_plant"];
   List<CameraDescription> cameras = [];
   int activeCameraItem = 0;
+  String predictionCardMessage = "\n\nLoading.....";
   ApiConnection con = new ApiConnection();
 
   PageController _controller = PageController(
@@ -85,6 +88,7 @@ class _CameraState extends State<Camera>
     onNewCameraSelected(cameras.first);
   }
 
+
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
@@ -130,8 +134,7 @@ class _CameraState extends State<Camera>
               padding: EdgeInsets.all(16.0),
               height: 150,
               width: width,
-              child: Text(""
-                  "\n\nLoading....", textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20))
+              child: Text(predictionCardMessage, textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20))
             ),
           ),]);
     }else{
@@ -172,6 +175,7 @@ class _CameraState extends State<Camera>
   }
 
   Future plantModel(File image) async {
+    var predictedPlant;
     var recognitions = await Tflite.runModelOnImage(
       path: image.path,
       numResults: 6,
@@ -181,11 +185,23 @@ class _CameraState extends State<Camera>
     );
     print("----------------------------------------------------");
     print(recognitions);
-    var predictedPlant = await con.fetchPlant(int.parse(recognitions.map((res){ return res["label"];}).toList()[0]));
-    setState(() {
-      _predictedPlant = predictedPlant;
-      _recognitions = recognitions;
-    });
+    if (!await DataConnectionChecker().hasConnection){
+      print("no Internet connection");
+      setState((){
+      predictionCardMessage = "\n\nNo internet connection";
+      });
+    }else {
+        predictedPlant = await con.fetchPlant(
+            int.parse(recognitions.map((res) {
+              return res["label"];
+            }).toList()[0]));
+      setState((){
+        _predictedPlant = predictedPlant;
+        _recognitions = recognitions;
+      });
+    }
+
+
   }
 
   Future plantModelWithBinary(img.Image image) async {
