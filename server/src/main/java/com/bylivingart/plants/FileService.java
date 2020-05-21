@@ -3,6 +3,7 @@ package com.bylivingart.plants;
 import com.bylivingart.plants.Exceptions.BadRequestException;
 import com.bylivingart.plants.Exceptions.InternalServerException;
 import com.bylivingart.plants.Exceptions.NotFoundException;
+import org.apache.tika.Tika;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,7 +48,9 @@ public class FileService {
             folder = GetPropertyValues.getResourcePath(folderName, "", userPlantId, forUsers);
         }
         if (folder.exists() || folder.mkdirs()) {
-            String mimeType = Files.probeContentType(f.toPath());
+            Tika tika = new Tika();
+            String mimeType = tika.detect(file.getBytes());
+            System.out.println(mimeType);
             if (mimeType != null && mimeType.equals("image/jpeg")) {
                 if (!f.exists()) {
                     if (userPlantId == null) {
