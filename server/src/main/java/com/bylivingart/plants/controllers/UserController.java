@@ -6,7 +6,6 @@ import com.bylivingart.plants.Exceptions.UnauthorizedException;
 import com.bylivingart.plants.dataclasses.User;
 import com.bylivingart.plants.statements.UserStatements;
 import io.swagger.annotations.*;
-import io.swagger.models.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -150,6 +149,22 @@ public class UserController {
         Connection conn = new DatabaseConnection().getConnection();
         UserStatements.deleteUserAdmin(id, conn);
         ResponseEntity<Void> response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        conn.close();
+        return response;
+    }
+
+    @ApiOperation("Get the info of a single user")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully gotten the user", response = User.class),
+            @ApiResponse(code = 400, message = "Bad request", response = Error.class),
+            @ApiResponse(code = 401, message = "Unauthorized", response = Error.class),
+            @ApiResponse(code = 403, message = "Forbidden", response = Error.class),
+            @ApiResponse(code = 404, message = "Not found", response = Error.class)
+    })
+    @GetMapping("/user/users/")
+    private ResponseEntity<User> getUserInfo(HttpServletRequest request) throws Exception {
+        Connection conn = new DatabaseConnection().getConnection();
+        ResponseEntity<User> response = new ResponseEntity<>(UserStatements.getUserInfo(request, conn), HttpStatus.OK);
         conn.close();
         return response;
     }

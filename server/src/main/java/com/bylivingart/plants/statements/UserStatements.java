@@ -59,7 +59,9 @@ public class UserStatements {
                 if (!rs.next()) {
                     throw new NotFoundException("User not found");
                 } else {
-                    return getResult(rs.getInt("id"), rs);
+                    User response = getResult(rs.getInt("id"), rs);
+                    response.setPassword(null);
+                    return response;
                 }
             } else {
                 throw new BadRequestException("Password is not long enough. It has to be at least a length of 6.");
@@ -120,7 +122,15 @@ public class UserStatements {
             ps2.setInt(1, id);
             ps2.execute();
         }
+    }
 
+    public static User getUserInfo(HttpServletRequest request, Connection conn) throws Exception {
+        int id = SecurityConfig.getUserIdFromBase64(request);
+        PreparedStatement ps = conn.prepareStatement("SELECT * FROM users WHERE id=?");
+        ps.setInt(1, id);
+        ResultSet rs = ps.executeQuery();
+        rs.next();
+        return getResult(id, rs);
     }
 
     public static boolean checkUserPassword(String password, String userName, Connection conn) throws Exception {
