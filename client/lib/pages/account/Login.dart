@@ -14,6 +14,7 @@ class _LoginState extends State<Login> {
   TextEditingController usernameController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
   ApiConnection apiConnection = new ApiConnection();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   Status _status = Status.none;
   String _statusMessage = "";
@@ -43,36 +44,62 @@ class _LoginState extends State<Login> {
         child: Container(
           constraints: BoxConstraints(maxWidth: 350),
           padding: EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Text("Login", style: TextStyle(fontSize: 18)),
-              ),
-              LoginInputField(usernameController, hintText: "Username", enabled: _status != Status.loading),
-              LoginInputField(passwordController, hintText: "Password", enabled: _status != Status.loading, obfuscated: true),
-              StatusBox(status: _status, message: _statusMessage),
-              RaisedButton(
-                color: theme.accentColor,
-                onPressed: login,
-                child: Text(
-                  "Login",
-                  style: theme.accentTextTheme.button
-                  )
-              )
-            ],
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Text("Login", style: TextStyle(fontSize: 18)),
+                ),
+                LoginInputField(usernameController, hintText: "Gebruikersnaam", enabled: _status != Status.loading, validator: validateUsername),
+                LoginInputField(passwordController, hintText: "Wachtwoord", enabled: _status != Status.loading, obfuscated: true, validator: validatePassword),
+                StatusBox(status: _status, message: _statusMessage),
+                RaisedButton(
+                  color: theme.accentColor,
+                  onPressed: login,
+                  child: Text(
+                    "Login",
+                    style: theme.accentTextTheme.button
+                    )
+                )
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
+  String validateUsername(String username) {
+    if(username.isEmpty) {
+      return "Geen gebruikersnaam ingevuld.";
+    }
+    return null;
+  }
+
+  String validatePassword(String password) {
+    if(password.isEmpty) {
+      return "Geen wachtwoord ingevuld.";
+    }
+    return null;
+  }
+
   Future<void> login() async {
-    try{
+    setState(() {
+      _status = Status.loading;
+    });
+    // Client side validation
+    if(!_formKey.currentState.validate()){
       setState(() {
-        _status = Status.loading;
+        _status = Status.none;
       });
+      return;
+    }
+
+    // Server side validation
+    try{
       bool validCredentials = await apiConnection.verifyCredentials(usernameController.text, passwordController.text);
       if (validCredentials) {
         print("Credentials are valid.");
@@ -85,19 +112,19 @@ class _LoginState extends State<Login> {
       }
       else {
         print("Invalid Credentials.");
-        showErrorMessage("Incorrect password.");
+        showErrorMessage("Verkeerd wachtwoord.");
       }
     }
     on ApiConnectionException catch(e) {
       print(e);
-      showErrorMessage("Error connecting to server.");
+      showErrorMessage("Fout bij verbinden met server.");
     }
     on StatusCodeException catch(e) {
       print(e);
       if(e.reponse.statusCode == 404) {
-        showErrorMessage("User '${usernameController.text}' does not exist.");
+        showErrorMessage("Gebruikersnaam '${usernameController.text}' bestaat niet.");
       } else {
-        showErrorMessage("Server error: ${e.reponse.statusCode}");
+        showErrorMessage("Server fout: ${e.reponse.statusCode}");
       }
     }
   }
