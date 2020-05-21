@@ -147,9 +147,9 @@ class _CameraState extends State<Camera>
               id: 0,
               name: plantName,
               imageName: 'assets/images/'+plantId.toString()+'.jpg',
-              description: "Omschrijving van de plant.",
-              waterText: "Informatie over hoeveel water de plant nodig heeft.",
-              sunText: "Informatie over hoeveel zonlicht de plant nodig heeft.",
+              description: _predictedPlant.description,
+              waterText: _predictedPlant.waterText,
+              sunText: _predictedPlant.sunText,
               waterScale: waterAmount,
               sunScale: sunAmount))},
           child: Container(
