@@ -42,6 +42,7 @@ class ApiConnection {
   // Sending basic requests
   Future<http.Response> _sendRequest(String url, {Map<String, String> headers, String type="GET", dynamic body="", File file}) async {
     headers = await _createJsonHeader( headers: headers, type: type);
+    String fullUrl = baseUrl + url;
     try {
       
       // Send request to server
@@ -49,32 +50,32 @@ class ApiConnection {
       switch(type) {
         case "GET":
           response = await http.get(
-            url, 
+            fullUrl, 
             headers: headers
           );
           break;
         case "POST":
           response = await http.post(
-            url,
+            fullUrl,
             headers: headers,
             body: body
           );
           break;
         case "PUT":
           response = await http.put(
-            url,
+            fullUrl,
             headers: headers,
             body: body
           );
           break;
         case "DELETE":
           response = await http.delete(
-            url,
+            fullUrl,
             headers: headers
           );
           break;
         case "MULTIPART":
-          http.MultipartRequest request = new http.MultipartRequest("POST", Uri.parse(url));
+          http.MultipartRequest request = new http.MultipartRequest("POST", Uri.parse(fullUrl));
           request.headers.addAll(headers);
           request.files.add(await http.MultipartFile.fromPath(
             "file", 
@@ -85,14 +86,14 @@ class ApiConnection {
           response = await http.Response.fromStream(streamedResponse);
           break;
         default:
-          throw ApiConnectionException("Unknown request type: $type while requesting url: $url");
+          throw ApiConnectionException("Unknown request type: $type while requesting url: $fullUrl");
           break;
       }
 
       // Handle response code
       if (response.statusCode == 401) {
         print("Status code ${response.statusCode} - Server Response: ${response.body}");
-        throw InvalidCredentialsException("Invalid credentials provided while trying to access url: $url");
+        throw InvalidCredentialsException("Invalid credentials provided while trying to access url: $fullUrl");
       }
       else if(response.statusCode >= 400){
         print("Status code ${response.statusCode} - Server Response: ${response.body}");
@@ -102,10 +103,10 @@ class ApiConnection {
 
     } on SocketException catch(e) {
       print(e);
-      throw ApiConnectionException("SocketException occured while trying to fetch url: $url");
+      throw ApiConnectionException("SocketException occured while trying to fetch url: $fullUrl");
     } on TimeoutException catch(e) {
       print(e);
-      throw ApiConnectionException("Timed out while trying to fetch url: $url");
+      throw ApiConnectionException("Timed out while trying to fetch url: $fullUrl");
     }
   }
 
@@ -159,35 +160,35 @@ class ApiConnection {
   
   // Weather stations
   Future<List<WeatherStation>> fetchWeatherStations(String region) async {
-    Iterable jsonWeatherStations = await _fetchJsonList('${baseUrl}weather/$region/');
+    Iterable jsonWeatherStations = await _fetchJsonList('weather/$region/');
     return jsonWeatherStations.map<WeatherStation>((jsonWeatherStation) => WeatherStation.fromJson(jsonWeatherStation)).toList();
   }
 
   Future<WeatherStation> fetchWeatherStation(double latitude, double longitude) async {
-    Map<String, dynamic> jsonWeatherStation = await _fetchJson('${baseUrl}weather/latlon/?lat=$latitude&lon=$longitude');
+    Map<String, dynamic> jsonWeatherStation = await _fetchJson('weather/latlon/?lat=$latitude&lon=$longitude');
     return WeatherStation.fromJson(jsonWeatherStation);
   }
 
   // Plants
   Future<List<Plant>> fetchPlants() async {
-    Iterable jsonPlants = await _fetchJsonList('${baseUrl}plants/');
+    Iterable jsonPlants = await _fetchJsonList('plants/');
     return jsonPlants.map<Plant>((jsonPlant) => Plant.fromJson(jsonPlant)).toList();
   }
 
   Future<Plant> fetchPlant(int id) async {
-    Map<String, dynamic> jsonPlant = await _fetchJsonObject('${baseUrl}plants/$id/');
+    Map<String, dynamic> jsonPlant = await _fetchJsonObject('plants/$id/');
     return Plant.fromJson(jsonPlant);
   }
 
   // User plants
   Future<List<UserPlant>> fetchUserPlants() async {
-    Iterable jsonUserPlants = await _fetchJsonList('${baseUrl}user/userplants/');
+    Iterable jsonUserPlants = await _fetchJsonList('user/userplants/');
     return jsonUserPlants.map<UserPlant>((jsonUserPlant) => UserPlant.fromJson(jsonUserPlant)).toList();
   }
 
 // Not yet implemented on server
   // Future<UserPlant> fetchUserPlant(int id) async {
-  //   Map<String, dynamic> jsonUserPlant = await _fetchJsonObject('${baseUrl}userplants/$id');
+  //   Map<String, dynamic> jsonUserPlant = await _fetchJsonObject('userplants/$id');
   //   return UserPlant.fromJson(jsonUserPlant);
   // }
 
@@ -197,7 +198,7 @@ class ApiConnection {
 
   Future<UserPlant> postUserPlant(UserPlant userPlant, File imageFile) async {
     userPlant.imageName = _generateImageFileName();
-    http.Response response = await _postJson("${baseUrl}user/userplants/", userPlant);
+    http.Response response = await _postJson("user/userplants/", userPlant);
     Map<String, dynamic> jsonUserPlant = _jsonFromResponse(response);
     UserPlant responseUserPlant = UserPlant.fromJson(jsonUserPlant);
     // Copy the user plant id created by the server to the local user plant object
@@ -207,17 +208,17 @@ class ApiConnection {
   }
 
   Future<http.Response> putUserPlant(UserPlant userPlant) async {
-    return await _putJson("${baseUrl}user/userplants?id=${userPlant.id}", userPlant);
+    return await _putJson("user/userplants?id=${userPlant.id}", userPlant);
   }
 
   Future<http.Response> deleteUserPlant(UserPlant userPlant) async {
-    return await _deleteJson("${baseUrl}user/userplants?id=${userPlant.id}");
+    return await _deleteJson("user/userplants?id=${userPlant.id}");
   }
 
   // Upload image of userplant
   Future<http.Response> uploadUserPlantImage(UserPlant userPlant, File imageFile) async {
     String imageName = userPlant.imageName == null ? _generateImageFileName() : userPlant.imageName;
-    return await _sendRequest("${baseUrl}user/userplants/image?imageName=$imageName&userPlantId=${userPlant.id}", type: "MULTIPART", file: imageFile);
+    return await _sendRequest("user/userplants/image?imageName=$imageName&userPlantId=${userPlant.id}", type: "MULTIPART", file: imageFile);
   }
 
   // Login
@@ -226,7 +227,7 @@ class ApiConnection {
       Map<String, String> headers = Map();
       String base64Authorisation = base64.encode(utf8.encode("$username:$password")).replaceAll("=", "");
       headers['Authorization'] = "Basic $base64Authorisation";
-      await _fetchJson("${baseUrl}users/checkpassword?userName=$username&password=$password", headers: headers);
+      await _fetchJson("users/checkpassword?userName=$username&password=$password", headers: headers);
       return true;
     }
     on InvalidCredentialsException catch(e) {
