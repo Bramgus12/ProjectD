@@ -36,7 +36,7 @@ class UserPlant implements JsonSerializeable {
   factory UserPlant.fromJson(Map<String, dynamic> jsonUserPlant) {
     return UserPlant(
       id: jsonUserPlant['id'],
-      userId: jsonUserPlant['deviceId'],
+      userId: jsonUserPlant['userId'],
       nickname: jsonUserPlant['nickname'],
       potVolume: jsonUserPlant['potVolume'],
       latitude: jsonUserPlant['lat'],

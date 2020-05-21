@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:global_configuration/global_configuration.dart';
 import 'package:plantexpert/Utility.dart';
@@ -25,7 +26,7 @@ class ApiConnection {
     : baseUrl = 'http://${GlobalConfiguration().getString("server")}:${GlobalConfiguration().getInt("port")}/';
 
   // Basic headers
-  Future<Map<String, String>> _createJsonHeader({Map<String, String> headers, type="GET"}) async {
+  Future<Map<String, String>> _createHeaders({Map<String, String> headers, String type="GET", String accept="application/json", contentType="application/json"}) async {
     if(headers == null) headers = Map();
 
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
@@ -34,14 +35,14 @@ class ApiConnection {
     if( headers['Authorization'] == null && username != null && password != null ){
       headers['Authorization'] = "Basic " + base64.encode(utf8.encode("$username:$password")).replaceAll("=", "");
     }
-    headers.putIfAbsent('Accept', () => 'application/json');
-    if(type == "POST") headers['Content-Type'] = "application/json";
+    headers.putIfAbsent('Accept', () => accept);
+    if(type == "POST") headers['Content-Type'] = contentType;
     return headers;
   }
 
   // Sending basic requests
   Future<http.Response> _sendRequest(String url, {Map<String, String> headers, String type="GET", dynamic body="", File file}) async {
-    headers = await _createJsonHeader( headers: headers, type: type);
+    headers = await _createHeaders( headers: headers, type: type);
     String fullUrl = baseUrl + url;
     try {
       
@@ -108,6 +109,13 @@ class ApiConnection {
       print(e);
       throw ApiConnectionException("Timed out while trying to fetch url: $fullUrl");
     }
+  }
+
+  // Fetch image from api
+  Future<Image> _fetchImage(String url, { Map<String, String> headers }) async {
+    headers = await _createHeaders(headers: headers, accept: "image/jpeg", contentType: "image/jpeg");
+    String fullUrl = baseUrl + url;
+    return Image.network(fullUrl, headers: headers);
   }
 
   // Convert http response body to json with error handling.
@@ -219,6 +227,10 @@ class ApiConnection {
   Future<http.Response> uploadUserPlantImage(UserPlant userPlant, File imageFile) async {
     String imageName = userPlant.imageName == null ? _generateImageFileName() : userPlant.imageName;
     return await _sendRequest("user/userplants/image?imageName=$imageName&userPlantId=${userPlant.id}", type: "MULTIPART", file: imageFile);
+  }
+
+  Future<Image> fetchUserPlantImage(UserPlant userPlant) async {
+    return await _fetchImage("user/userplants/${userPlant.id}/${userPlant.imageName}/");
   }
 
   // Login
