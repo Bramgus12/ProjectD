@@ -1,6 +1,6 @@
-croton
-dracaena_lemon_lime
-peace_lily
-pothos
-snake_plant
-unknown
+7
+9
+10
+11
+12
+-1

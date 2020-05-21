@@ -9,6 +9,7 @@ import 'package:image/image.dart' as img;
 import 'package:localstorage/localstorage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:plantexpert/api/ApiConnection.dart';
 import 'package:plantexpert/api/Plant.dart';
 import 'package:plantexpert/MenuNavigation.dart';
 import 'package:tflite/tflite.dart';
@@ -28,6 +29,7 @@ class _CameraState extends State<Camera>
 
   File imageFile;
   List _recognitions;
+  Plant _predictedPlant;
   bool _busy = false;
   bool storageReady = false;
   final LocalStorage storage = new LocalStorage('by_living_art.json');
@@ -35,18 +37,12 @@ class _CameraState extends State<Camera>
   final List<String> plantNames = <String>["croton", "dracaena_lemon_lime", "peace_lily", "pothos", "snake_plant"];
   List<CameraDescription> cameras = [];
   int activeCameraItem = 0;
+  ApiConnection con = new ApiConnection();
 
   PageController _controller = PageController(
     initialPage: 0,
   );
 
-  var plnts = [
-    {"plantName":"croton", "waterAmount": 4.0, "sunAmount": 2.0},
-    {"plantName":"dracaena lemon lime", "waterAmount": 2.0, "sunAmount": 0.0},
-    {"plantName":"peace lily", "waterAmount": 3.0, "sunAmount": 3.0},
-    {"plantName":"pothos", "waterAmount": 3.0, "sunAmount": 2.0},
-    {"plantName":"snake plant", "waterAmount": 1.0, "sunAmount": 5.0},
-  ];
 
   @override
   void initState() {
@@ -123,6 +119,7 @@ class _CameraState extends State<Camera>
   Widget predictionView(){
 
     if(_recognitions == null){
+      double width = MediaQuery.of(context).size.width;
       return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -130,17 +127,18 @@ class _CameraState extends State<Camera>
             Padding(
             padding: const EdgeInsets.only(left: 16.0),
             child: Container(
-
               padding: EdgeInsets.all(16.0),
               height: 150,
-              child: Text("Select a plant image from your gallery or take a picture \nof a plant by clicking the floating button at the bottom \nleft of your screen.", textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20))
+              width: width,
+              child: Text(""
+                  "\n\nLoading....", textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20))
             ),
           ),]);
     }else{
-      var plantNumber = _recognitions.map((res){ return res["index"];}).toList()[0];
-      String plantName = plnts[plantNumber]["plantName"];
-      double waterAmount = plnts[plantNumber]["waterAmount"];
-      double sunAmount = plnts[plantNumber]["sunAmount"];
+      var plantId = int.parse(_recognitions.map((res){ return res["label"];}).toList()[0]);
+      String plantName = _predictedPlant.name;
+      double waterAmount = _predictedPlant.waterNumber;
+      double sunAmount = _predictedPlant.sunNumber;
 
       return
         GestureDetector(
@@ -148,14 +146,14 @@ class _CameraState extends State<Camera>
           arguments: new Plant(
               id: 0,
               name: plantName,
-              imageName: 'assets/images/'+_recognitions.map((res){ return res["index"];}).toList()[0].toString()+'.jpg',
+              imageName: 'assets/images/'+plantId.toString()+'.jpg',
               description: "Omschrijving van de plant.",
               waterText: "Informatie over hoeveel water de plant nodig heeft.",
               sunText: "Informatie over hoeveel zonlicht de plant nodig heeft.",
               waterScale: waterAmount,
               sunScale: sunAmount))},
           child: Container(
-            child: predictionCard(_recognitions.map((res){ return res["index"];}).toList()[0]))
+            child: predictionCard( plantName,waterAmount.toInt(),sunAmount.toInt(),plantId))
           );
     }
 
@@ -183,7 +181,9 @@ class _CameraState extends State<Camera>
     );
     print("----------------------------------------------------");
     print(recognitions);
+    var predictedPlant = await con.fetchPlant(int.parse(recognitions.map((res){ return res["label"];}).toList()[0]));
     setState(() {
+      _predictedPlant = predictedPlant;
       _recognitions = recognitions;
     });
   }
@@ -514,12 +514,9 @@ class _CameraState extends State<Camera>
     return Container(child: Row(children: res,));
   }
 
-  Widget getData(int plantNumber) {
-    String plantName = plnts[plantNumber]["plantName"];
-    double waterAmount = plnts[plantNumber]["waterAmount"];
-    double sunAmount = plnts[plantNumber]["sunAmount"];
+  Widget getData(String plantName, int waterAmount, int sunAmount) {
 
-    return plantCardDetails(plantName,  waterAmount.toInt(),  sunAmount.toInt());
+    return plantCardDetails(plantName,  waterAmount,  sunAmount);
   }
 
   Widget plantCardDetails(String plantName, int waterAmount, int sunAmount) {
@@ -549,7 +546,7 @@ class _CameraState extends State<Camera>
     );
   }
 
-  Widget predictionCard(int plantNumber){
+  Widget predictionCard(String plantName, int waterAmount, int sunAmount,int plantId){
      var res = Row(
 
       mainAxisAlignment: MainAxisAlignment.end,
@@ -557,7 +554,7 @@ class _CameraState extends State<Camera>
         Padding(
           padding: const EdgeInsets.only(left: 16.0),
           child: Container(
-            child: getData(plantNumber),
+            child: getData(plantName,waterAmount,sunAmount),
           ),
         ),
 
@@ -569,7 +566,7 @@ class _CameraState extends State<Camera>
             child: Image(
               fit: BoxFit.contain,
               alignment: Alignment.topRight,
-              image: AssetImage('assets/images/'+plantNumber.toString()+'.jpg'),
+              image: AssetImage('assets/images/'+plantId.toString()+'.jpg'),
             ),
           ),
         )
