@@ -15,8 +15,13 @@ class AddPlant extends StatefulWidget {
 class _AddPlant extends State<AddPlant> {
   final _formKey = GlobalKey<FormState>();
   final UserPlant newPlant = new UserPlant();
-  // TODO: add text
-  final _distanceToWindowText = <String>['Verweg', '2', '3', '4', 'Dichtbij'];
+  final _distanceToWindowText = <String>[
+    '2 meter of meer',
+    'Maximaal 1,5 meter',
+    'Maximaal 1 meter',
+    'Tussen 30 cm en 1 meter',
+    '30 cm of minder'
+  ];
 
   String selectedImagePath;
   DateTime selectedDate;
@@ -119,6 +124,7 @@ class _AddPlant extends State<AddPlant> {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: change all colors to theme colors
     return Scaffold(
       drawer: MenuNavigation(),
       // bottomNavigationBar: BottomNavigation(),
@@ -134,6 +140,7 @@ class _AddPlant extends State<AddPlant> {
                 TextStyle(fontFamily: 'Libre Baskerville', color: Colors.white),
             child: Padding(
                 padding: EdgeInsets.all(15.0),
+                // TODO: also validate onChanged instead of on submit to make the form more 'user-friendly'
                 child: Form(
                   key: _formKey,
                   child: ListView(
@@ -231,19 +238,18 @@ class _AddPlant extends State<AddPlant> {
                       Row(
                         children: <Widget>[
                           Expanded(
-                            flex: 6,
+                            flex: 5,
                             child: Text(
                                 'Wanneer heeft de plant voor het laatst water gekregen?'),
                           ),
                           Expanded(
-                            flex: 4,
+                            flex: 5,
                             child: Row(
                               children: <Widget>[
-                                Text("Weet ik niet"),
+                                Text('Niet van toepassing'),
                                 Checkbox(
                                   value: hideDatePicker,
                                   onChanged: (bool value) {
-                                    print(value);
                                     hideDatePicker = value;
                                     // FIXME: find a more maintainable way to enable/disable the submit button
                                     if (hideDatePicker) {
@@ -352,9 +358,9 @@ class _AddPlant extends State<AddPlant> {
 
                       Row(children: <Widget>[
                         Expanded(
-                            flex: 4,
+                            flex: 9,
                             child: AddPlantTextField(
-                              label: 'Minimale temperatuur kamer',
+                              label: 'Minimale temperatuur in de kamer',
                               keyboardType: TextInputType.number,
                               validator: (String value) {
                                 int temp = int.tryParse(value);
@@ -379,9 +385,9 @@ class _AddPlant extends State<AddPlant> {
                           child: SizedBox.shrink(),
                         ),
                         Expanded(
-                            flex: 4,
+                            flex: 9,
                             child: AddPlantTextField(
-                              label: 'Maximale temperatuur kamer',
+                              label: 'Maximale temperatuur in de kamer',
                               keyboardType: TextInputType.number,
                               validator: (String value) {
                                 int temp = int.tryParse(value);

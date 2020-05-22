@@ -76,9 +76,9 @@ class _CameraState extends State<Camera>
       _recognitions = null;
     });
     var img = await ImagePicker.pickImage(source: ImageSource.gallery);
-    if (img != null) {
+    if(img != null){
       predictImage(img);
-      this.setState(() {
+      this.setState((){
         imageFile = img;
       });
     }
@@ -112,8 +112,8 @@ class _CameraState extends State<Camera>
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  Widget selectedImageView() {
-    if (imageFile == null) {
+  Widget selectedImageView(){
+    if(imageFile == null){
       return Text(" ");
     }else{
       return  Image.file(imageFile,width: 150, height: 150,);
@@ -122,8 +122,7 @@ class _CameraState extends State<Camera>
 
   Widget predictionView(){
 
-  Widget predictionView() {
-    if (_recognitions == null) {
+    if(_recognitions == null){
       return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -131,15 +130,12 @@ class _CameraState extends State<Camera>
             Padding(
               padding: const EdgeInsets.only(left: 16.0),
               child: Container(
+
                   padding: EdgeInsets.all(16.0),
                   height: 150,
-                  child: Text(
-                      "Select a plant image from your gallery or take a picture \nof a plant by clicking the floating button at the bottom \nleft of your screen.",
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 20))),
-            ),
-          ),]);
+                  child: Text("Select a plant image from your gallery or take a picture \nof a plant by clicking the floating button at the bottom \nleft of your screen.", textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20))
+              ),
+            ),]);
     }else{
       var plantNumber = _recognitions.map((res){ return res["index"];}).toList()[0];
       String plantName = plnts[plantNumber]["plantName"];
@@ -148,19 +144,19 @@ class _CameraState extends State<Camera>
 
       return
         GestureDetector(
-          onTap: () => {Navigator.pushNamed(context, '/plant-detail',
-          arguments: new Plant(
-              id: 0,
-              name: plantName,
-              imageName: 'assets/images/'+_recognitions.map((res){ return res["index"];}).toList()[0].toString()+'.jpg',
-              description: "Omschrijving van de plant.",
-              waterText: "Informatie over hoeveel water de plant nodig heeft.",
-              sunText: "Informatie over hoeveel zonlicht de plant nodig heeft.",
-              waterScale: waterAmount,
-              sunScale: sunAmount))},
-          child: Container(
-            child: predictionCard(_recognitions.map((res){ return res["index"];}).toList()[0]))
-          );
+            onTap: () => {Navigator.pushNamed(context, '/plant-detail',
+                arguments: new Plant(
+                    id: 0,
+                    name: plantName,
+                    imageName: 'assets/images/'+_recognitions.map((res){ return res["index"];}).toList()[0].toString()+'.jpg',
+                    description: "Omschrijving van de plant.",
+                    waterText: "Informatie over hoeveel water de plant nodig heeft.",
+                    sunText: "Informatie over hoeveel zonlicht de plant nodig heeft.",
+                    waterScale: waterAmount,
+                    sunScale: sunAmount))},
+            child: Container(
+                child: predictionCard(_recognitions.map((res){ return res["index"];}).toList()[0]))
+        );
     }
 
   }
@@ -216,7 +212,7 @@ class _CameraState extends State<Camera>
         numResults: 6, // defaults to 5
         threshold: 0.05, // defaults to 0.1
         asynch: true // defaults to true
-        );
+    );
     print("----------------------------------------------------");
     print(recognitions);
     setState(() {
@@ -230,113 +226,113 @@ class _CameraState extends State<Camera>
 
   Widget _dottedLines() {
     return
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                InkWell(
-                  onTap: () => {
-                    setState(() {
-                      _controller.jumpToPage(0);
-                    })
-                  },
-                  child: new Container(
-                    margin: const EdgeInsets.all(2.0),
-                    padding: const EdgeInsets.all(8.0),
-                    decoration: new BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: _controller.page == 0
-                          ? Colors.grey[850]
-                          : Colors.grey[600],
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () => {
-                    setState(() {
-                      _controller.jumpToPage(1);
-                    })
-                  },
-                  child: new Container(
-                    margin: const EdgeInsets.all(2.0),
-                    padding: const EdgeInsets.all(8.0),
-                    decoration: new BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: activeCameraItem == 1
-                          ? Colors.grey[850]
-                          : Colors.grey[600],
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () => {
-                    setState(() {
-                      _controller.jumpToPage(2);
-                    })
-                  },
-                  child: new Container(
-                    margin: const EdgeInsets.all(2.0),
-                    padding: const EdgeInsets.all(8.0),
-                    decoration: new BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: activeCameraItem == 2
-                          ? Colors.grey[850]
-                          : Colors.grey[600],
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () => {
-                    setState(() {
-                      _controller.jumpToPage(3);
-                    })
-                  },
-                  child: new Container(
-                    margin: const EdgeInsets.all(2.0),
-                    padding: const EdgeInsets.all(8.0),
-                    decoration: new BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: activeCameraItem == 3
-                          ? Colors.grey[850]
-                          : Colors.grey[600],
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () => {
-                    setState(() {
-                      _controller.jumpToPage(4);
-                    })
-                  },
-                  child: new Container(
-                    margin: const EdgeInsets.all(2.0),
-                    padding: const EdgeInsets.all(8.0),
-                    decoration: new BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: activeCameraItem == 4
-                          ? Colors.grey[850]
-                          : Colors.grey[600],
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: (() {
-                    setState(() {
-                      _controller.jumpToPage(5);
-                      storage.setItem("first_time_usage", true);
-                    });
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          InkWell(
+            onTap: () => {
+              setState(() {
+                _controller.jumpToPage(0);
+              })
+            },
+            child: new Container(
+              margin: const EdgeInsets.all(2.0),
+              padding: const EdgeInsets.all(8.0),
+              decoration: new BoxDecoration(
+                shape: BoxShape.circle,
+                color: _controller.page == 0
+                    ? Colors.grey[850]
+                    : Colors.grey[600],
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: () => {
+              setState(() {
+                _controller.jumpToPage(1);
+              })
+            },
+            child: new Container(
+              margin: const EdgeInsets.all(2.0),
+              padding: const EdgeInsets.all(8.0),
+              decoration: new BoxDecoration(
+                shape: BoxShape.circle,
+                color: activeCameraItem == 1
+                    ? Colors.grey[850]
+                    : Colors.grey[600],
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: () => {
+              setState(() {
+                _controller.jumpToPage(2);
+              })
+            },
+            child: new Container(
+              margin: const EdgeInsets.all(2.0),
+              padding: const EdgeInsets.all(8.0),
+              decoration: new BoxDecoration(
+                shape: BoxShape.circle,
+                color: activeCameraItem == 2
+                    ? Colors.grey[850]
+                    : Colors.grey[600],
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: () => {
+              setState(() {
+                _controller.jumpToPage(3);
+              })
+            },
+            child: new Container(
+              margin: const EdgeInsets.all(2.0),
+              padding: const EdgeInsets.all(8.0),
+              decoration: new BoxDecoration(
+                shape: BoxShape.circle,
+                color: activeCameraItem == 3
+                    ? Colors.grey[850]
+                    : Colors.grey[600],
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: () => {
+              setState(() {
+                _controller.jumpToPage(4);
+              })
+            },
+            child: new Container(
+              margin: const EdgeInsets.all(2.0),
+              padding: const EdgeInsets.all(8.0),
+              decoration: new BoxDecoration(
+                shape: BoxShape.circle,
+                color: activeCameraItem == 4
+                    ? Colors.grey[850]
+                    : Colors.grey[600],
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: (() {
+              setState(() {
+                _controller.jumpToPage(5);
+                storage.setItem("first_time_usage", true);
+              });
 
-                  }),
-                  child: new Container(
-                    margin: const EdgeInsets.all(2.0),
-                    padding: const EdgeInsets.all(8.0),
-                    decoration: new BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ),
-              ],
-            );
+            }),
+            child: new Container(
+              margin: const EdgeInsets.all(2.0),
+              padding: const EdgeInsets.all(8.0),
+              decoration: new BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.grey[600],
+              ),
+            ),
+          ),
+        ],
+      );
   }
 
   List<Widget> cameraUsage() {
@@ -362,10 +358,10 @@ class _CameraState extends State<Camera>
             Expanded (
               child: Text(
                 "De eerste stap is het maken van een foto die "
-                  "gebruikt kan worden voor het toevoegen van "
-                  "een plant aan de gebruikers plantenlijst. "
-                  "Dit kan gedaan worden vanuit de gallerij of "
-                  "door direct een foto te maken.",
+                    "gebruikt kan worden voor het toevoegen van "
+                    "een plant aan de gebruikers plantenlijst. "
+                    "Dit kan gedaan worden vanuit de gallerij of "
+                    "door direct een foto te maken.",
                 overflow: TextOverflow.ellipsis,
                 maxLines: 6,
               ),
@@ -395,10 +391,10 @@ class _CameraState extends State<Camera>
             Expanded (
               child: Text(
                 "De tweede stap is de plant die de gebruiker "
-                  "heeft uit de lijst van planten "
-                  "selecteren, deze lijst heeft de meest "
-                  "overeenkomende planten van de plant van "
-                  "de gebruiker. ",
+                    "heeft uit de lijst van planten "
+                    "selecteren, deze lijst heeft de meest "
+                    "overeenkomende planten van de plant van "
+                    "de gebruiker. ",
                 overflow: TextOverflow.ellipsis,
                 maxLines: 6,
               ),
@@ -428,11 +424,11 @@ class _CameraState extends State<Camera>
             Expanded (
               child: Text(
                 "De derde stap is kijken naar meer "
-                  "informatie over de plant die in de "
-                  "eerste stap geselecteerd is, bij "
-                  "dit scherm kan de plant ook "
-                  "geselecteerd worden om toe te voegen"
-                  " aan de gebruikers plantenlijst. "
+                    "informatie over de plant die in de "
+                    "eerste stap geselecteerd is, bij "
+                    "dit scherm kan de plant ook "
+                    "geselecteerd worden om toe te voegen"
+                    " aan de gebruikers plantenlijst. "
                     "de gebruiker. ",
                 overflow: TextOverflow.ellipsis,
                 maxLines: 6,
@@ -463,10 +459,10 @@ class _CameraState extends State<Camera>
             Expanded (
               child: Text(
                 "De vierde stap is het toevoegen van "
-                  "planten aan de plantenlijst, dit"
-                  " wordt gedaan door een aantal "
-                  "gegevens die van belang voor de "
-                  "plant zijn in te vullen. ",
+                    "planten aan de plantenlijst, dit"
+                    " wordt gedaan door een aantal "
+                    "gegevens die van belang voor de "
+                    "plant zijn in te vullen. ",
                 overflow: TextOverflow.ellipsis,
                 maxLines: 6,
               ),
@@ -496,7 +492,7 @@ class _CameraState extends State<Camera>
             Expanded (
               child: Text(
                 "Swipe naar links of druk op de laatste "
-                  "cirkel om de uitleg af te sluitern. ",
+                    "cirkel om de uitleg af te sluitern. ",
                 overflow: TextOverflow.ellipsis,
                 maxLines: 6,
               ),
@@ -515,10 +511,7 @@ class _CameraState extends State<Camera>
       res.add(Container(child: Text(icon)));
     }
 
-    return Container(
-        child: Row(
-      children: res,
-    ));
+    return Container(child: Row(children: res,));
   }
 
   Widget getData(int plantNumber) {
@@ -535,40 +528,30 @@ class _CameraState extends State<Camera>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
-          padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 9.0),
-          child: Container(
-              child: Text(
-            plantName,
-            style: TextStyle(
-                color: Color(0xffe6020a),
-                fontSize: 24.0,
-                fontWeight: FontWeight.bold),
-          )),
+          padding: const EdgeInsets.fromLTRB( 8.0,0,0,9.0),
+          child: Container(child: Text(plantName,
+            style: TextStyle(color: Color(0xffe6020a), fontSize: 24.0,fontWeight: FontWeight.bold),)),
         ),
         Padding(
           padding: const EdgeInsets.only(left: 8.0),
-          child: Text("Confidence : " +
-              _recognitions
-                  .map((res) {
-                    return res["confidence"];
-                  })
-                  .toList()[0]
-                  .toString()),
+          child: Text("Confidence : "+_recognitions.map((res){ return res["confidence"];}).toList()[0].toString()),
+        ),
+
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: getIcon("Hoeveelheid water: ",waterAmount,'💧'),
         ),
         Padding(
           padding: const EdgeInsets.only(left: 8.0),
-          child: getIcon("Hoeveelheid water: ", waterAmount, '💧'),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: getIcon("Hoeveelheid zonlicht: ", sunAmount, '☀'),
+          child: getIcon("Hoeveelheid zonlicht: ",sunAmount,'☀'),
         ),
       ],
     );
   }
 
-  Widget predictionCard(int plantNumber) {
+  Widget predictionCard(int plantNumber){
     var res = Row(
+
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
         Padding(
@@ -577,6 +560,7 @@ class _CameraState extends State<Camera>
             child: getData(plantNumber),
           ),
         ),
+
         Container(
           width: 250,
           height: 180,
@@ -605,27 +589,27 @@ class _CameraState extends State<Camera>
 
     if(storageReady && imageFile == null && storage.getItem("first_time_usage") == true){
       builder.add(
-        Container(
-          child: Column(
-            children: <Widget>[
-              Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      child: Padding(
-                        padding: const EdgeInsets.all(1.0),
-                        child: Center(
-                          child: _cameraPreviewWidget(),
+          Container(
+            child: Column(
+              children: <Widget>[
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        child: Padding(
+                          padding: const EdgeInsets.all(1.0),
+                          child: Center(
+                            child: _cameraPreviewWidget(),
+                          ),
                         ),
                       ),
-                    ),
-                  )
-                ],
-              ),
-              _captureControlRowWidget()
-            ],
-          ),
-        )
+                    )
+                  ],
+                ),
+                _captureControlRowWidget()
+              ],
+            ),
+          )
       );
     } else if(storageReady && imageFile != null && storage.getItem("first_time_usage") == true) {
       builder.add(
@@ -664,28 +648,28 @@ class _CameraState extends State<Camera>
     }
 
     return new WillPopScope(
-        onWillPop: _onWillPop,
-        child: Scaffold(
-          drawer: MenuNavigation(),
-          bottomNavigationBar: BottomNavigation(),
-          appBar: AppBar(
-            title: Text("Camera", style: TextStyle(fontFamily: 'Libre Baskerville')),
-            centerTitle: true,
-          ),
-          body: PageView(
-            controller: _controller,
-            onPageChanged: (int page) {
-              setState(() {
-                activeCameraItem = page;
-
-                if(page == 5)
-                  storage.setItem("first_time_usage", true);
-
-              });
-            },
-            children: storageReady ? builder : <Widget>[],
-          ),
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        drawer: MenuNavigation(),
+        bottomNavigationBar: BottomNavigation(),
+        appBar: AppBar(
+          title: Text("Camera", style: TextStyle(fontFamily: 'Libre Baskerville')),
+          centerTitle: true,
         ),
+        body: PageView(
+          controller: _controller,
+          onPageChanged: (int page) {
+            setState(() {
+              activeCameraItem = page;
+
+              if(page == 5)
+                storage.setItem("first_time_usage", true);
+
+            });
+          },
+          children: storageReady ? builder : <Widget>[],
+        ),
+      ),
     );
   }
 
@@ -734,7 +718,7 @@ class _CameraState extends State<Camera>
           Row(),
           Row(),
           Row(),
-           ClipOval(
+          ClipOval(
             child: Material(
               color: Colors.blue, // button color
               child: InkWell(
