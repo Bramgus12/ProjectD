@@ -13,6 +13,7 @@ class StatusBox extends StatelessWidget {
   final String message;
   final Status status;
   final double _padding = 15.0; 
+  final double _minHeight = 66;
 
   StatusBox({this.status=Status.none, this.message="Test"});
 
@@ -21,6 +22,7 @@ class StatusBox extends StatelessWidget {
     switch (status) {
       case Status.loading:
         return Container(
+          constraints: BoxConstraints(minHeight: _minHeight),
           padding: EdgeInsets.all(_padding),
           child: CircularProgressIndicator()
         );
@@ -28,18 +30,24 @@ class StatusBox extends StatelessWidget {
       case Status.error:
       case Status.message:
         return Container(
-          padding: EdgeInsets.all(_padding),
-          margin: EdgeInsets.symmetric(vertical: 10),
-          color: status == Status.error ? Theme.of(context).errorColor : null,
-          child: Text(
-            message,
-            style: TextStyle(color: status == Status.error ? Colors.white : null),
-            textAlign: TextAlign.center,
-          )
+          constraints: BoxConstraints(minHeight: _minHeight),
+          child: Container(
+            padding: EdgeInsets.all(_padding),
+            margin: EdgeInsets.symmetric(vertical: 10),
+            color: status == Status.error ? Theme.of(context).errorColor : null,
+            child: Text(
+              message,
+              style: TextStyle(color: status == Status.error ? Colors.white : null),
+              textAlign: TextAlign.center,
+            )
+          ),
         );
         break;
       default:
-        return Container(padding: EdgeInsets.all(_padding));
+        return Container(
+          constraints: BoxConstraints(minHeight: _minHeight),
+          // padding: EdgeInsets.all(_padding)
+        );
     }
   }
 }

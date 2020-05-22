@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 class LoginInputField extends StatelessWidget {
   final TextEditingController controller;
@@ -18,7 +19,6 @@ class LoginInputField extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: TextFormField(
-        
         keyboardType: keyboardType,
         enabled: enabled,
         controller: controller,
@@ -43,38 +43,85 @@ class LoginInputField extends StatelessWidget {
 }
 
 class LoginDatePicker extends StatefulWidget {
+  final String label;
+  final void Function(DateTime) dateTimeCallback;
+  final bool validationError;
+  final String validationMessage;
+
+  LoginDatePicker(this.dateTimeCallback, {this.label, this.validationError=false, this.validationMessage=""});
+
   @override
   _LoginDatePickerState createState() => _LoginDatePickerState();
 }
 
 class _LoginDatePickerState extends State<LoginDatePicker> {
+  DateTime pickedDate = DateTime.now();
+
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
     return Row(
       children: <Widget>[
         Padding(
           padding: const EdgeInsets.only(bottom: 20),
-          child: OutlineButton(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                "Geboorte Datum",
-                style: TextStyle(
-                  color: Colors.grey
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              OutlineButton(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Text(
+                    pickedDate == null ? widget.label : DateFormat('dd-MM-yyyy').format(pickedDate),
+                    style: TextStyle(
+                      color: theme.textTheme.headline1.color,
+                      fontWeight: theme.textTheme.bodyText2.fontWeight,
+                      fontSize: 16.0,
+                      fontFamily: theme.textTheme.bodyText2.fontFamily
+                    ),
+                  ),
                 ),
+                borderSide: BorderSide(
+                  color: widget.validationError ? theme.errorColor : Colors.grey
+                ),
+                onPressed: (){ pickDate(context); },
               ),
-            ),
-            borderSide: BorderSide(
-              color: Colors.grey
-            ),
-            onPressed: () {  },
+              Visibility(
+                visible: widget.validationError,
+                child: Container(
+                  margin: EdgeInsets.fromLTRB(10, 10, 0, 0),
+                  child: Text(
+                    widget.validationMessage,
+                    style: theme.textTheme.caption.apply(
+                      color: theme.errorColor
+                    ),
+                  ),
+                )
+              )
+            ],
           ),
         ),
       ],
     );
   }
 
-  // TODO: implement date picker button functionality
+  Future<void> pickDate(BuildContext context) async {
+    DateTime date = await showDatePicker(
+      context: context, 
+      initialDate: pickedDate, 
+      firstDate: DateTime(1900, 1, 1), 
+      lastDate: DateTime.now(),
+      initialDatePickerMode: DatePickerMode.year,
+      fieldLabelText: this.widget.label,
+    );
+    if(date == null) return;
+
+    setState(() {
+      pickedDate = date;
+    });
+
+    widget.dateTimeCallback(date);
+
+  }
 }
 
 

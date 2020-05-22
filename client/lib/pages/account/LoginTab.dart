@@ -5,6 +5,8 @@ import 'package:plantexpert/pages/account/LoginInputField.dart';
 import 'package:plantexpert/widgets/StatusBox.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'AccountValidationFunctions.dart';
+
 class LoginTab extends StatefulWidget {
   @override
   _LoginTabState createState() => _LoginTabState();
@@ -53,7 +55,7 @@ class _LoginTabState extends State<LoginTab> {
               StatusBox(status: _status, message: _statusMessage),
               RaisedButton(
                 color: theme.accentColor,
-                onPressed: login,
+                onPressed: _status == Status.loading ? null : login,
                 child: Text(
                   "Login",
                   style: theme.accentTextTheme.button
@@ -64,20 +66,6 @@ class _LoginTabState extends State<LoginTab> {
         ),
       ),
     );
-  }
-
-  String validateUsername(String username) {
-    if(username.isEmpty) {
-      return "Geen gebruikersnaam ingevuld.";
-    }
-    return null;
-  }
-
-  String validatePassword(String password) {
-    if(password.isEmpty) {
-      return "Geen wachtwoord ingevuld.";
-    }
-    return null;
   }
 
   Future<void> login() async {
