@@ -76,9 +76,9 @@ class _CameraState extends State<Camera>
       _recognitions = null;
     });
     var img = await ImagePicker.pickImage(source: ImageSource.gallery);
-    if (img != null) {
+    if(img != null){
       predictImage(img);
-      this.setState(() {
+      this.setState((){
         imageFile = img;
       });
     }
@@ -112,8 +112,8 @@ class _CameraState extends State<Camera>
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  Widget selectedImageView() {
-    if (imageFile == null) {
+  Widget selectedImageView(){
+    if(imageFile == null){
       return Text(" ");
     }else{
       return  Image.file(imageFile,width: 150, height: 150,);
@@ -122,22 +122,18 @@ class _CameraState extends State<Camera>
 
   Widget predictionView(){
 
-  Widget predictionView() {
-    if (_recognitions == null) {
+    if(_recognitions == null){
       return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.only(left: 16.0),
-              child: Container(
-                  padding: EdgeInsets.all(16.0),
-                  height: 150,
-                  child: Text(
-                      "Select a plant image from your gallery or take a picture \nof a plant by clicking the floating button at the bottom \nleft of your screen.",
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 20))),
+            padding: const EdgeInsets.only(left: 16.0),
+            child: Container(
+
+              padding: EdgeInsets.all(16.0),
+              height: 150,
+              child: Text("Select a plant image from your gallery or take a picture \nof a plant by clicking the floating button at the bottom \nleft of your screen.", textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20))
             ),
           ),]);
     }else{
@@ -515,10 +511,7 @@ class _CameraState extends State<Camera>
       res.add(Container(child: Text(icon)));
     }
 
-    return Container(
-        child: Row(
-      children: res,
-    ));
+    return Container(child: Row(children: res,));
   }
 
   Widget getData(int plantNumber) {
@@ -535,40 +528,30 @@ class _CameraState extends State<Camera>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
-          padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 9.0),
-          child: Container(
-              child: Text(
-            plantName,
-            style: TextStyle(
-                color: Color(0xffe6020a),
-                fontSize: 24.0,
-                fontWeight: FontWeight.bold),
-          )),
+          padding: const EdgeInsets.fromLTRB( 8.0,0,0,9.0),
+          child: Container(child: Text(plantName,
+            style: TextStyle(color: Color(0xffe6020a), fontSize: 24.0,fontWeight: FontWeight.bold),)),
         ),
         Padding(
           padding: const EdgeInsets.only(left: 8.0),
-          child: Text("Confidence : " +
-              _recognitions
-                  .map((res) {
-                    return res["confidence"];
-                  })
-                  .toList()[0]
-                  .toString()),
+          child: Text("Confidence : "+_recognitions.map((res){ return res["confidence"];}).toList()[0].toString()),
+        ),
+
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: getIcon("Hoeveelheid water: ",waterAmount,'💧'),
         ),
         Padding(
           padding: const EdgeInsets.only(left: 8.0),
-          child: getIcon("Hoeveelheid water: ", waterAmount, '💧'),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: getIcon("Hoeveelheid zonlicht: ", sunAmount, '☀'),
+          child: getIcon("Hoeveelheid zonlicht: ",sunAmount,'☀'),
         ),
       ],
     );
   }
 
-  Widget predictionCard(int plantNumber) {
-    var res = Row(
+  Widget predictionCard(int plantNumber){
+     var res = Row(
+
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
         Padding(
@@ -577,6 +560,7 @@ class _CameraState extends State<Camera>
             child: getData(plantNumber),
           ),
         ),
+
         Container(
           width: 250,
           height: 180,
@@ -591,7 +575,7 @@ class _CameraState extends State<Camera>
         )
       ],
     );
-    return res;
+     return res;
   }
 
   @override
