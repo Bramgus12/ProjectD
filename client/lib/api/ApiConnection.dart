@@ -175,7 +175,7 @@ class ApiConnection {
   }
 
   Future<http.Response> postUser(User user) async {
-    return await _postJson("users", user);
+    return await _postJson("users/", user);
   }
   
   // Weather stations

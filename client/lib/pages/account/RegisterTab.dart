@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:plantexpert/api/ApiConnection.dart';
+import 'package:plantexpert/api/ApiConnectionException.dart';
 import 'package:plantexpert/api/User.dart';
 import 'package:plantexpert/pages/account/AccountValidationFunctions.dart';
 import 'package:plantexpert/pages/account/LoginInputField.dart';
@@ -26,7 +27,7 @@ class _RegisterTabState extends State<RegisterTab> {
   TextEditingController homeAdditionController = new TextEditingController();
   TextEditingController cityController = new TextEditingController();
   TextEditingController zipController = new TextEditingController();
-  DateTime birthDay;
+  DateTime birthDay = DateTime.now();
 
   bool birthdayError = false;
   String birthdayErrorMessage = "";
@@ -122,7 +123,13 @@ class _RegisterTabState extends State<RegisterTab> {
     );
 
     // TODO: Api response error handling
-    await apiConnection.postUser(user);
+    try {
+      await apiConnection.postUser(user);
+    } on ApiConnectionException catch(e) {
+      print(e);
+    } on StatusCodeException catch(e) {
+      print(e);
+    } 
 
   }
 }
