@@ -6,6 +6,7 @@ import com.bylivingart.plants.Exceptions.NotFoundException;
 import com.bylivingart.plants.FileService;
 import com.bylivingart.plants.GetPropertyValues;
 import com.bylivingart.plants.dataclasses.Plants;
+import com.bylivingart.plants.dataclasses.UserPlants;
 import com.bylivingart.plants.statements.PlantsStatements;
 import io.swagger.annotations.*;
 import org.apache.commons.io.IOUtils;
@@ -75,10 +76,23 @@ public class PlantsController {
             @RequestParam String plantName,
             @RequestParam String imageName
     ) throws Exception {
-        if (FileService.uploadImage(file, plantName, imageName, false)) {
-            return new ResponseEntity<>(HttpStatus.CREATED);
+        Connection conn = new DatabaseConnection().getConnection();
+        ArrayList<Plants> list = PlantsStatements.getAllPlants(conn);
+        boolean exists = false;
+        for (Plants plant : list){
+            if (plant.getName().equals(plantName)) {
+                exists = true;
+                break;
+            }
+        }
+        if (exists) {
+            if (FileService.uploadImage(file, plantName, imageName, false)) {
+                return new ResponseEntity<>(HttpStatus.CREATED);
+            } else {
+                throw new BadRequestException("Couldn't upload file");
+            }
         } else {
-            throw new BadRequestException("Couldn't upload file");
+            throw new NotFoundException("PlantName does not exist in database");
         }
     }
 
@@ -129,14 +143,10 @@ public class PlantsController {
             @ApiParam(value = "The id of the plant you want to delete", required = true) @PathVariable int id
     ) throws Exception {
         Connection conn = new DatabaseConnection().getConnection();
-        if (PlantsStatements.deletePlant(id, conn)) {
-            ResponseEntity<Void> response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            conn.close();
-            return response;
-        } else {
-            conn.close();
-            throw new NotFoundException("Plant not found");
-        }
+        PlantsStatements.deletePlant(id, conn);
+        ResponseEntity<Void> response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        conn.close();
+        return response;
     }
 
     @ApiOperation(value = "update a plant")

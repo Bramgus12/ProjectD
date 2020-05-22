@@ -1,6 +1,7 @@
 package com.bylivingart.plants.statements;
 
 import com.bylivingart.plants.Exceptions.NotFoundException;
+import com.bylivingart.plants.FileService;
 import com.bylivingart.plants.SecurityConfig;
 import com.bylivingart.plants.dataclasses.UserPlants;
 
@@ -84,19 +85,22 @@ public class UserPlantsStatements {
         }
     }
 
-    public static boolean deleteUserPlant(int id, Connection conn, HttpServletRequest request) throws Exception {
+    public static void deleteUserPlant(int id, Connection conn, HttpServletRequest request) throws Exception {
         int userId = SecurityConfig.getUserIdFromBase64(request);
         PreparedStatement ps = conn.prepareStatement("SELECT * FROM user_plants WHERE id=? AND user_id=?;");
         ps.setInt(1, id);
         ps.setInt(2, userId);
         ResultSet rs = ps.executeQuery();
-
-        PreparedStatement ps2 = conn.prepareStatement("DELETE FROM user_plants WHERE id=? AND user_id=?");
-        ps2.setInt(1, id);
-        ps2.setInt(2, userId);
-        ps2.execute();
-
-        return rs.next();
+        if (rs.next()) {
+            PreparedStatement ps2 = conn.prepareStatement("DELETE FROM user_plants WHERE id=? AND user_id=?");
+            ps2.setInt(1, id);
+            ps2.setInt(2, userId);
+            ps2.execute();
+            UserPlants userPlants = getAllFromResultSet(rs);
+            FileService.deleteImage(String.valueOf(userId), userPlants.getImageName(), String.valueOf(userPlants.getId()), true);
+        } else {
+            throw new NotFoundException("UserPlant not found.");
+        }
     }
 
     private static PreparedStatement fillPreparedStatement(PreparedStatement ps, UserPlants userPlants, int userId, int startingIndex) throws Exception {
