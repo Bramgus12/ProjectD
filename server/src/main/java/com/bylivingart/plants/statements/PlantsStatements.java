@@ -78,7 +78,7 @@ public class PlantsStatements {
             PreparedStatement ps = conn.prepareStatement(
                     "UPDATE plants SET name=?, water_scale=?, water_number=?, water_text=?, sun_scale=?, sun_number=?, sun_text=?, description=?, optimum_temp=?, image_name=? WHERE id=?"
             );
-            ps.setInt(10, plant.getId());
+            ps.setInt(11, plant.getId());
             fillPreparedStatement(ps, plant, 1).execute();
             return true;
         } else {
