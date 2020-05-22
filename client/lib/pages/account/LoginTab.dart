@@ -5,16 +5,16 @@ import 'package:plantexpert/pages/account/LoginInputField.dart';
 import 'package:plantexpert/widgets/StatusBox.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Login extends StatefulWidget{
+class LoginTab extends StatefulWidget {
   @override
-  _LoginState createState() => _LoginState();
+  _LoginTabState createState() => _LoginTabState();
 }
 
-class _LoginState extends State<Login> {
+class _LoginTabState extends State<LoginTab> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController usernameController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
   ApiConnection apiConnection = new ApiConnection();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   Status _status = Status.none;
   String _statusMessage = "";
@@ -35,37 +35,31 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Login', style: TextStyle(fontFamily: 'Libre Baskerville')),
-        centerTitle: true,
-      ),
-      body: Center(
-        child: Container(
-          constraints: BoxConstraints(maxWidth: 350),
-          padding: EdgeInsets.all(20),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Text("Login", style: TextStyle(fontSize: 18)),
-                ),
-                LoginInputField(usernameController, hintText: "Gebruikersnaam", enabled: _status != Status.loading, validator: validateUsername),
-                LoginInputField(passwordController, hintText: "Wachtwoord", enabled: _status != Status.loading, obfuscated: true, validator: validatePassword),
-                StatusBox(status: _status, message: _statusMessage),
-                RaisedButton(
-                  color: theme.accentColor,
-                  onPressed: login,
-                  child: Text(
-                    "Login",
-                    style: theme.accentTextTheme.button
-                    )
-                )
-              ],
-            ),
+    return SingleChildScrollView(
+      child: Container(
+        constraints: BoxConstraints(maxWidth: 350),
+        padding: EdgeInsets.all(20),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Text("Login", style: TextStyle(fontSize: 18)),
+              ),
+              LoginInputField(usernameController, hintText: "Gebruikersnaam", enabled: _status != Status.loading, validator: validateUsername),
+              LoginInputField(passwordController, hintText: "Wachtwoord", enabled: _status != Status.loading, obfuscated: true, validator: validatePassword),
+              StatusBox(status: _status, message: _statusMessage),
+              RaisedButton(
+                color: theme.accentColor,
+                onPressed: login,
+                child: Text(
+                  "Login",
+                  style: theme.accentTextTheme.button
+                  )
+              )
+            ],
           ),
         ),
       ),

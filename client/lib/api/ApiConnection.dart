@@ -7,6 +7,7 @@ import 'package:global_configuration/global_configuration.dart';
 import 'package:plantexpert/Utility.dart';
 import 'package:plantexpert/api/JsonSerializeable.dart';
 import 'package:plantexpert/api/Plant.dart';
+import 'package:plantexpert/api/User.dart';
 import 'package:plantexpert/api/UserPlant.dart';
 import 'package:plantexpert/api/WeatherStation.dart';
 import 'package:http_parser/http_parser.dart';
@@ -164,6 +165,17 @@ class ApiConnection {
   // Delete json
   Future<http.Response> _deleteJson(String url, { Map<String, String> headers } ) async {
     return await _sendRequest(url, headers: headers, type: "DELETE");
+  }
+
+  // User 
+  Future<User> fetchUser() async {
+    /// Fetches the user data of the logged in user.
+    Map<String, String> jsonUser = await _fetchJson("user/users/");
+    return User.fromJson(jsonUser);
+  }
+
+  Future<http.Response> postUser(User user) async {
+    return await _postJson("users", user);
   }
   
   // Weather stations
