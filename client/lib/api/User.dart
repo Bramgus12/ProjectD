@@ -6,8 +6,8 @@ class User implements JsonSerializeable {
   int id;
   String username;
   String password;
-  String authority = "ROLE_USER";
-  bool enabled = true;
+  String authority;
+  bool enabled;
   String name;
   String email;
   DateTime dateOfBirth;
@@ -21,8 +21,8 @@ class User implements JsonSerializeable {
     this.id,
     this.username,
     this.password,
-    this.authority,
-    this.enabled,
+    this.authority = "ROLE_USER",
+    this.enabled = true,
     this.name,
     this.email,
     this.dateOfBirth,
@@ -36,7 +36,7 @@ class User implements JsonSerializeable {
   factory User.fromJson(Map<String, dynamic> jsonUser) {
     return User(
       id : jsonUser['id'],
-      username : jsonUser['username'],
+      username : jsonUser['user_name'],
       password : jsonUser['password'],
       authority : jsonUser['authority'],
       enabled : jsonUser['enabled'],
@@ -59,7 +59,7 @@ class User implements JsonSerializeable {
   Map<String, dynamic> toJson() {
     return {
       "id" : id,
-      "username" : username,
+      "user_name" : username,
       "password" : password,
       "authority" : authority,
       "enabled" : enabled,

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:plantexpert/api/ApiConnection.dart';
 import 'package:plantexpert/api/ApiConnectionException.dart';
@@ -5,6 +7,7 @@ import 'package:plantexpert/api/User.dart';
 import 'package:plantexpert/pages/account/AccountValidationFunctions.dart';
 import 'package:plantexpert/pages/account/LoginInputField.dart';
 import 'package:plantexpert/widgets/StatusBox.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RegisterTab extends StatefulWidget {
   @override
@@ -27,10 +30,23 @@ class _RegisterTabState extends State<RegisterTab> {
   TextEditingController homeAdditionController = new TextEditingController();
   TextEditingController cityController = new TextEditingController();
   TextEditingController zipController = new TextEditingController();
-  DateTime birthDay = DateTime.now();
+  DateTime birthDay;
 
   bool birthdayError = false;
   String birthdayErrorMessage = "";
+
+  void showErrorMessage(String errorMessage) {
+    setState(() {
+      _statusMessage = errorMessage;
+      _status = Status.error;
+    });
+  }
+
+  void hideErrorMessage(){
+    setState(() {
+      _status = Status.none;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,6 +126,7 @@ class _RegisterTabState extends State<RegisterTab> {
     
     // Create user object from form data
     User user = User(
+      id: 0,
       username: usernameController.text,
       password: passwordController.text,
       name: nameController.text,
@@ -122,14 +139,38 @@ class _RegisterTabState extends State<RegisterTab> {
       postalCode: zipController.text
     );
 
-    // TODO: Api response error handling
     try {
       await apiConnection.postUser(user);
+
+      // Save username and password to shared preferences.
+      SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+      sharedPreferences.setString("username", usernameController.text);
+      sharedPreferences.setString("password", passwordController.text);
+
+      hideErrorMessage();
+      Navigator.pop(context);
+
     } on ApiConnectionException catch(e) {
       print(e);
+      showErrorMessage("Error connecting to server.");
     } on StatusCodeException catch(e) {
       print(e);
-    } 
+
+      if(e.reponse.statusCode == 400){
+        try{
+          Map<String, dynamic> serverResponse = json.decode(e.reponse.body);
+          if(serverResponse['message'] == "User already exists.")
+            showErrorMessage("De gebruikersnaam '${usernameController.text}' is niet beschikbaar.");
+          else
+            showErrorMessage("Server response: ${serverResponse['message']}");
+        } catch(jsonException) {
+          print(jsonException);
+          showErrorMessage("Server response: ${e.reponse.statusCode}");
+        }
+      }
+      else
+        showErrorMessage("Server response: ${e.reponse.statusCode}");
+    }
 
   }
 }

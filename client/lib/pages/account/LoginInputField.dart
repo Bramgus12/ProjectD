@@ -55,7 +55,7 @@ class LoginDatePicker extends StatefulWidget {
 }
 
 class _LoginDatePickerState extends State<LoginDatePicker> {
-  DateTime pickedDate = DateTime.now();
+  DateTime pickedDate;
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +107,7 @@ class _LoginDatePickerState extends State<LoginDatePicker> {
   Future<void> pickDate(BuildContext context) async {
     DateTime date = await showDatePicker(
       context: context, 
-      initialDate: pickedDate, 
+      initialDate: pickedDate == null ? DateTime.now() : pickedDate, 
       firstDate: DateTime(1900, 1, 1), 
       lastDate: DateTime.now(),
       initialDatePickerMode: DatePickerMode.year,

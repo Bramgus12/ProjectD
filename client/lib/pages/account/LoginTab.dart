@@ -85,7 +85,7 @@ class _LoginTabState extends State<LoginTab> {
       bool validCredentials = await apiConnection.verifyCredentials(usernameController.text, passwordController.text);
       if (validCredentials) {
         print("Credentials are valid.");
-        // Save username and password to shared preferences. This not a secure approach for a login system and should be changed later.
+        // Save username and password to shared preferences.
         SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
         sharedPreferences.setString("username", usernameController.text);
         sharedPreferences.setString("password", passwordController.text);
