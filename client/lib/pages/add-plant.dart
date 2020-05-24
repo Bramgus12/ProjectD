@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:plantexpert/api/User.dart';
 import 'package:plantexpert/api/UserPlant.dart';
+import 'package:plantexpert/api/ApiConnection.dart';
 
 import '../MenuNavigation.dart';
 
@@ -63,13 +64,19 @@ class _AddPlant extends State<AddPlant> {
     });
   }
 
-  void submit() {
-    // TODO: invalidate if given lastWaterDate is null and showFutureTimeWarning is true
+  void submit() async {
     if (this._formKey.currentState.validate() && allowedToSubmit) {
       _formKey.currentState.save();
       newPlant.imageName = selectedImagePath;
-      User.plants.add(newPlant);
-      Navigator.pushNamed(context, '/my-plants');
+      // plantId required, use 4 for now
+      newPlant.plantId = 4;
+
+      var api = new ApiConnection();
+      var result = api.postUserPlant(newPlant, File(newPlant.imageName));
+      print('posting, can take a while...');
+      await result;
+      print('done');
+      // Navigator.pushNamed(context, '/my-plants');
     }
   }
 
@@ -124,7 +131,8 @@ class _AddPlant extends State<AddPlant> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: change all colors to theme colors
+    ThemeData theme = Theme.of(context);
+
     return Scaffold(
       drawer: MenuNavigation(),
       // bottomNavigationBar: BottomNavigation(),
@@ -134,10 +142,9 @@ class _AddPlant extends State<AddPlant> {
         centerTitle: true,
       ),
       body: Container(
-        color: Colors.grey[900],
         child: DefaultTextStyle(
             style:
-                TextStyle(fontFamily: 'Libre Baskerville', color: Colors.white),
+                TextStyle(fontFamily: 'Libre Baskerville', color: Colors.black),
             child: Padding(
                 padding: EdgeInsets.all(15.0),
                 // TODO: also validate onChanged instead of on submit to make the form more 'user-friendly'
@@ -281,9 +288,9 @@ class _AddPlant extends State<AddPlant> {
                                         CrossAxisAlignment.start,
                                     children: <Widget>[
                                       FlatButton(
-                                        child: Icon(Icons.date_range),
+                                        child: Icon(Icons.date_range, color: Colors.white),
                                         onPressed: () => pickDate(context),
-                                        color: Colors.blue,
+                                        color: theme.accentColor,
                                       ),
                                       SizedBox(height: 10),
                                       Text(selectedDate != null
@@ -299,9 +306,9 @@ class _AddPlant extends State<AddPlant> {
                                         CrossAxisAlignment.start,
                                     children: <Widget>[
                                       FlatButton(
-                                        child: Icon(Icons.timer),
+                                        child: Icon(Icons.timer, color: Colors.white),
                                         onPressed: () => pickTime(context),
-                                        color: Colors.blue,
+                                        color: theme.accentColor,
                                       ),
                                       SizedBox(height: 10),
                                       () {
@@ -348,8 +355,8 @@ class _AddPlant extends State<AddPlant> {
                             },
                             min: 1,
                             max: 5,
-                            // label: newPlant.distanceToWindow.toString(),
-                            activeColor: Colors.blue,
+                            activeColor: theme.accentColor,
+                            inactiveColor: theme.disabledColor,
                             divisions: 4,
                           ),
                         ],
@@ -410,10 +417,10 @@ class _AddPlant extends State<AddPlant> {
                       ]),
                       // TODO: allow submission if all required fields are filled
                       RaisedButton(
-                        child: Text('Voeg toe'),
+                        child: Text('Voeg toe', style: theme.accentTextTheme.button),
                         onPressed: allowedToSubmit ? submit : null,
-                        disabledColor: Colors.grey[700],
-                        disabledTextColor: Colors.black,
+                        color: theme.accentColor,
+                        disabledColor: theme.disabledColor,
                       )
                     ],
                   ),
@@ -434,6 +441,8 @@ class AddPlantTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
+
     return Container(
       width: MediaQuery.of(context).size.width,
       child: Column(
@@ -442,13 +451,12 @@ class AddPlantTextField extends StatelessWidget {
           Text(label),
           SizedBox(height: 10),
           TextFormField(
-            style: TextStyle(color: Colors.black),
             decoration: InputDecoration(
               focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.white),
+                borderSide: BorderSide(color: theme.accentColor),
               ),
               enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white)),
+                  borderSide: BorderSide(color: theme.accentColor)),
               errorBorder:
                   OutlineInputBorder(borderSide: BorderSide(color: Colors.red)),
               filled: true,

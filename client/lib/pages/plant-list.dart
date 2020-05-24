@@ -21,23 +21,22 @@ class PlantList extends StatelessWidget {
         child: ListView.builder(
           itemBuilder: (_, index) {
             return PlantListItem(
-              // plant: Plant(
-              //   id: 0,
-              //   name: "Test Plant",
-              //   waterScale: 2.0,
-              //   waterNumber: 2.0,
-              //   waterText: "Plant needs water.",
-              //   sunScale: 2.0,
-              //   sunNumber: 2.0,
-              //   sunText: "Plant needs sun.",
-              //   description: "This is a plant.",
-              //   optimalTemp: 2,
-              //   imageName: "assets/images/croton.jpg"
-              // )
-              plant: User.plants[index].toPlant()
+               plant: Plant(
+                 id: 0,
+                 name: "Test Plant",
+                 waterScale: 2.0,
+                 waterNumber: 2.0,
+                 waterText: "Plant needs water.",
+                 sunScale: 2.0,
+                 sunNumber: 2.0,
+                 sunText: "Plant needs sun.",
+                 description: "This is a plant.",
+                 optimalTemp: 2,
+                 imageName: "assets/images/croton.jpg"
+               )
             );
           },
-          itemCount: User.plants.length,
+          itemCount: 1,
         )
       ),
       floatingActionButton: FloatingActionButton(
@@ -61,6 +60,7 @@ class PlantListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
     return DefaultTextStyle(
       child: GestureDetector(
         onTap: () => Navigator.pushNamed(context, '/plant-detail', arguments: plant),
@@ -71,25 +71,34 @@ class PlantListItem extends StatelessWidget {
               border: Border(
                   bottom: BorderSide(
                       width: 1.0,
-                      color: Colors.white
+                      color: theme.accentColor
                   )
               ),
-              color: Colors.black
           ),
           child: Row(
             children: <Widget>[
               Expanded(
                 flex: 4,
-                child: Image.file(
-                  File(plant.imageName),
-                  width: _imageWidth,
-                  height: _imageHeight,
-                ),
+                child: () {
+                  if (plant.imageName.contains('assets/images')) {
+                    return Image.asset(
+                      plant.imageName,
+                      width: _imageWidth,
+                      height: _imageHeight,
+                    );
+                  }
+
+                  return Image.file(
+                    File(plant.imageName),
+                    width: _imageWidth,
+                    height: _imageHeight,
+                  );
+                }(),
               ),
               // space between image and text
               Expanded(
                 flex: 1,
-                child: SizedBox(width: 1),
+                child: SizedBox.shrink(),
               ),
               Expanded(
                 flex: 5,
@@ -98,14 +107,14 @@ class PlantListItem extends StatelessWidget {
                     children: <Widget>[
                       Text(
                         'Naam',
-                        style: TextStyle(color: Colors.grey)
+                        style: TextStyle(color: theme.accentColor)
                       ),
                       Text(plant.name),
                       SizedBox(height: 10),
 
                       Text(
                           'Hoeveelheid zonlicht',
-                          style: TextStyle(color: Colors.grey)
+                          style: TextStyle(color: theme.accentColor)
                       ),
                       RatingRow(
                         count: plant.sunScale.toInt(),
@@ -117,7 +126,7 @@ class PlantListItem extends StatelessWidget {
 
                       Text(
                           'Hoeveelheid water',
-                          style: TextStyle(color: Colors.grey)
+                          style: TextStyle(color: theme.accentColor)
                       ),
                       RatingRow(
                           count: plant.waterScale.toInt(),
@@ -153,7 +162,7 @@ class RatingRow extends StatelessWidget {
       children: List.generate(5, (index) =>
         Icon(
           index < count ? filledIcon : unfilledIcon,
-          color: Colors.white
+          color: Colors.black
         )
       )
     );

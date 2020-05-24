@@ -141,13 +141,9 @@ public class UserPlantsController {
     @DeleteMapping("/user/userplants")
     private ResponseEntity<Void> deleteUserPlant(@RequestParam int id, HttpServletRequest request) throws Exception {
         Connection conn = new DatabaseConnection().getConnection();
-        if (UserPlantsStatements.deleteUserPlant(id, conn, request)) {
-            conn.close();
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else {
-            conn.close();
-            throw new NotFoundException("UserPlant not found");
-        }
+        UserPlantsStatements.deleteUserPlant(id, conn, request);
+        conn.close();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @ApiOperation("Upload image")
@@ -163,11 +159,11 @@ public class UserPlantsController {
     private ResponseEntity<Void> uploadPlantImage(
             @RequestParam MultipartFile file,
             @RequestParam String imageName,
-            @RequestParam String userPlantId,
+            @RequestParam int userPlantId,
             HttpServletRequest request
     ) throws Exception {
         int userId = SecurityConfig.getUserIdFromBase64(request);
-        if (FileService.uploadImage(file, String.valueOf(userId), imageName,userPlantId, true)) {
+        if (FileService.uploadImage(file, String.valueOf(userId), imageName, String.valueOf(userPlantId), true)) {
             return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
             throw new BadRequestException("Couldn't upload file");
