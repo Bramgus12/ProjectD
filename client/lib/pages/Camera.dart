@@ -191,14 +191,20 @@ class _CameraState extends State<Camera>
       predictionCardMessage = "\n\nNo internet connection";
       });
     }else {
+      try{
         predictedPlant = await con.fetchPlant(
             int.parse(recognitions.map((res) {
               return res["label"];
             }).toList()[0]));
-      setState((){
-        _predictedPlant = predictedPlant;
-        _recognitions = recognitions;
-      });
+        setState((){
+          _predictedPlant = predictedPlant;
+          _recognitions = recognitions;
+        });
+      } on Exception catch(e){
+        setState((){
+          predictionCardMessage = "\n\nUnable to connect to server";
+        });
+      }
     }
 
 
