@@ -1,18 +1,39 @@
-# ProjectD - By Living
+# ProjectD - By Living Art
 
 This project wil contain an Android client and Server.  
 
 ## Running the android Application
 
-go to the folder `client` and execute the following commands:
+This Application is made in Flutter. There are multiple editors that work with this application. We recommend Visual Studio Code.
+
+1. Download VSCode from [this](https://code.visualstudio.com/) website.
+2. Download Flutter from [this](https://flutter.dev/docs/get-started/install) website.
+3. Download and install Android studio from [this](https://developer.android.com/studio) website.
+4. You can then follow the instructions on the website of Flutter. If you work on MacOS or Linux please update your path. This is an optional function for flutter but this would help you a lot.
+5. Open the folder `~/ProjectD/client/` in VSCode. If you open a Dart file you should get a message from VSCode that you have to install some extensions to run that language. If you don't see this message you can try to find the extension in the store. The extension is called flutter.
+6. You should see a terminal in VSCode. If you don't see one please go to `Terminal > New Terminal`.
+7. Please run the command `$ flutter doctor`. This will tell you if everything is installed correctly or not.
+8. After you have fixed all issues with flutter open the terminal and run the command `$ flutter pub get`.
+9. You have to change a line of code in the application. This is the IP-Address that the API is running on. If you are debugging this should be different for everyone. This line is in the file `~/ProjectD/client/assets/cfg/debug.json`. Change the IP-Address in that file.
+10. You should be ready to run the application now. See below on how to run it on an android emulator and on an Android device.
 
 ### Android Device
 
+1. Connect your phone via a cable to the computer. Make sure Android Debugging is turned on in the developer options.\
+2. If you want to see if your pc can find your phone run `$ adb devices` in a terminal. If this doesn't work you have to either set adb in your path or you have to install it via a package manager. (apt on linux)
+3. You should have an option in VSCode in de bottom right cornor to change the device you are about to run the application on. Change this to your phone.
+4. Press F5 and have fun.
+
 ### Android Emulator
+
+1. Open android studio and in the opening screen press the configure button and go to AVD Manager. This is the place where you can install and download android emulators.
+2. Create an emulator to your liking, but use an updated version of android. This application is tested on android 10 (Q) so we recommend you to download that version.
+3. Now go to VSCode and change the device to the emulator in the bottom right corner.
+4. Now press F5 and the app will install on the emulator.
 
 ## Running the Server
 
-The server is run on Java. This means that you need an IDE that works with Java. I am going to write the instructions for Intellij IDEA and Visual Studio Code. Please note that Intellij IDEA is a full fledged IDE where Visual Studio code is just text editor with some IDE functions.
+The server will be running on Java. This means that you need an IDE that works with Java. I am going to write the instructions for Intellij IDEA and Visual Studio Code. Please note that Intellij IDEA is a full fledged IDE where Visual Studio code is just text editor with some IDE functions.
 
 ### Intellij IDEA
 

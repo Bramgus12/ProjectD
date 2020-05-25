@@ -57,15 +57,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     public static User HashUserPassword(User user) {
-        User newUser = new User();
-        newUser.setId(user.getId());
-        newUser.setAuthority(user.getAuthority());
-        newUser.setUser_name(user.getUser_name());
-        newUser.setEnabled(user.getEnabled());
-        String newPassword = encoder().encode(user.getPassword());
-        System.out.println(newPassword);
-        newUser.setPassword(newPassword);
-        return newUser;
+        String oldPassword = user.getPassword();
+        String newPassword = encoder().encode(oldPassword);
+        user.setPassword(newPassword);
+        return user;
     }
 
     @Bean

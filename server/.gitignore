@@ -104,8 +104,8 @@ Database_config.properties
 /.settings/
 /.classpath
 /.project
-/src/main/resources/application.properties
 /src/main/resources/photos/*
 !/src/main/resources/photos/.gitkeep
 /src/main/resources/plants/*
 !/src/main/resources/plants/.gitkeep
+local.properties
