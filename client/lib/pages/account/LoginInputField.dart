@@ -22,7 +22,19 @@ class LoginInputField extends StatelessWidget {
         keyboardType: keyboardType,
         enabled: enabled,
         controller: controller,
-        validator: (value) => this.validator == null ? null : this.validator(value),
+        validator: (value) {
+          String result;
+          if(this.validator != null) 
+            result = this.validator(value);
+          if(result != null){
+            // Scroll to field if it's not valid and not visible
+            RenderBox box = context.findRenderObject();
+            Offset offset = box.localToGlobal(Offset.zero);
+            if(offset.dy < 0)
+              Scrollable.ensureVisible(context);
+          }
+          return result;
+        },
         decoration: InputDecoration(
           filled: !enabled,
           fillColor: theme.disabledColor,
