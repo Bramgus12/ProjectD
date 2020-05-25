@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:plantexpert/pages/account/Account.dart';
 
+import 'Utility.dart';
 import 'pages/Camera.dart';
 import 'pages/Home.dart';
 import 'pages/plant-list.dart';
@@ -19,6 +20,7 @@ Future<void> main() async {
     // Running in debug mode
     await GlobalConfiguration().loadFromAsset("debug");
   }
+  initializeNotifications();
 
   runApp(MyApp());
 }

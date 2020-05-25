@@ -3,6 +3,7 @@ import 'package:plantexpert/api/ApiConnection.dart';
 import 'package:plantexpert/api/ApiConnectionException.dart';
 import 'package:plantexpert/api/Plant.dart';
 import 'package:plantexpert/api/UserPlant.dart';
+import 'package:plantexpert/Utility.dart';
 
 import '../MenuNavigation.dart';
 
@@ -20,6 +21,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    int plantTimer = 5;
     return Scaffold(
       drawer: MenuNavigation(),
       bottomNavigationBar: BottomNavigation(),
@@ -31,6 +33,12 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            RaisedButton(
+              onPressed: () =>  scheduleNotification(5, "Plant $plantTimer heeft water nodig",
+                  "Het is al weer een paar dagen geleden en de plant heeft wel weer zin in wat water, geef hem snel water!",
+              "Water geven", "Notificaties voor het geven van water. "),
+              child: Text('Schedule notifcation for $plantTimer seconds from now. '),
+            ),
             RaisedButton(
               onPressed: plantsButtonTest,
               child: Text('UserPlant Image Test'),
