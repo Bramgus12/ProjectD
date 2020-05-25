@@ -1,7 +1,8 @@
 package com.bylivingart.plants.controllers;
 
 import com.bylivingart.plants.DatabaseConnection;
-import com.bylivingart.plants.PlantsApplication;
+import com.bylivingart.plants.Exceptions.BadRequestException;
+import com.bylivingart.plants.Exceptions.UnauthorizedException;
 import com.bylivingart.plants.dataclasses.User;
 import com.bylivingart.plants.statements.UserStatements;
 import io.swagger.annotations.*;
@@ -9,49 +10,103 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 @Api(value = "User controller")
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping
 public class UserController {
     @ApiOperation(value = "Get a list of users")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved list", response = User.class, responseContainer = "List"),
-            @ApiResponse(code = 400, message = "Bad request"),
-            @ApiResponse(code = 401, message = "Invalid credentials")
+            @ApiResponse(code = 400, message = "Bad request", response = Error.class),
+            @ApiResponse(code = 401, message = "Invalid credentials", response = Error.class),
+            @ApiResponse(code = 403, message = "forbidden", response = Error.class),
+            @ApiResponse(code = 404, message = "No data in database", response = Error.class)
     })
-    @GetMapping
-    private ResponseEntity<ArrayList<User>> getAllUsers() {
-        try {
-            Connection conn = new DatabaseConnection().getConnection();
-            ResponseEntity<ArrayList<User>> response = new ResponseEntity<>(UserStatements.getAllUsers(conn), HttpStatus.OK);
-            conn.close();
-            return response;
-        } catch (SQLException e) {
-            throw new IllegalArgumentException(e.getMessage());
+    @GetMapping("/admin/users/")
+    private ResponseEntity<ArrayList<User>> getAllUsers() throws Exception {
+        Connection conn = new DatabaseConnection().getConnection();
+        ResponseEntity<ArrayList<User>> response = new ResponseEntity<>(UserStatements.getAllUsers(conn), HttpStatus.OK);
+        conn.close();
+        return response;
+    }
+
+    @ApiOperation(value = "Check the user password")
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "User password is correct"),
+            @ApiResponse(code = 400, message = "Bad request", response = Error.class),
+            @ApiResponse(code = 404, message = "User not found", response = Error.class)
+    })
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @GetMapping("/users/checkpassword")
+    private ResponseEntity<Void> checkUserPassword(String userName, String password) throws Exception{
+        Connection conn = new DatabaseConnection().getConnection();
+        if (UserStatements.checkUserPassword(password, userName, conn)) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            throw new UnauthorizedException("UserName or Password is wrong");
         }
+    }
+
+    @ApiOperation("Create a user as a Admin")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "User created successfully", response = User.class),
+            @ApiResponse(code = 400, message = "Bad request", response = Error.class),
+            @ApiResponse(code = 401, message = "Unauthorized", response = Error.class),
+            @ApiResponse(code = 403, message = "Forbidden", response = Error.class),
+            @ApiResponse(code = 404, message = "User not found", response = Error.class)
+    })
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/admin/users/")
+    private ResponseEntity<User> createUserAdmin(
+            @RequestBody User user
+    ) throws Exception {
+        Connection conn = new DatabaseConnection().getConnection();
+        ResponseEntity<User> response = new ResponseEntity<>(UserStatements.createUserAdmin(user, conn), HttpStatus.CREATED);
+        conn.close();
+        return response;
     }
 
     @ApiOperation(value = "Create a new User")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully retrieved list", response = User.class),
-            @ApiResponse(code = 400, message = "Bad request"),
-            @ApiResponse(code = 401, message = "Invalid credentials")
+            @ApiResponse(code = 201, message = "Successfully retrieved list", response = User.class),
+            @ApiResponse(code = 400, message = "Bad request", response = Error.class),
+            @ApiResponse(code = 401, message = "Invalid credentials", response = Error.class),
+            @ApiResponse(code = 403, message = "forbidden", response = Error.class),
+            @ApiResponse(code = 404, message = "User not found", response = Error.class)
     })
-    @PostMapping
-    private ResponseEntity<User> createUser(@RequestBody User user) {
-        try {
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/users/")
+    private ResponseEntity<User> createUser(
+            @ApiParam(value = "Authority is defaulted to 'ROLE_USER' and id is autogenerated") @RequestBody User user
+    ) throws Exception {
+        Connection conn = new DatabaseConnection().getConnection();
+        ResponseEntity<User> response = new ResponseEntity<>(UserStatements.createUser(user, conn), HttpStatus.CREATED);
+        conn.close();
+        return response;
+    }
+
+
+    @ApiOperation("Update a user as an admin")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Updated user successfully", response = User.class),
+            @ApiResponse(code = 400, message = "Bad request", response = Error.class),
+            @ApiResponse(code = 401, message = "Unauthorized", response = Error.class),
+            @ApiResponse(code = 403, message = "Forbidden", response = Error.class),
+            @ApiResponse(code = 404, message = "User not found", response = Error.class)
+    })
+    @PutMapping("/admin/users/{id}/")
+    private ResponseEntity<User> updateUserAdmin(@PathVariable Integer id, @RequestBody User user) throws Exception {
+        if (id.equals(user.getId())) {
             Connection conn = new DatabaseConnection().getConnection();
-            ResponseEntity<User> response = new ResponseEntity<>(UserStatements.createUser(user, conn), HttpStatus.OK);
+            ResponseEntity<User> response = new ResponseEntity<>(UserStatements.updateUserAdmin(user, id, conn), HttpStatus.OK);
             conn.close();
             return response;
-        } catch (SQLException e) {
-            throw new IllegalArgumentException(e.getMessage());
+        } else {
+            throw new BadRequestException("ID's are different");
         }
     }
 
@@ -59,53 +114,79 @@ public class UserController {
     @ApiOperation(value = "Update an User object")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully updated the User object", response = User.class),
-            @ApiResponse(code = 400, message = "Bad request"),
-            @ApiResponse(code = 401, message = "Bad credentials")
+            @ApiResponse(code = 400, message = "Bad request", response = Error.class),
+            @ApiResponse(code = 401, message = "Bad credentials", response = Error.class),
+            @ApiResponse(code = 403, message = "forbidden", response = Error.class),
+            @ApiResponse(code = 404, message = "User not found", response = Error.class)
     })
-    @PutMapping("/{id}")
+    @PutMapping("/user/users/{id}/")
     private ResponseEntity<User> updateUser(
             @ApiParam(value = "Id of the User that you want to update", required = true) @PathVariable Integer id,
-            @ApiParam(value = "The object with the User that you want to update", required = true) @RequestBody User user
-    ) {
-        try {
-            if (id.equals(user.getId())) {
-                Connection conn = new DatabaseConnection().getConnection();
-                User result = UserStatements.updateUser(user, conn);
-                conn.close();
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            } else {
-                throw new IllegalArgumentException("ID's are different");
-            }
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e.getMessage());
+            @ApiParam(value = "The object with the User that you want to update", required = true) @RequestBody User user,
+            HttpServletRequest request
+    ) throws Exception {
+        if (id.equals(user.getId())) {
+            Connection conn = new DatabaseConnection().getConnection();
+            User result = UserStatements.updateUser(user, conn, request);
+            conn.close();
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } else {
+            throw new BadRequestException("ID's are different");
         }
+    }
+
+    @ApiOperation("Delete a user as a Admin")
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "Successfully deleted the user"),
+            @ApiResponse(code = 400, message = "Bad request", response = Error.class),
+            @ApiResponse(code = 401, message = "Unauthorized", response = Error.class),
+            @ApiResponse(code = 403, message = "Forbidden", response = Error.class),
+            @ApiResponse(code = 404, message = "User not found", response = Error.class)
+    })
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/admin/users/{id}")
+    private ResponseEntity<Void> deleteUserAdmin(@PathVariable int id) throws Exception {
+        Connection conn = new DatabaseConnection().getConnection();
+        UserStatements.deleteUserAdmin(id, conn);
+        ResponseEntity<Void> response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        conn.close();
+        return response;
+    }
+
+    @ApiOperation("Get the info of a single user")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully gotten the user", response = User.class),
+            @ApiResponse(code = 400, message = "Bad request", response = Error.class),
+            @ApiResponse(code = 401, message = "Unauthorized", response = Error.class),
+            @ApiResponse(code = 403, message = "Forbidden", response = Error.class),
+            @ApiResponse(code = 404, message = "Not found", response = Error.class)
+    })
+    @GetMapping("/user/users/")
+    private ResponseEntity<User> getUserInfo(HttpServletRequest request) throws Exception {
+        Connection conn = new DatabaseConnection().getConnection();
+        ResponseEntity<User> response = new ResponseEntity<>(UserStatements.getUserInfo(request, conn), HttpStatus.OK);
+        conn.close();
+        return response;
     }
 
     // Delete a certain address object.
     @ApiOperation(value = "Delete a user", response = User.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully deleted the user", response = User.class),
-            @ApiResponse(code = 400, message = "Bad request"),
-            @ApiResponse(code = 401, message = "Bad credentials")
+            @ApiResponse(code = 204, message = "Successfully deleted the user"),
+            @ApiResponse(code = 400, message = "Bad request", response = Error.class),
+            @ApiResponse(code = 401, message = "Bad credentials", response = Error.class),
+            @ApiResponse(code = 403, message = "forbidden", response = Error.class),
+            @ApiResponse(code = 404, message = "User not found", response = Error.class)
     })
-    @DeleteMapping("/{id}")
-    private ResponseEntity<User> deleteUser(
-            @ApiParam(value = "Id for the object you want to delete", required = true) @PathVariable Integer id
-    ) {
-        try {
-            Connection conn = new DatabaseConnection().getConnection();
-            ResponseEntity<User> response = new ResponseEntity<>(UserStatements.deleteUser(id, conn), HttpStatus.OK);
-            conn.close();
-            return response;
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e.getMessage());
-        }
-    }
-
-    // puts the Error in the right format
-    @ExceptionHandler
-    void handleIllegalArgumentException(IllegalArgumentException e, HttpServletResponse response) throws IOException {
-        PlantsApplication.printErrorInConsole(e.getMessage());
-        response.sendError(HttpStatus.BAD_REQUEST.value());
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/user/users/")
+    private ResponseEntity<Void> deleteUser(
+            HttpServletRequest request
+    ) throws Exception {
+        Connection conn = new DatabaseConnection().getConnection();
+        UserStatements.deleteUser(conn, request);
+        ResponseEntity<Void> response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        conn.close();
+        return response;
     }
 }

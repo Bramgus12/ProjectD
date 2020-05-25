@@ -16,9 +16,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for buienradarType complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="buienradarType">
  *   &lt;complexContent>
@@ -34,16 +34,14 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "buienradarType", propOrder = {
-    "url",
-    "urlbackup",
-    "icoonactueel",
-    "zonopkomst",
-    "zononder"
+        "url",
+        "urlbackup",
+        "icoonactueel",
+        "zonopkomst",
+        "zononder"
 })
 public class BuienradarType {
 
@@ -60,11 +58,9 @@ public class BuienradarType {
 
     /**
      * Gets the value of the url property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getUrl() {
         return url;
@@ -72,11 +68,9 @@ public class BuienradarType {
 
     /**
      * Sets the value of the url property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setUrl(String value) {
         this.url = value;
@@ -84,11 +78,9 @@ public class BuienradarType {
 
     /**
      * Gets the value of the urlbackup property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getUrlbackup() {
         return urlbackup;
@@ -96,11 +88,9 @@ public class BuienradarType {
 
     /**
      * Sets the value of the urlbackup property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setUrlbackup(String value) {
         this.urlbackup = value;
@@ -108,11 +98,9 @@ public class BuienradarType {
 
     /**
      * Gets the value of the icoonactueel property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link IcoonactueelType }
-     *     
+     *
+     * @return possible object is
+     * {@link IcoonactueelType }
      */
     public IcoonactueelType getIcoonactueel() {
         return icoonactueel;
@@ -120,11 +108,9 @@ public class BuienradarType {
 
     /**
      * Sets the value of the icoonactueel property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link IcoonactueelType }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link IcoonactueelType }
      */
     public void setIcoonactueel(IcoonactueelType value) {
         this.icoonactueel = value;
@@ -132,11 +118,9 @@ public class BuienradarType {
 
     /**
      * Gets the value of the zonopkomst property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getZonopkomst() {
         return zonopkomst;
@@ -144,11 +128,9 @@ public class BuienradarType {
 
     /**
      * Sets the value of the zonopkomst property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setZonopkomst(String value) {
         this.zonopkomst = value;
@@ -156,11 +138,9 @@ public class BuienradarType {
 
     /**
      * Gets the value of the zononder property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getZononder() {
         return zononder;
@@ -168,11 +148,9 @@ public class BuienradarType {
 
     /**
      * Sets the value of the zononder property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setZononder(String value) {
         this.zononder = value;

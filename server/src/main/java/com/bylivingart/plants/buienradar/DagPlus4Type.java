@@ -16,9 +16,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for dag-plus4Type complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="dag-plus4Type">
  *   &lt;complexContent>
@@ -43,25 +43,23 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "dag-plus4Type", propOrder = {
-    "datum",
-    "dagweek",
-    "kanszon",
-    "kansregen",
-    "minmmregen",
-    "maxmmregen",
-    "mintemp",
-    "mintempmax",
-    "maxtemp",
-    "maxtempmax",
-    "windrichting",
-    "windkracht",
-    "icoon",
-    "sneeuwcms"
+        "datum",
+        "dagweek",
+        "kanszon",
+        "kansregen",
+        "minmmregen",
+        "maxmmregen",
+        "mintemp",
+        "mintempmax",
+        "maxtemp",
+        "maxtempmax",
+        "windrichting",
+        "windkracht",
+        "icoon",
+        "sneeuwcms"
 })
 public class DagPlus4Type {
 
@@ -96,11 +94,9 @@ public class DagPlus4Type {
 
     /**
      * Gets the value of the datum property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getDatum() {
         return datum;
@@ -108,11 +104,9 @@ public class DagPlus4Type {
 
     /**
      * Sets the value of the datum property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setDatum(String value) {
         this.datum = value;
@@ -120,11 +114,9 @@ public class DagPlus4Type {
 
     /**
      * Gets the value of the dagweek property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getDagweek() {
         return dagweek;
@@ -132,11 +124,9 @@ public class DagPlus4Type {
 
     /**
      * Sets the value of the dagweek property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setDagweek(String value) {
         this.dagweek = value;
@@ -144,11 +134,9 @@ public class DagPlus4Type {
 
     /**
      * Gets the value of the kanszon property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getKanszon() {
         return kanszon;
@@ -156,11 +144,9 @@ public class DagPlus4Type {
 
     /**
      * Sets the value of the kanszon property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setKanszon(String value) {
         this.kanszon = value;
@@ -168,11 +154,9 @@ public class DagPlus4Type {
 
     /**
      * Gets the value of the kansregen property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getKansregen() {
         return kansregen;
@@ -180,11 +164,9 @@ public class DagPlus4Type {
 
     /**
      * Sets the value of the kansregen property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setKansregen(String value) {
         this.kansregen = value;
@@ -192,11 +174,9 @@ public class DagPlus4Type {
 
     /**
      * Gets the value of the minmmregen property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getMinmmregen() {
         return minmmregen;
@@ -204,11 +184,9 @@ public class DagPlus4Type {
 
     /**
      * Sets the value of the minmmregen property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setMinmmregen(String value) {
         this.minmmregen = value;
@@ -216,11 +194,9 @@ public class DagPlus4Type {
 
     /**
      * Gets the value of the maxmmregen property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getMaxmmregen() {
         return maxmmregen;
@@ -228,11 +204,9 @@ public class DagPlus4Type {
 
     /**
      * Sets the value of the maxmmregen property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setMaxmmregen(String value) {
         this.maxmmregen = value;
@@ -240,11 +214,9 @@ public class DagPlus4Type {
 
     /**
      * Gets the value of the mintemp property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getMintemp() {
         return mintemp;
@@ -252,11 +224,9 @@ public class DagPlus4Type {
 
     /**
      * Sets the value of the mintemp property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setMintemp(String value) {
         this.mintemp = value;
@@ -264,11 +234,9 @@ public class DagPlus4Type {
 
     /**
      * Gets the value of the mintempmax property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getMintempmax() {
         return mintempmax;
@@ -276,11 +244,9 @@ public class DagPlus4Type {
 
     /**
      * Sets the value of the mintempmax property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setMintempmax(String value) {
         this.mintempmax = value;
@@ -288,11 +254,9 @@ public class DagPlus4Type {
 
     /**
      * Gets the value of the maxtemp property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getMaxtemp() {
         return maxtemp;
@@ -300,11 +264,9 @@ public class DagPlus4Type {
 
     /**
      * Sets the value of the maxtemp property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setMaxtemp(String value) {
         this.maxtemp = value;
@@ -312,11 +274,9 @@ public class DagPlus4Type {
 
     /**
      * Gets the value of the maxtempmax property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getMaxtempmax() {
         return maxtempmax;
@@ -324,11 +284,9 @@ public class DagPlus4Type {
 
     /**
      * Sets the value of the maxtempmax property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setMaxtempmax(String value) {
         this.maxtempmax = value;
@@ -336,11 +294,9 @@ public class DagPlus4Type {
 
     /**
      * Gets the value of the windrichting property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getWindrichting() {
         return windrichting;
@@ -348,11 +304,9 @@ public class DagPlus4Type {
 
     /**
      * Sets the value of the windrichting property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setWindrichting(String value) {
         this.windrichting = value;
@@ -360,11 +314,9 @@ public class DagPlus4Type {
 
     /**
      * Gets the value of the windkracht property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getWindkracht() {
         return windkracht;
@@ -372,11 +324,9 @@ public class DagPlus4Type {
 
     /**
      * Sets the value of the windkracht property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setWindkracht(String value) {
         this.windkracht = value;
@@ -384,11 +334,9 @@ public class DagPlus4Type {
 
     /**
      * Gets the value of the icoon property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link IcoonType }
-     *     
+     *
+     * @return possible object is
+     * {@link IcoonType }
      */
     public IcoonType getIcoon() {
         return icoon;
@@ -396,11 +344,9 @@ public class DagPlus4Type {
 
     /**
      * Sets the value of the icoon property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link IcoonType }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link IcoonType }
      */
     public void setIcoon(IcoonType value) {
         this.icoon = value;
@@ -408,11 +354,9 @@ public class DagPlus4Type {
 
     /**
      * Gets the value of the sneeuwcms property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getSneeuwcms() {
         return sneeuwcms;
@@ -420,11 +364,9 @@ public class DagPlus4Type {
 
     /**
      * Sets the value of the sneeuwcms property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setSneeuwcms(String value) {
         this.sneeuwcms = value;

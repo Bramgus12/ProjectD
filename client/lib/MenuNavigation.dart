@@ -1,10 +1,8 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
 
 
-var selectedColor = new Color(0xff119543);
 
 class MenuNavigation extends StatefulWidget{
   MenuNavigation({Key key}) : super(key: key);
@@ -20,6 +18,7 @@ class _MenuNavigation extends State<MenuNavigation> {
 
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -49,24 +48,31 @@ class _MenuNavigation extends State<MenuNavigation> {
             onTap: (){
               Navigator.pushReplacementNamed(context, '/');
             },
-            leading: Icon(Icons.home, color: ModalRoute.of(context).settings.name == '/' ? selectedColor : Colors.black,),
+            leading: Icon(Icons.home, color: ModalRoute.of(context).settings.name == '/' ? theme.accentColor : Colors.black,),
           ),
           ListTile(
             title: Text('Camera'),
             onTap: (){
               Navigator.pushReplacementNamed(context, '/camera');
             },
-            leading: Icon(Icons.camera_alt, color: ModalRoute.of(context).settings.name == '/camera' ? selectedColor : Colors.black,),
+            leading: Icon(Icons.camera_alt, color: ModalRoute.of(context).settings.name == '/camera' ? theme.accentColor : Colors.black,),
           ),
           ListTile(
             title: Text('Mijn planten'),
             onTap: (){
               Navigator.pushReplacementNamed(context, '/my-plants');
             },
-            leading: Icon(Icons.featured_play_list, color: ModalRoute.of(context).settings.name == '/my-plants' ? selectedColor : Colors.black,),
+            leading: Icon(Icons.featured_play_list, color: ModalRoute.of(context).settings.name == '/my-plants' ? theme.accentColor : Colors.black,),
 
           ),
+          ListTile(
+            title: Text('Login'),
+            onTap: (){
+              Navigator.pushNamed(context, '/login');
+            },
+            leading: Icon(Icons.account_box, color: ModalRoute.of(context).settings.name == '/login' ? theme.accentColor : Colors.black,),
 
+          )
 
         ],
       ),
@@ -107,7 +113,7 @@ class _BottomNavigation extends State<BottomNavigation> {
         ),
       ],
       currentIndex: indexes.indexOf(ModalRoute.of(context).settings.name),
-      selectedItemColor: selectedColor,
+      selectedItemColor: Theme.of(context).accentColor,
       onTap: (int index) => {
         Navigator.pushReplacementNamed(
             context,

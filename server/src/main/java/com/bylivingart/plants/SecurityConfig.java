@@ -1,6 +1,10 @@
 package com.bylivingart.plants;
 
+import com.bylivingart.plants.Exceptions.NotFoundException;
+import com.bylivingart.plants.Exceptions.UnauthorizedException;
 import com.bylivingart.plants.dataclasses.User;
+import com.bylivingart.plants.statements.UserStatements;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +18,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
+import javax.swing.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 @Configuration
 @EnableWebSecurity
@@ -23,20 +32,39 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private DataSource dataSource;
 
+    public static int getUserIdFromBase64(HttpServletRequest request) throws Exception {
+        String basic = request.getHeader("Authorization");
+        Connection conn = new DatabaseConnection().getConnection();
+        String base64 = basic.substring(6);
+        byte[] array = Base64.decodeBase64(base64.getBytes());
+        String decodedBase64 = new String(array);
+        String[] base64Array = decodedBase64.split(":");
+        String username = base64Array[0];
+        String password = base64Array[1];
+
+        if (UserStatements.checkUserPassword(password, username, conn)) {
+            PreparedStatement ps = conn.prepareStatement("SELECT id FROM users where user_name=?");
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+            if (!rs.next()) {
+                throw new NotFoundException("User not found");
+            } else {
+                return rs.getInt("id");
+            }
+        } else {
+            throw new UnauthorizedException("Unauthorized");
+        }
+    }
+
     public static User HashUserPassword(User user) {
-        User newUser = new User();
-        newUser.setId(user.getId());
-        newUser.setAuthority(user.getAuthority());
-        newUser.setUser_name(user.getUser_name());
-        newUser.setEnabled(user.getEnabled());
-        String newPassword = encoder().encode(user.getPassword());
-        System.out.println(newPassword);
-        newUser.setPassword(newPassword);
-        return newUser;
+        String oldPassword = user.getPassword();
+        String newPassword = encoder().encode(oldPassword);
+        user.setPassword(newPassword);
+        return user;
     }
 
     @Bean
-    public static javax.sql.DataSource createDataSource() {
+    public static javax.sql.DataSource createDataSource() throws Exception {
         String propFileName = "Database_config.properties";
         String[] values = GetPropertyValues.getDatabasePropValues(propFileName);
         org.postgresql.ds.PGSimpleDataSource ds = new org.postgresql.ds.PGSimpleDataSource();
@@ -61,8 +89,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .passwordEncoder(new BCryptPasswordEncoder());
     }
 
+
     @Configuration
     @Order(1)
+    public static class UserStatementsSecurity3 extends WebSecurityConfigurerAdapter {
+        @Autowired
+        private AuthenticationEntryPoint authEntryPoint;
+
+        protected void configure(HttpSecurity http) throws Exception {
+            http
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                    .csrf().disable().antMatcher("/admin/**")
+                    .authorizeRequests().anyRequest()
+                    .hasRole("ADMIN")
+                    .and().httpBasic()
+                    .authenticationEntryPoint(authEntryPoint);
+        }
+    }
+
+    @Configuration
+    @Order(2)
     public static class ApiWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
         @Autowired
         private AuthenticationEntryPoint authEntryPoint;
@@ -71,7 +117,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             http
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                     .csrf().disable()
-                    .antMatcher("/api/admin/**")
+                    .antMatcher("/user/**")
                     .authorizeRequests().anyRequest()
                     .hasAnyRole("USER", "ADMIN")
                     .and()
@@ -79,41 +125,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         }
     }
 
-    @Configuration
-    @Order(2)
-    public static class UserStatementsSecurity extends WebSecurityConfigurerAdapter {
-        @Autowired
-        private AuthenticationEntryPoint authEntryPoint;
-
-        protected void configure(HttpSecurity http) throws Exception {
-            http
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                    .csrf().disable().antMatcher("/api/users")
-                    .authorizeRequests().anyRequest()
-                    .hasRole("ADMIN")
-                    .and().httpBasic()
-                    .authenticationEntryPoint(authEntryPoint);
-        }
-    }
-
-    @Configuration
     @Order(3)
-    public static class UserStatementsSecurit extends WebSecurityConfigurerAdapter {
-        @Autowired
-        private AuthenticationEntryPoint authEntryPoint;
-
-        protected void configure(HttpSecurity http) throws Exception {
-            http
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                    .csrf().disable().antMatcher("/api/users/**")
-                    .authorizeRequests().anyRequest()
-                    .hasRole("ADMIN")
-                    .and().httpBasic()
-                    .authenticationEntryPoint(authEntryPoint);
-        }
-    }
-
-    @Order(4)
     @Configuration
     public static class FormLoginWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 

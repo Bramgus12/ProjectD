@@ -16,9 +16,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for verwachting_vandaagType complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="verwachting_vandaagType">
  *   &lt;complexContent>
@@ -36,18 +36,16 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "verwachting_vandaagType", propOrder = {
-    "url",
-    "urlbackup",
-    "titel",
-    "tijdweerbericht",
-    "samenvatting",
-    "tekst",
-    "formattedtekst"
+        "url",
+        "urlbackup",
+        "titel",
+        "tijdweerbericht",
+        "samenvatting",
+        "tekst",
+        "formattedtekst"
 })
 public class VerwachtingVandaagType {
 
@@ -68,11 +66,9 @@ public class VerwachtingVandaagType {
 
     /**
      * Gets the value of the url property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getUrl() {
         return url;
@@ -80,11 +76,9 @@ public class VerwachtingVandaagType {
 
     /**
      * Sets the value of the url property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setUrl(String value) {
         this.url = value;
@@ -92,11 +86,9 @@ public class VerwachtingVandaagType {
 
     /**
      * Gets the value of the urlbackup property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getUrlbackup() {
         return urlbackup;
@@ -104,11 +96,9 @@ public class VerwachtingVandaagType {
 
     /**
      * Sets the value of the urlbackup property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setUrlbackup(String value) {
         this.urlbackup = value;
@@ -116,11 +106,9 @@ public class VerwachtingVandaagType {
 
     /**
      * Gets the value of the titel property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getTitel() {
         return titel;
@@ -128,11 +116,9 @@ public class VerwachtingVandaagType {
 
     /**
      * Sets the value of the titel property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setTitel(String value) {
         this.titel = value;
@@ -140,11 +126,9 @@ public class VerwachtingVandaagType {
 
     /**
      * Gets the value of the tijdweerbericht property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getTijdweerbericht() {
         return tijdweerbericht;
@@ -152,11 +136,9 @@ public class VerwachtingVandaagType {
 
     /**
      * Sets the value of the tijdweerbericht property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setTijdweerbericht(String value) {
         this.tijdweerbericht = value;
@@ -164,11 +146,9 @@ public class VerwachtingVandaagType {
 
     /**
      * Gets the value of the samenvatting property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getSamenvatting() {
         return samenvatting;
@@ -176,11 +156,9 @@ public class VerwachtingVandaagType {
 
     /**
      * Sets the value of the samenvatting property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setSamenvatting(String value) {
         this.samenvatting = value;
@@ -188,11 +166,9 @@ public class VerwachtingVandaagType {
 
     /**
      * Gets the value of the tekst property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getTekst() {
         return tekst;
@@ -200,11 +176,9 @@ public class VerwachtingVandaagType {
 
     /**
      * Sets the value of the tekst property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setTekst(String value) {
         this.tekst = value;
@@ -212,11 +186,9 @@ public class VerwachtingVandaagType {
 
     /**
      * Gets the value of the formattedtekst property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getFormattedtekst() {
         return formattedtekst;
@@ -224,11 +196,9 @@ public class VerwachtingVandaagType {
 
     /**
      * Sets the value of the formattedtekst property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setFormattedtekst(String value) {
         this.formattedtekst = value;
