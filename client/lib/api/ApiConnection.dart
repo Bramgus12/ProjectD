@@ -125,7 +125,7 @@ class ApiConnection {
       if (response.statusCode == 204) {
         return {};
       }
-      return json.decode(response.body);
+      return json.decode(utf8.decode(response.bodyBytes));
     } on FormatException catch(e) {
       print(e);
       throw ApiConnectionException("Invalid json received from url: ${response.request.url}");
