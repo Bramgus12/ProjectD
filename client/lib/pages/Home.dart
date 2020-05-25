@@ -16,6 +16,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   ApiConnection apiConnection = ApiConnection();
+  Image userPlantImageWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +33,16 @@ class _HomePageState extends State<HomePage> {
           children: <Widget>[
             RaisedButton(
               onPressed: plantsButtonTest,
-              child: Text('UserPlant Post Test'),
-            )
+              child: Text('UserPlant Image Test'),
+            ),
+            (){
+              if(userPlantImageWidget == null){
+                return Container();
+              }
+              else{
+                return userPlantImageWidget;
+              }
+            }()
           ],
         ),
       ),
@@ -78,8 +87,17 @@ class _HomePageState extends State<HomePage> {
 
     try {
       print("Sending request");
-      List<Plant> plants = await apiConnection.fetchPlants();
-      print(plants);
+      // List<Plant> plants = await apiConnection.fetchPlants();
+      List<UserPlant> userPlants = await apiConnection.fetchUserPlants();
+      for (UserPlant userPlant in userPlants) {
+        if(userPlant.id == 22) {
+          print(userPlant);
+          Image fetchedUserPlantImage = await apiConnection.fetchUserPlantImage(userPlant);
+          setState(() {
+            userPlantImageWidget = fetchedUserPlantImage;
+          });
+        }
+      }
       print("Request done");
     } on StatusCodeException catch(e) {
       // handle exception
