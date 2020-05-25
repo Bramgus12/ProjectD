@@ -613,7 +613,7 @@ class _CameraState extends State<Camera>
         Container(
           child: Stack(
             children: <Widget>[
-              Container(
+              !controller.value.isInitialized ? Container() : Container(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height,
                 child: FittedBox(
