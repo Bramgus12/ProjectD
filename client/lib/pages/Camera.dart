@@ -625,7 +625,9 @@ class _CameraState extends State<Camera>
                   )
                 ],
               ),
-              _captureControlRowWidget()
+              Expanded(
+                child: _captureControlRowWidget()
+              )
             ],
           ),
         )
@@ -728,44 +730,32 @@ class _CameraState extends State<Camera>
 
   /// Display the control bar with buttons to take pictures and record videos.
   Widget _captureControlRowWidget() {
-    return Padding(
-      padding: EdgeInsets.all(16.0),
-      child:  Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
 
-          Row(),
-          Row(),
-          Row(),
-           ClipOval(
-            child: Material(
-              color: Colors.blue, // button color
-              child: InkWell(
-                splashColor: Colors.green, // inkwell color
-                child: SizedBox(width: 56, height: 56, child: Icon(Icons.camera_alt,
-                  color: Colors.white,)),
-                onTap: controller != null &&
-                    controller.value.isInitialized ?
-                onTakePictureButtonPressed
-                    : null,
-              ),
+          Opacity(
+            opacity: 0,
+              child: FloatingActionButton(
+              onPressed: null,
             ),
           ),
-          Row(),
-          ClipOval(
-            child: Material(
-              color: Colors.blue, // button color
-              child: InkWell(
-                splashColor: Colors.green, // inkwell color
-                child: SizedBox(width: 56, height: 56, child: Icon(Icons.image,
-                  color: Colors.white,)),
-                onTap: (){openGallery(context);},
-              ),
+
+          FloatingActionButton(
+            onPressed: controller != null && controller.value.isInitialized ? onTakePictureButtonPressed : null,
+            child: Icon(Icons.camera_alt),
+          ),
+
+          FloatingActionButton(
+            onPressed: (){openGallery(context);},
+            child: Icon(
+              Icons.image
             ),
           )
+
+          
         ],
-      ),
-    );
+      );
   }
 
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
