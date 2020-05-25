@@ -2,6 +2,7 @@ package com.bylivingart.plants.controllers;
 
 import com.bylivingart.plants.DatabaseConnection;
 import com.bylivingart.plants.buienradar.BuienradarnlType;
+import com.bylivingart.plants.buienradar.VerwachtingMeerdaagsType;
 import com.bylivingart.plants.buienradar.WeerstationType;
 import com.bylivingart.plants.dataclasses.Error;
 import com.bylivingart.plants.statements.WeatherStatements;
@@ -41,6 +42,17 @@ public class WeatherController {
     ) throws Exception {
         Connection conn = new DatabaseConnection().getConnection();
         return new ResponseEntity<>(WeatherStatements.getWeerStationByRegio(regio, conn), HttpStatus.OK);
+    }
+
+    @ApiOperation("Get the forecast for the next five days")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully gotten the forecast.", response = VerwachtingMeerdaagsType.class),
+            @ApiResponse(code = 400, message = "Bad request", response = Error.class),
+            @ApiResponse(code = 404, message = "Not found", response = Error.class)
+    })
+    @GetMapping("/forecast")
+    private ResponseEntity<VerwachtingMeerdaagsType> getForecast() throws Exception{
+        return new ResponseEntity<>(WeatherStatements.getForecast(), HttpStatus.OK);
     }
 
 

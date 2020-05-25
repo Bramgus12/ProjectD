@@ -32,6 +32,7 @@ class InvalidCredentialsException implements IOException {
 
 class StatusCodeException implements IOException {
 
+  // TODO: fix typo
   final Response reponse;
 
   StatusCodeException(this.reponse);
