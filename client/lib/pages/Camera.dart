@@ -607,26 +607,31 @@ class _CameraState extends State<Camera>
     }
 
     if(storageReady && imageFile == null && storage.getItem("first_time_usage") == true){
+      var size = MediaQuery.of(context).size.width;
+
       builder.add(
         Container(
-          child: Column(
+          child: Stack(
             children: <Widget>[
-              Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      child: Padding(
-                        padding: const EdgeInsets.all(1.0),
-                        child: Center(
-                          child: _cameraPreviewWidget(),
-                        ),
-                      ),
-                    ),
-                  )
-                ],
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: FittedBox(
+                  child: Container(
+                    width: size,
+                    height: size / controller.value.aspectRatio,
+                    child: _cameraPreviewWidget()
+                  ),
+                  fit: BoxFit.cover,
+                )
+
               ),
-              Expanded(
-                child: _captureControlRowWidget()
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: _captureControlRowWidget()
+                ),
               )
             ],
           ),
@@ -707,10 +712,7 @@ class _CameraState extends State<Camera>
         ),
       );
     } else {
-      return AspectRatio(
-        aspectRatio: controller.value.aspectRatio,
-        child: CameraPreview(controller),
-      );
+      return CameraPreview(controller);
     }
   }
 
@@ -738,12 +740,14 @@ class _CameraState extends State<Camera>
             opacity: 0,
               child: FloatingActionButton(
               onPressed: null,
+              heroTag: "invisibleButton",
             ),
           ),
 
           FloatingActionButton(
             onPressed: controller != null && controller.value.isInitialized ? onTakePictureButtonPressed : null,
             child: Icon(Icons.camera_alt),
+            heroTag: "cameraButton",
           ),
 
           FloatingActionButton(
@@ -751,6 +755,7 @@ class _CameraState extends State<Camera>
             child: Icon(
               Icons.image
             ),
+            heroTag: "galleryButton",
           )
 
           
