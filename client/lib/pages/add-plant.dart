@@ -71,6 +71,7 @@ class _AddPlant extends State<AddPlant> {
     
     if (this._formKey.currentState.validate() && _checkAllowedToSubmit() && !submitted) {
       submitted = true;
+      // disable the submit button
       setState(() {});
       _formKey.currentState.save();
       newPlant.imageName = selectedImagePath;
@@ -157,7 +158,6 @@ class _AddPlant extends State<AddPlant> {
   bool _checkAllowedToSubmit() {
     bool res = selectedImagePath != null 
       && (hideDatePicker || newPlant.lastWaterDate != null)
-      && !submitted
       && !submitted;
     
     print('_checkAllowedToSubmit() $res');
