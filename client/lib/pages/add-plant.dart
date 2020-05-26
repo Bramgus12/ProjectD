@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:plantexpert/api/ApiConnectionException.dart';
 import 'package:plantexpert/api/User.dart';
 import 'package:plantexpert/api/UserPlant.dart';
 import 'package:plantexpert/api/ApiConnection.dart';
@@ -33,7 +35,7 @@ class _AddPlant extends State<AddPlant> {
   // make date + time picker optional
   bool hideDatePicker = false;
   bool showFutureTimeWarning = false;
-  bool allowedToSubmit = false;
+  bool submitted = false;
 
   // dd-MM-yyyy HH:mm
   String formatDate(DateTime date) {
@@ -65,17 +67,41 @@ class _AddPlant extends State<AddPlant> {
   }
 
   void submit() async {
-    if (this._formKey.currentState.validate() && allowedToSubmit) {
+    print('submit() submitted $submitted');
+    
+    if (this._formKey.currentState.validate() && _checkAllowedToSubmit() && !submitted) {
+      submitted = true;
+      setState(() {});
       _formKey.currentState.save();
       newPlant.imageName = selectedImagePath;
+
       // plantId required, use 4 for now
       newPlant.plantId = 4;
-
+      
       var api = new ApiConnection();
-      var result = api.postUserPlant(newPlant, File(newPlant.imageName));
-      print('posting, can take a while...');
-      await result;
-      print('done');
+      var result;
+
+      try {
+        result = await api.postUserPlant(newPlant, File(newPlant.imageName));
+      }
+      on SocketException catch(e) {
+        print(e);
+      }
+      on TimeoutException catch(e) {
+        print(e);
+      }
+      on ApiConnectionException catch(e) {
+        print(e);
+      }
+      
+      if (result == null) {
+        submitted = false;
+        // enable the submit button
+        setState(() {});
+        return;
+      }
+
+      print(result);
       // Navigator.pushNamed(context, '/my-plants');
     }
   }
@@ -119,14 +145,23 @@ class _AddPlant extends State<AddPlant> {
       print('can\'t select future date');
       newPlant.lastWaterDate = null;
       showFutureTimeWarning = true;
-      allowedToSubmit = false;
       return;
     }
 
     showFutureTimeWarning = false;
-    allowedToSubmit = true;
     newPlant.lastWaterDate = pickedDateTime;
     print('lastTimeWater = ${formatDate(newPlant.lastWaterDate)}');
+  }
+
+ // check if all required fields are filled
+  bool _checkAllowedToSubmit() {
+    bool res = selectedImagePath != null 
+      && (hideDatePicker || newPlant.lastWaterDate != null)
+      && !submitted
+      && !submitted;
+    
+    print('_checkAllowedToSubmit() $res');
+    return res;
   }
 
   @override
@@ -259,12 +294,6 @@ class _AddPlant extends State<AddPlant> {
                                   onChanged: (bool value) {
                                     hideDatePicker = value;
                                     // FIXME: find a more maintainable way to enable/disable the submit button
-                                    if (hideDatePicker) {
-                                      allowedToSubmit = true;
-                                    }
-                                    else {
-                                      allowedToSubmit = false;
-                                    }
                                     setState(() {});
                                   },
                                 ),
@@ -418,7 +447,7 @@ class _AddPlant extends State<AddPlant> {
                       // TODO: allow submission if all required fields are filled
                       RaisedButton(
                         child: Text('Voeg toe', style: theme.accentTextTheme.button),
-                        onPressed: allowedToSubmit ? submit : null,
+                        onPressed: _checkAllowedToSubmit() ? submit : null,
                         color: theme.accentColor,
                         disabledColor: theme.disabledColor,
                       )
