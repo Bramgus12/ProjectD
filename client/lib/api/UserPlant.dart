@@ -60,7 +60,7 @@ class UserPlant implements JsonSerializeable {
       "lat" : latitude,
       "lon" : longitude,
       "imageName" : imageName,
-      "lastWaterDate" : lastWaterDate != null ? lastWaterDate.toIso8601String() : "",
+      "lastWaterDate" : lastWaterDate.toIso8601String(),
       "distanceToWindow" : distanceToWindow,
       "maxTemp" : maxTemp,
       "minTemp" : minTemp,

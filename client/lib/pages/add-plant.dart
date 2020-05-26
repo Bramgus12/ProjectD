@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:plantexpert/api/ApiConnectionException.dart';
-import 'package:plantexpert/api/User.dart';
+import 'package:plantexpert/api/Plant.dart';
 import 'package:plantexpert/api/UserPlant.dart';
 import 'package:plantexpert/api/ApiConnection.dart';
 
@@ -31,11 +31,16 @@ class _AddPlant extends State<AddPlant> {
   TimeOfDay selectedTime;
   int minTemp;
   int maxTemp;
+  int plantId;
 
   // make date + time picker optional
   bool hideDatePicker = false;
   bool showFutureTimeWarning = false;
   bool submitted = false;
+  bool failedFetchPlants = false;
+
+  ApiConnection api = new ApiConnection();
+  Future<List<Plant>> _fetchedPlants;
 
   // dd-MM-yyyy HH:mm
   String formatDate(DateTime date) {
@@ -68,33 +73,30 @@ class _AddPlant extends State<AddPlant> {
 
   void submit() async {
     print('submit() submitted $submitted');
-    
-    if (this._formKey.currentState.validate() && _checkAllowedToSubmit() && !submitted) {
+    print(newPlant);
+
+    if (this._formKey.currentState.validate() &&
+        _checkAllowedToSubmit() &&
+        !submitted) {
       submitted = true;
       // disable the submit button
       setState(() {});
       _formKey.currentState.save();
       newPlant.imageName = selectedImagePath;
 
-      // plantId required, use 4 for now
-      newPlant.plantId = 4;
-      
-      var api = new ApiConnection();
       var result;
+
+      print('posting...');
 
       try {
         result = await api.postUserPlant(newPlant, File(newPlant.imageName));
-      }
-      on SocketException catch(e) {
+      } on ApiConnectionException catch (e) {
+        print(e);
+      } on TimeoutException catch (e) {
         print(e);
       }
-      on TimeoutException catch(e) {
-        print(e);
-      }
-      on ApiConnectionException catch(e) {
-        print(e);
-      }
-      
+
+      // TODO: show error when posting failed
       if (result == null) {
         submitted = false;
         // enable the submit button
@@ -103,6 +105,7 @@ class _AddPlant extends State<AddPlant> {
       }
 
       print(result);
+      // TODO: show feedback when posting was a success
       // Navigator.pushNamed(context, '/my-plants');
     }
   }
@@ -154,14 +157,36 @@ class _AddPlant extends State<AddPlant> {
     print('lastTimeWater = ${formatDate(newPlant.lastWaterDate)}');
   }
 
- // check if all required fields are filled
+  // check if all required fields are filled
   bool _checkAllowedToSubmit() {
-    bool res = selectedImagePath != null 
-      && (hideDatePicker || newPlant.lastWaterDate != null)
-      && !submitted;
-    
+    bool res = selectedImagePath != null
+        && (hideDatePicker || newPlant.lastWaterDate != null);
+
     print('_checkAllowedToSubmit() $res');
     return res;
+  }
+
+  Future<List<Plant>> _fetchPlants() async {
+    var plants;
+
+    try {
+      plants = await api.fetchPlants();
+    } on ApiConnectionException catch (e) {
+      print(e);
+      failedFetchPlants = true;
+    } on TimeoutException catch (e) {
+      print(e);
+      failedFetchPlants = true;
+    }
+
+    return plants;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // prevent fetching plants twice
+    _fetchedPlants = _fetchPlants();
   }
 
   @override
@@ -186,7 +211,52 @@ class _AddPlant extends State<AddPlant> {
                 child: Form(
                   key: _formKey,
                   child: ListView(
+                    // TODO: show the selected plant as text
                     children: <Widget>[
+                      Text('Plantsoort'),
+                      SizedBox(height: 10),
+                      FutureBuilder(
+                        future: _fetchedPlants,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<List<Plant>> snapshot) {
+                          var items = <DropdownMenuItem>[
+                            DropdownMenuItem(
+                              child: Text('Planten worden opgehaald...'),
+                              value: 0,
+                            )
+                          ];
+
+                          if (snapshot.hasData) {
+                            items = snapshot.data
+                                .map((p) => DropdownMenuItem(
+                                    child: Text(p.name), value: p.id))
+                                .toList();
+                          }
+                          // hasError doesn't work on caught exceptions
+                          else if (snapshot.hasError || failedFetchPlants) {
+                            items[0] = DropdownMenuItem(
+                              child:
+                                  Text('Planten konden niet worden opheaald'),
+                              value: 0,
+                            );
+                          }
+
+                          return DropdownButtonFormField(
+                            items: items,
+                            onChanged: (value) {
+                              print('selected $value');
+                              newPlant.plantId = value;
+                            },
+                            onSaved: (value) {
+                              newPlant.plantId = value;
+                              print(newPlant.plantId);
+                            },
+                            value: plantId ?? null,
+                          );
+                        },
+                      ),
+                      SizedBox(height: 20),
+
                       Text('Afbeelding'),
                       SizedBox(height: 10),
                       Row(
@@ -317,7 +387,8 @@ class _AddPlant extends State<AddPlant> {
                                         CrossAxisAlignment.start,
                                     children: <Widget>[
                                       FlatButton(
-                                        child: Icon(Icons.date_range, color: Colors.white),
+                                        child: Icon(Icons.date_range,
+                                            color: Colors.white),
                                         onPressed: () => pickDate(context),
                                         color: theme.accentColor,
                                       ),
@@ -335,7 +406,8 @@ class _AddPlant extends State<AddPlant> {
                                         CrossAxisAlignment.start,
                                     children: <Widget>[
                                       FlatButton(
-                                        child: Icon(Icons.timer, color: Colors.white),
+                                        child: Icon(Icons.timer,
+                                            color: Colors.white),
                                         onPressed: () => pickTime(context),
                                         color: theme.accentColor,
                                       ),
@@ -446,7 +518,8 @@ class _AddPlant extends State<AddPlant> {
                       ]),
                       // TODO: allow submission if all required fields are filled
                       RaisedButton(
-                        child: Text('Voeg toe', style: theme.accentTextTheme.button),
+                        child: Text('Voeg toe',
+                            style: theme.accentTextTheme.button),
                         onPressed: _checkAllowedToSubmit() ? submit : null,
                         color: theme.accentColor,
                         disabledColor: theme.disabledColor,
