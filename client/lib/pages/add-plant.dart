@@ -29,18 +29,21 @@ class _AddPlant extends State<AddPlant> {
   String selectedImagePath;
   DateTime selectedDate;
   TimeOfDay selectedTime;
-  int minTemp;
-  int maxTemp;
   int plantId;
 
   // make date + time picker optional
+  // TODO: server doesn't accept null DateTimes as of 2020-27-05
   bool hideDatePicker = false;
   bool showFutureTimeWarning = false;
-  bool submitted = false;
+  bool formSubmitted = false;
+  // failing to fetch plants from the server
   bool failedFetchPlants = false;
 
   ApiConnection api = new ApiConnection();
+  // used in FutureBuilder
   Future<List<Plant>> _fetchedPlants;
+  // save the selected name of the plant type (built-in dropdown only saves the selected value)
+  String plantTypeName;
 
   // dd-MM-yyyy HH:mm
   String formatDate(DateTime date) {
@@ -72,18 +75,16 @@ class _AddPlant extends State<AddPlant> {
   }
 
   void submit() async {
-    print('submit() submitted $submitted');
+    print('submit() submitted $formSubmitted');
     print(newPlant);
 
-    if (this._formKey.currentState.validate() &&
-        _checkAllowedToSubmit() &&
-        !submitted) {
-      submitted = true;
+    if (this._formKey.currentState.validate() && _checkAllowedToSubmit()) {
+      formSubmitted = true;
       // disable the submit button
       setState(() {});
       _formKey.currentState.save();
       newPlant.imageName = selectedImagePath;
-
+      print('valid: $newPlant');
       var result;
 
       print('posting...');
@@ -95,10 +96,13 @@ class _AddPlant extends State<AddPlant> {
       } on TimeoutException catch (e) {
         print(e);
       }
+      on SocketException catch (e) {
+        print(e);
+      }
 
       // TODO: show error when posting failed
       if (result == null) {
-        submitted = false;
+        formSubmitted = false;
         // enable the submit button
         setState(() {});
         return;
@@ -222,7 +226,7 @@ class _AddPlant extends State<AddPlant> {
                           var items = <DropdownMenuItem>[
                             DropdownMenuItem(
                               child: Text('Planten worden opgehaald...'),
-                              value: 0,
+                              value: null,
                             )
                           ];
 
@@ -236,16 +240,20 @@ class _AddPlant extends State<AddPlant> {
                           else if (snapshot.hasError || failedFetchPlants) {
                             items[0] = DropdownMenuItem(
                               child:
-                                  Text('Planten konden niet worden opheaald'),
-                              value: 0,
+                                  Text('Planten konden niet worden opgehaald'),
+                              value: null,
                             );
                           }
 
                           return DropdownButtonFormField(
                             items: items,
+                            hint: Text(plantTypeName ?? 'Kies het soort plant.'),
                             onChanged: (value) {
-                              print('selected $value');
+                              Text t = items.where((item) => item.value == value).elementAt(0).child;
+                              plantTypeName = t.data;
+                              print('selected $value $plantTypeName');
                               newPlant.plantId = value;
+                              setState(() {});
                             },
                             onSaved: (value) {
                               newPlant.plantId = value;
@@ -268,6 +276,7 @@ class _AddPlant extends State<AddPlant> {
                               children: <Widget>[
                                 () {
                                   if (selectedImagePath != null) {
+                                    // TODO: not all images are .jpeg
                                     return Image.file(
                                       File(selectedImagePath),
                                       width: 150,
@@ -330,6 +339,10 @@ class _AddPlant extends State<AddPlant> {
                         onSaved: (String value) {
                           newPlant.nickname = value;
                         },
+                        onChanged: (String value) {
+                          newPlant.nickname = value;
+                        },
+                        initialValue: newPlant.nickname ?? ''
                       ),
                       AddPlantTextField(
                         label: 'Inhoud pot',
@@ -346,6 +359,10 @@ class _AddPlant extends State<AddPlant> {
                         onSaved: (String value) {
                           newPlant.potVolume = double.parse(value);
                         },
+                        onChanged: (String value) {
+                          newPlant.potVolume = double.tryParse(value);
+                        },
+                        initialValue: newPlant.potVolume?.toString() ?? ''
                       ),
                       Row(
                         children: <Widget>[
@@ -477,16 +494,20 @@ class _AddPlant extends State<AddPlant> {
                                   return 'Moet een getal zijn.';
                                 }
 
-                                if (maxTemp != null && maxTemp < temp) {
+                                if (newPlant.maxTemp != null && newPlant.maxTemp < temp) {
                                   return 'Mag niet hoger zijn\n dan de maximale temperatuur.';
                                 }
 
-                                minTemp = temp;
+                                newPlant.minTemp = temp;
                                 return null;
                               },
                               onSaved: (String value) {
-                                newPlant.minTemp = minTemp;
+                                newPlant.minTemp = int.parse(value);
                               },
+                              onChanged: (String value) {
+                                newPlant.minTemp = int.tryParse(value);
+                              },
+                              initialValue: newPlant.minTemp?.toString() ?? ''
                             )),
                         Expanded(
                           flex: 2,
@@ -504,16 +525,20 @@ class _AddPlant extends State<AddPlant> {
                                   return 'Moet een getal zijn.';
                                 }
 
-                                if (minTemp != null && minTemp > temp) {
+                                if (newPlant.minTemp != null && newPlant.minTemp > temp) {
                                   return 'Mag niet lager zijn\n dan de minimale temperatuur';
                                 }
 
-                                maxTemp = temp;
+                                newPlant.maxTemp = temp;
                                 return null;
                               },
                               onSaved: (String value) {
-                                newPlant.maxTemp = maxTemp;
+                                newPlant.maxTemp = int.parse(value);
                               },
+                              onChanged: (String value) {
+                                newPlant.maxTemp = int.tryParse(value);
+                              },
+                              initialValue: newPlant.maxTemp?.toString() ?? ''
                             ))
                       ]),
                       // TODO: allow submission if all required fields are filled
@@ -534,12 +559,14 @@ class _AddPlant extends State<AddPlant> {
 
 class AddPlantTextField extends StatelessWidget {
   final String label;
+  final String initialValue;
   final TextInputType keyboardType;
   final Function(String) validator;
   final Function(String) onSaved;
+  final Function(String) onChanged;
 
   AddPlantTextField(
-      {this.label, this.keyboardType, this.validator, this.onSaved});
+      {this.label, this.initialValue = '', this.keyboardType, this.validator, this.onSaved, this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -553,6 +580,7 @@ class AddPlantTextField extends StatelessWidget {
           Text(label),
           SizedBox(height: 10),
           TextFormField(
+            initialValue: this.initialValue,
             decoration: InputDecoration(
               focusedBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: theme.accentColor),
@@ -567,6 +595,7 @@ class AddPlantTextField extends StatelessWidget {
             keyboardType: this.keyboardType ?? TextInputType.text,
             validator: this.validator,
             onSaved: this.onSaved,
+            onChanged: this.onChanged
           ),
           SizedBox(
             height: 20,
