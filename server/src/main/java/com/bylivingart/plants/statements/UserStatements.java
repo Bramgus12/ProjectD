@@ -25,7 +25,9 @@ public class UserStatements {
             throw new NotFoundException("No data in database");
         } else {
             do {
-                list.add(getResult(result.getInt("id"), result));
+                User response = getResult(result.getInt("id"), result);
+                response.setPassword(null);
+                list.add(response);
             } while (result.next());
             return list;
         }
@@ -95,7 +97,9 @@ public class UserStatements {
             if (!resultSet.next()) {
                 throw new NotFoundException("User doesn't exist on this id after updating");
             } else {
-                return getResult(id, resultSet);
+                User response = getResult(id, resultSet);
+                response.setPassword(null);
+                return response;
             }
         } else {
             throw new UnauthorizedException("Unauthorized");
@@ -130,7 +134,9 @@ public class UserStatements {
         ps.setInt(1, id);
         ResultSet rs = ps.executeQuery();
         rs.next();
-        return getResult(id, rs);
+        User response = getResult(id, rs);
+        response.setPassword(null);
+        return response;
     }
 
     public static boolean checkUserPassword(String password, String userName, Connection conn) throws Exception {
