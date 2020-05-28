@@ -1,12 +1,33 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:plantexpert/api/ApiConnectionException.dart';
 import 'package:plantexpert/api/Plant.dart';
-import 'package:plantexpert/api/User.dart';
+import 'package:plantexpert/api/ApiConnection.dart';
 
 import '../MenuNavigation.dart';
 
 class PlantList extends StatelessWidget {
+  final ApiConnection api = ApiConnection();
+
+  bool failedFetchingPlants = false;
+  bool fetched = false;
+
+  Future<List<Plant>> _fetchPlants() async {
+    try {
+      return await api.fetchPlants();
+    }
+    on ApiConnectionException catch (e) {
+      failedFetchingPlants = true;
+    }
+    on TimeoutException catch (e) {
+      failedFetchingPlants = true;
+    }
+
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,26 +39,35 @@ class PlantList extends StatelessWidget {
       ),
       body: Container(
         width: MediaQuery.of(context).size.width,
-        child: ListView.builder(
-          itemBuilder: (_, index) {
-            return PlantListItem(
-               plant: Plant(
-                 id: 0,
-                 name: "Test Plant",
-                 waterScale: 2.0,
-                 waterNumber: 2.0,
-                 waterText: "Plant needs water.",
-                 sunScale: 2.0,
-                 sunNumber: 2.0,
-                 sunText: "Plant needs sun.",
-                 description: "This is a plant.",
-                 optimalTemp: 2,
-                 imageName: "assets/images/croton.jpg"
-               )
+        child: FutureBuilder(
+          future: _fetchPlants(),
+          builder: (BuildContext context, AsyncSnapshot<List<Plant>> snapshot) {
+            List<PlantListItem> items;
+
+            if (snapshot.hasData) {
+              items = snapshot.data.map((p) => PlantListItem(plant: p)).toList();
+              items.forEach((p) => {
+                p.plant.imageName = 'assets/images/' + (p.plant.imageName != null ? p.plant.id.toString() : '-1') + '.jpg'
+              });
+            }
+            else if (snapshot.hasError || failedFetchingPlants) {
+              print(snapshot.error);
+            }
+
+            return ListView(
+              children: items ?? <Widget>[
+                Column(
+                  children: <Widget>[
+                    SizedBox(height: 10),
+                    CircularProgressIndicator(),
+                    SizedBox(height: 10),
+                    Text('Planten worden opgehaald')
+                  ],
+                )
+              ]
             );
           },
-          itemCount: 1,
-        )
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.pushNamed(context, '/add-plant'),
@@ -80,12 +110,15 @@ class PlantListItem extends StatelessWidget {
               Expanded(
                 flex: 4,
                 child: () {
-                  if (plant.imageName.contains('assets/images')) {
+                  if (plant.imageName != null && plant.imageName.contains('assets/images')) {
                     return Image.asset(
                       plant.imageName,
                       width: _imageWidth,
                       height: _imageHeight,
                     );
+                  }
+                  else if (plant.imageName == null) {
+                    return SizedBox.shrink();
                   }
 
                   return Image.file(
@@ -109,7 +142,7 @@ class PlantListItem extends StatelessWidget {
                         'Naam',
                         style: TextStyle(color: theme.accentColor)
                       ),
-                      Text(plant.name),
+                      Text(plant.name, style: TextStyle(color: Colors.black)),
                       SizedBox(height: 10),
 
                       Text(
