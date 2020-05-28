@@ -26,10 +26,8 @@ class _AddPlant extends State<AddPlant> {
     '30 cm of minder'
   ];
 
-  String selectedImagePath;
   DateTime selectedDate;
   TimeOfDay selectedTime;
-  int plantId;
 
   // make date + time picker optional
   // TODO: server doesn't accept null DateTimes as of 2020-27-05
@@ -66,16 +64,15 @@ class _AddPlant extends State<AddPlant> {
 
     setState(() {
       // keep the previous image if no image is selected
-      if (pickedImage == null && selectedImagePath != null) {
+      if (pickedImage == null && newPlant.imageName != null) {
         return;
       }
 
-      selectedImagePath = pickedImage != null ? pickedImage.path : null;
+      newPlant.imageName = pickedImage?.path;
     });
   }
 
   void submit() async {
-    print('submit() submitted $formSubmitted');
     print(newPlant);
 
     if (this._formKey.currentState.validate() && _checkAllowedToSubmit()) {
@@ -83,11 +80,7 @@ class _AddPlant extends State<AddPlant> {
       // disable the submit button
       setState(() {});
       _formKey.currentState.save();
-      newPlant.imageName = selectedImagePath;
-      print('valid: $newPlant');
       var result;
-
-      print('posting...');
 
       try {
         result = await api.postUserPlant(newPlant, File(newPlant.imageName));
@@ -100,8 +93,24 @@ class _AddPlant extends State<AddPlant> {
         print(e);
       }
 
+      var theme = Theme.of(context);
+
       // TODO: show error when posting failed
       if (result == null) {
+        await showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return Dialog(
+                child: Container(
+                    color: Colors.red,
+                    height: MediaQuery.of(context).size.height / 4,
+                    child: Center(
+                      child: Text('Kon niet worden toegevoegd', style: TextStyle(color: Colors.white, fontSize: 16)),
+                    )
+                ),
+              );
+            }
+        );
         formSubmitted = false;
         // enable the submit button
         setState(() {});
@@ -109,8 +118,22 @@ class _AddPlant extends State<AddPlant> {
       }
 
       print(result);
-      // TODO: show feedback when posting was a success
-      // Navigator.pushNamed(context, '/my-plants');
+
+      await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return Dialog(
+                child: Container(
+                  color: theme.accentColor,
+                  height: MediaQuery.of(context).size.height / 4,
+                  child: Center(
+                    child: Text('Succesvol toegevoegd', style: TextStyle(color: Colors.white, fontSize: 16)),
+                  )
+                ),
+            );
+          }
+      );
+      Navigator.pushNamed(context, '/my-plants');
     }
   }
 
@@ -163,11 +186,16 @@ class _AddPlant extends State<AddPlant> {
 
   // check if all required fields are filled
   bool _checkAllowedToSubmit() {
-    bool res = selectedImagePath != null
-        && (hideDatePicker || newPlant.lastWaterDate != null);
+    print('_checkAllowedToSubmit() $newPlant');
+    bool allowed = (newPlant.imageName != null
+          && (hideDatePicker || newPlant.lastWaterDate != null)
+          && newPlant.nickname != null
+          && newPlant.potVolume != null
+          && (newPlant.minTemp != null && newPlant.maxTemp != null)
+        );
 
-    print('_checkAllowedToSubmit() $res');
-    return res;
+    print('_checkAllowedToSubmit() $allowed');
+    return allowed;
   }
 
   Future<List<Plant>> _fetchPlants() async {
@@ -191,6 +219,7 @@ class _AddPlant extends State<AddPlant> {
     super.initState();
     // prevent fetching plants twice
     _fetchedPlants = _fetchPlants();
+    newPlant.distanceToWindow = 1.0;
   }
 
   @override
@@ -255,11 +284,7 @@ class _AddPlant extends State<AddPlant> {
                               newPlant.plantId = value;
                               setState(() {});
                             },
-                            onSaved: (value) {
-                              newPlant.plantId = value;
-                              print(newPlant.plantId);
-                            },
-                            value: plantId ?? null,
+                            value: null,
                           );
                         },
                       ),
@@ -275,10 +300,10 @@ class _AddPlant extends State<AddPlant> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 () {
-                                  if (selectedImagePath != null) {
+                                  if (newPlant.imageName != null && File(newPlant.imageName).existsSync()) {
                                     // TODO: not all images are .jpeg
                                     return Image.file(
-                                      File(selectedImagePath),
+                                      File(newPlant.imageName),
                                       width: 150,
                                       height: 150,
                                     );

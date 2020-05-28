@@ -46,8 +46,8 @@ class PlantList extends StatelessWidget {
 
             if (snapshot.hasData) {
               items = snapshot.data.map((p) => PlantListItem(plant: p)).toList();
-              items.forEach((p) => {
-                p.plant.imageName = 'assets/images/' + (p.plant.imageName != null ? p.plant.id.toString() : '-1') + '.jpg'
+              items.forEach((p) {
+                p.plant.imageName = 'assets/images/' + p.plant.id.toString() + '.jpg';
               });
             }
             else if (snapshot.hasError || failedFetchingPlants) {
