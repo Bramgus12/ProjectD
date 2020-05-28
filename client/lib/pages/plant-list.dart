@@ -54,17 +54,26 @@ class PlantList extends StatelessWidget {
               print(snapshot.error);
             }
 
+            if (items == null) {
+              if (failedFetchingPlants) {
+                return Center(
+                  child: Text('Planten konden niet worden opehaald'),
+                );
+              }
+              return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      CircularProgressIndicator(),
+                      SizedBox(height: 10),
+                      Text('Planten worden opgehaald')
+                    ],
+                  )
+              );
+            }
+
             return ListView(
-              children: items ?? <Widget>[
-                Column(
-                  children: <Widget>[
-                    SizedBox(height: 10),
-                    CircularProgressIndicator(),
-                    SizedBox(height: 10),
-                    Text('Planten worden opgehaald')
-                  ],
-                )
-              ]
+              children: items
             );
           },
         ),
