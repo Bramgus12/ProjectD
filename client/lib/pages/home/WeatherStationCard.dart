@@ -41,7 +41,6 @@ class _WeatherStationCardState extends State<WeatherStationCard> {
                 return Text("Weer in regio ${weatherStation.region}");
               }
               else {
-                print("here");
                 return Container();
               }
             }(),
@@ -50,8 +49,13 @@ class _WeatherStationCardState extends State<WeatherStationCard> {
             if (status == _Status.loading || locationStatus == _LocationStatus.unknown)
               return CircularProgressIndicator();
             else if(weatherStation != null)
-              return Container(
-                child: Text(weatherStation.toString()),
+              return Column(
+                children: <Widget>[
+                  Image.network(weatherStation.icoonactueel.value),
+                  Container(
+                    child: Text(weatherStation.toString()),
+                  ),
+                ],
               );
             else
               return Container();
