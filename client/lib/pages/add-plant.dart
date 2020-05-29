@@ -119,6 +119,7 @@ class _AddPlant extends State<AddPlant> {
       }
       on InvalidCredentialsException catch (e) {
         errorMessage = 'Je moet ingelogd zijn om planten te kunnen toevoegen';
+        result = null;
         print(e);
       }
       on StatusCodeException catch (e) {
@@ -178,7 +179,8 @@ class _AddPlant extends State<AddPlant> {
             );
           }
       );
-      //Navigator.pushNamed(context, '/my-plants');
+
+      Navigator.pushNamed(context, '/my-plants');
     }
   }
 
