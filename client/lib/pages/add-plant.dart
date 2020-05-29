@@ -81,22 +81,61 @@ class _AddPlant extends State<AddPlant> {
       setState(() {});
       _formKey.currentState.save();
       var result;
+      ThemeData theme = Theme.of(context);
+      String errorMessage;
 
       try {
-        result = await api.postUserPlant(newPlant, File(newPlant.imageName));
+        result = api.postUserPlant(newPlant, File(newPlant.imageName));
+        showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return Dialog(
+                child: Container(
+                    color: theme.accentColor,
+                    height: MediaQuery
+                        .of(context)
+                        .size
+                        .height / 4,
+                    child: Center(
+                      child: CircularProgressIndicator(backgroundColor: Colors.white),
+                    )
+                ),
+              );
+            }
+        );
+        await result;
       } on ApiConnectionException catch (e) {
+        errorMessage = 'Fout bij het verbinden van de server';
+        result = null;
         print(e);
       } on TimeoutException catch (e) {
         print(e);
       }
       on SocketException catch (e) {
+        errorMessage = 'Fout bij het verbinden van de server';
+        result = null;
+        print(e);
+      }
+      on InvalidCredentialsException catch (e) {
+        errorMessage = 'Je moet ingelogd zijn om planten te kunnen toevoegen';
+        print(e);
+      }
+      on StatusCodeException catch (e) {
         print(e);
       }
 
-      var theme = Theme.of(context);
-
       // TODO: show error when posting failed
       if (result == null) {
+        // SocketException occurs before the loading dialog is shown,
+        // use try catch to prevent `The getter 'focusScopeNode' was called on null`
+        try {
+          Navigator.pop(context);
+        }
+        on NoSuchMethodError catch (e) {
+
+        }
+
         await showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -105,7 +144,13 @@ class _AddPlant extends State<AddPlant> {
                     color: Colors.red,
                     height: MediaQuery.of(context).size.height / 4,
                     child: Center(
-                      child: Text('Kon niet worden toegevoegd', style: TextStyle(color: Colors.white, fontSize: 16)),
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Text(
+                            errorMessage ?? 'Kon niet worden toegevoegd',
+                            style: TextStyle(color: Colors.white, fontSize: 16)
+                        )
+                      )
                     )
                 ),
               );
@@ -133,7 +178,7 @@ class _AddPlant extends State<AddPlant> {
             );
           }
       );
-      Navigator.pushNamed(context, '/my-plants');
+      //Navigator.pushNamed(context, '/my-plants');
     }
   }
 
@@ -187,7 +232,7 @@ class _AddPlant extends State<AddPlant> {
   // check if all required fields are filled
   bool _checkAllowedToSubmit() {
     print('_checkAllowedToSubmit() $newPlant');
-    bool allowed = (newPlant.imageName != null
+    bool allowed = !formSubmitted && (newPlant.imageName != null
           && (hideDatePicker || newPlant.lastWaterDate != null)
           && newPlant.nickname != null
           && newPlant.potVolume != null

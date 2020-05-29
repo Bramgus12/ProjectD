@@ -12,7 +12,8 @@ class PlantList extends StatelessWidget {
   final ApiConnection api = ApiConnection();
 
   bool failedFetchingPlants = false;
-  bool fetched = false;
+  // save the fetched plants so they don't have to get fetched multiple times in a row 
+  List<PlantListItem> plantListItems;
 
   Future<List<Plant>> _fetchPlants() async {
     try {
@@ -42,11 +43,9 @@ class PlantList extends StatelessWidget {
         child: FutureBuilder(
           future: _fetchPlants(),
           builder: (BuildContext context, AsyncSnapshot<List<Plant>> snapshot) {
-            List<PlantListItem> items;
-
-            if (snapshot.hasData) {
-              items = snapshot.data.map((p) => PlantListItem(plant: p)).toList();
-              items.forEach((p) {
+            if (snapshot.hasData && plantListItems == null) {
+              plantListItems = snapshot.data.map((p) => PlantListItem(plant: p)).toList();
+              plantListItems.forEach((p) {
                 p.plant.imageName = 'assets/images/' + p.plant.id.toString() + '.jpg';
               });
             }
@@ -54,7 +53,7 @@ class PlantList extends StatelessWidget {
               print(snapshot.error);
             }
 
-            if (items == null) {
+            if (plantListItems == null) {
               if (failedFetchingPlants) {
                 return Center(
                   child: Text('Planten konden niet worden opehaald'),
@@ -73,7 +72,7 @@ class PlantList extends StatelessWidget {
             }
 
             return ListView(
-              children: items
+              children: plantListItems
             );
           },
         ),
