@@ -1,28 +1,37 @@
 package com.bylivingart.plants.dataclasses;
 
+import com.bylivingart.plants.Exceptions.BadRequestException;
 import io.swagger.annotations.ApiModelProperty;
+import org.apache.commons.validator.routines.EmailValidator;
+import org.springframework.stereotype.Controller;
 
+import javax.validation.constraints.*;
 import java.sql.Date;
 
-
+@Controller
 public class User {
-    @ApiModelProperty(notes = "Auto-assigned id of the user")
     private int id;
 
-    @ApiModelProperty(notes = "The name of the user", required = true)
+
     private String user_name;
 
-    @ApiModelProperty(notes = "The password. It will be encrypted after making it", required = true)
+
     private String password;
 
-    @ApiModelProperty(notes = "Authority should be either \"ROLE_USER\" or \"ROLE_ADMIN\", Admin can make users and normal users can't", required = true)
+    @NotBlank
+    @Pattern(regexp = "(ROLE_)((ADMIN)|(USER))")
     private String authority;
 
-    @ApiModelProperty(notes = "Should be set to true if the user wants to use the features in the api.", required = true)
+    @NotNull
     private Boolean enabled;
 
+    @NotBlank
     private String name;
+
+    @Email(message = "Email not valid")
     private String email;
+
+    @Past
     private Date dateOfBirth;
     private String streetName;
     private int houseNumber;

@@ -58,6 +58,10 @@ dependencies {
 
 	// https://mvnrepository.com/artifact/org.apache.tika/tika-core
 	compile group: 'org.apache.tika', name: 'tika-core', version: '1.24.1'
+
+	// https://mvnrepository.com/artifact/commons-validator/commons-validator
+	compile group: 'commons-validator', name: 'commons-validator', version: '1.6'
+
 }
 
 test {
