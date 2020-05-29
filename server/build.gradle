@@ -56,6 +56,9 @@ dependencies {
 	// https://mvnrepository.com/artifact/commons-io/commons-io
 	compile group: 'commons-io', name: 'commons-io', version: '2.6'
 
+	// https://mvnrepository.com/artifact/org.apache.tika/tika-core
+	compile group: 'org.apache.tika', name: 'tika-core', version: '1.24.1'
+
 	compile files('libs/ojdbc7.jar')
 }
 

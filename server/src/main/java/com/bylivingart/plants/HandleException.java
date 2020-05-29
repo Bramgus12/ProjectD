@@ -19,31 +19,37 @@ public class HandleException extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(UnauthorizedException.class)
     public static void handleUnauthorizedException(Exception e, HttpServletResponse response) throws IOException {
+        PlantsApplication.printErrorInConsole(e.getLocalizedMessage());
         response.sendError(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
     }
 
     @ExceptionHandler(NotFoundException.class)
     private void handleNotFoundExceptions(NotFoundException e, HttpServletResponse response) throws IOException {
+        PlantsApplication.printErrorInConsole(e.getLocalizedMessage());
         response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());
     }
 
     @ExceptionHandler(BadRequestException.class)
     private void handleBadRequestException(BadRequestException e, HttpServletResponse response) throws IOException {
+        PlantsApplication.printErrorInConsole(e.getLocalizedMessage());
         response.sendError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
     }
 
     @ExceptionHandler(InternalServerException.class)
     private void handleInternalServerException(InternalServerException e, HttpServletResponse response) throws IOException {
+        e.printStackTrace();
         response.sendError(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
     }
 
     @ExceptionHandler(SQLException.class)
     private void handleSQLException(SQLException e, HttpServletResponse response) throws IOException {
+        PlantsApplication.printErrorInConsole(e.getLocalizedMessage());
         response.sendError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
     }
 
     @ExceptionHandler(FileNotFoundException.class)
     private void handleFileNotFoundExceptions(FileNotFoundException e, HttpServletResponse response) throws IOException {
+        PlantsApplication.printErrorInConsole(e.getLocalizedMessage());
         response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());
     }
 }

@@ -2,10 +2,7 @@ package com.bylivingart.plants.statements;
 
 import com.bylivingart.plants.Exceptions.BadRequestException;
 import com.bylivingart.plants.Exceptions.NotFoundException;
-import com.bylivingart.plants.buienradar.BuienradarnlType;
-import com.bylivingart.plants.buienradar.IcoonactueelType;
-import com.bylivingart.plants.buienradar.StationnaamType;
-import com.bylivingart.plants.buienradar.WeerstationType;
+import com.bylivingart.plants.buienradar.*;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -163,6 +160,10 @@ public class WeatherStatements {
             } while (resultSet.next());
         }
         return stationnamen;
+    }
+
+    public static VerwachtingMeerdaagsType getForecast() throws Exception{
+        return getWeather().getWeergegevens().getVerwachtingMeerdaags();
     }
 
 

@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
-import 'package:plantexpert/pages/Login.dart';
+import 'package:plantexpert/pages/account/Account.dart';
 
 import 'pages/Camera.dart';
 import 'pages/Home.dart';
@@ -30,11 +30,12 @@ class MyApp extends StatelessWidget {
       title: 'Plant Expert',
       theme: ThemeData(
         primaryColor: Colors.white,
+        accentColor: Color(0xff119543)
       ),
       initialRoute: '/',
       routes: {
         '/plant-detail': (context) => PlantDetail(plantInfo: ModalRoute.of(context).settings.arguments),
-        '/login' : (context) => Login(),
+        '/login' : (context) => Account(),
       },
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {

@@ -2,6 +2,8 @@ package com.bylivingart.plants;
 
 import com.bylivingart.plants.Exceptions.BadRequestException;
 import com.bylivingart.plants.Exceptions.InternalServerException;
+import com.bylivingart.plants.Exceptions.NotFoundException;
+import org.apache.tika.Tika;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -46,9 +48,9 @@ public class FileService {
             folder = GetPropertyValues.getResourcePath(folderName, "", userPlantId, forUsers);
         }
         if (folder.exists() || folder.mkdirs()) {
-            String mimeType = Files.probeContentType(f.toPath());
+            Tika tika = new Tika();
+            String mimeType = tika.detect(file.getBytes());
             System.out.println(mimeType);
-            System.out.println(f);
             if (mimeType != null && mimeType.equals("image/jpeg")) {
                 if (!f.exists()) {
                     if (userPlantId == null) {
@@ -65,6 +67,25 @@ public class FileService {
             }
         } else {
             throw new InternalServerException("Folder could not be made");
+        }
+    }
+
+    public static boolean deleteImage(String folderName, String fileName, boolean forUsers) throws Exception {
+        return deleteImage(folderName, fileName, null, forUsers);
+    }
+
+    public static boolean deleteImage(String folderName, String fileName, String userPlantId, boolean forUsers) throws Exception {
+        File f;
+        if (userPlantId != null) {
+            f = GetPropertyValues.getResourcePath(folderName, fileName, userPlantId, forUsers);
+        } else {
+            f = GetPropertyValues.getResourcePath(folderName, fileName, forUsers);
+        }
+
+        if (f.exists()) {
+            return f.delete();
+        } else {
+            throw new NotFoundException("File not found");
         }
     }
 }
