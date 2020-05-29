@@ -3,27 +3,37 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:plantexpert/api/ApiConnectionException.dart';
-import 'package:plantexpert/api/Plant.dart';
-import 'package:plantexpert/api/ApiConnection.dart';
+import 'package:plantexpert/api/UserPlant.dart';
+import 'package:plantexpert/Utility.dart';
 
 import '../MenuNavigation.dart';
 
-class PlantList extends StatelessWidget {
-  final ApiConnection api = ApiConnection();
 
+
+class PlantList extends StatelessWidget {
   bool failedFetchingPlants = false;
   // save the fetched plants so they don't have to get fetched multiple times in a row 
   List<PlantListItem> plantListItems;
 
-  Future<List<Plant>> _fetchPlants() async {
+  Future<List<UserPlant>> _fetchUserPlants() async {
     try {
-      return await api.fetchPlants();
+      return await PlantenApi.instance.connection.fetchUserPlants();
     }
     on ApiConnectionException catch (e) {
       failedFetchingPlants = true;
+      print(e);
     }
     on TimeoutException catch (e) {
       failedFetchingPlants = true;
+      print(e);
+    }
+    on InvalidCredentialsException catch (e) {
+      failedFetchingPlants = true;
+      print(e);
+    }
+    on SocketException catch (e) {
+      failedFetchingPlants = true;
+      print(e);
     }
 
     return null;
@@ -41,15 +51,16 @@ class PlantList extends StatelessWidget {
       body: Container(
         width: MediaQuery.of(context).size.width,
         child: FutureBuilder(
-          future: _fetchPlants(),
-          builder: (BuildContext context, AsyncSnapshot<List<Plant>> snapshot) {
+          future: _fetchUserPlants(),
+          builder: (BuildContext context, AsyncSnapshot<List<UserPlant>> snapshot) {
             if (snapshot.hasData && plantListItems == null) {
-              plantListItems = snapshot.data.map((p) => PlantListItem(plant: p)).toList();
-              plantListItems.forEach((p) {
-                p.plant.imageName = 'assets/images/' + p.plant.id.toString() + '.jpg';
-              });
+              List<UserPlant> userPlants = snapshot.data;
+              plantListItems = snapshot.data.map((p) => PlantListItem(userPlant: p)).toList();
+              // FIXME: the database contains plants without a nickname
+              plantListItems = plantListItems.where((item) => item.userPlant.nickname != null).toList();
+              //plantListItems = plantListItems.sublist(0, 10);
             }
-            else if (snapshot.hasError || failedFetchingPlants) {
+            else if (snapshot.hasError) {
               print(snapshot.error);
             }
 
@@ -89,22 +100,22 @@ class PlantList extends StatelessWidget {
 }
 
 class PlantListItem extends StatelessWidget {
-  final Plant plant;
+  final UserPlant userPlant;
 
   final double _imageWidth = 150.0;
   final double _imageHeight = 150.0;
 
-  PlantListItem({this.plant});
+  PlantListItem({this.userPlant});
 
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     return DefaultTextStyle(
       child: GestureDetector(
-        onTap: () => Navigator.pushNamed(context, '/plant-detail', arguments: plant),
+        onTap: () => Navigator.pushNamed(context, '/plant-detail', arguments: userPlant),
         child: Container(
           padding: EdgeInsets.all(10.0),
-          height: _imageHeight * 1.2,
+          height: 250,
           decoration: BoxDecoration(
               border: Border(
                   bottom: BorderSide(
@@ -117,24 +128,25 @@ class PlantListItem extends StatelessWidget {
             children: <Widget>[
               Expanded(
                 flex: 4,
-                child: () {
-                  if (plant.imageName != null && plant.imageName.contains('assets/images')) {
-                    return Image.asset(
-                      plant.imageName,
-                      width: _imageWidth,
-                      height: _imageHeight,
-                    );
-                  }
-                  else if (plant.imageName == null) {
-                    return SizedBox.shrink();
-                  }
+                //child: SizedBox.shrink(),
+                child: FutureBuilder(
+                  future: getUserPlantImage(userPlant),
+                  builder: (BuildContext context, AsyncSnapshot<Image> snapshot) {
+                    if (snapshot.hasData) {
+                      try {
+                        Image image = snapshot.data;
+                        return image;
+                      }
+                      on NetworkImageLoadException catch(e) {
+                        print('There was a proble fetching ${userPlant.imageName}');
+                      }
+                    }
 
-                  return Image.file(
-                    File(plant.imageName),
-                    width: _imageWidth,
-                    height: _imageHeight,
-                  );
-                }(),
+                    return Center(
+                        child: CircularProgressIndicator(backgroundColor: theme.accentColor)
+                    );
+                  },
+                ),
               ),
               // space between image and text
               Expanded(
@@ -150,31 +162,41 @@ class PlantListItem extends StatelessWidget {
                         'Naam',
                         style: TextStyle(color: theme.accentColor)
                       ),
-                      Text(plant.name, style: TextStyle(color: Colors.black)),
+                      Text(userPlant.nickname ?? 'leeg', style: TextStyle(color: Colors.black)),
                       SizedBox(height: 10),
 
                       Text(
-                          'Hoeveelheid zonlicht',
-                          style: TextStyle(color: theme.accentColor)
+                        'Heeft voor het laatst water gekregen op',
+                        style: TextStyle(color: theme.accentColor),
                       ),
-                      RatingRow(
-                        count: plant.sunScale.toInt(),
-                        // TODO: find better icons for sunlight
-                        filledIcon: Icons.star,
-                        unfilledIcon: Icons.star_border,
+                      SizedBox(height: 5),
+                      Text(
+                          userPlant.lastWaterDate != null
+                              ? formatDate(userPlant.lastWaterDate)
+                              : 'Niet van toepassing',
+                          style: TextStyle(color: Colors.black)
                       ),
                       SizedBox(height: 10),
 
                       Text(
-                          'Hoeveelheid water',
-                          style: TextStyle(color: theme.accentColor)
+                        'Plantsoort',
+                        style: TextStyle(color: theme.accentColor),
                       ),
-                      RatingRow(
-                          count: plant.waterScale.toInt(),
-                          // TODO: find better icons for water
-                          filledIcon: Icons.star,
-                          unfilledIcon: Icons.star_border,
-                      )
+                      FutureBuilder(
+                        future: getPlantTypeName(userPlant),
+                        builder: (_, AsyncSnapshot<String> snapshot) {
+                          String name = 'Plantsoort wordt opgehaald';
+
+                          if (snapshot.hasData) {
+                            name = snapshot.data;
+                          }
+                          else if (snapshot.hasError) {
+                            name = 'Plantsoort kon niet worden opgehaald.';
+                          }
+
+                          return Text(name, style: TextStyle(color: Colors.black));
+                        },
+                      ),
                     ],
                   )
                 )

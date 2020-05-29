@@ -6,7 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:plantexpert/api/ApiConnectionException.dart';
 import 'package:plantexpert/api/Plant.dart';
 import 'package:plantexpert/api/UserPlant.dart';
-import 'package:plantexpert/api/ApiConnection.dart';
+import 'package:plantexpert/Utility.dart';
 
 import '../MenuNavigation.dart';
 
@@ -37,26 +37,10 @@ class _AddPlant extends State<AddPlant> {
   // failing to fetch plants from the server
   bool failedFetchPlants = false;
 
-  ApiConnection api = new ApiConnection();
   // used in FutureBuilder
   Future<List<Plant>> _fetchedPlants;
   // save the selected name of the plant type (built-in dropdown only saves the selected value)
   String plantTypeName;
-
-  // dd-MM-yyyy HH:mm
-  String formatDate(DateTime date) {
-    if (date == null) {
-      throw new ArgumentError('date is null');
-    }
-
-    var year = newPlant.lastWaterDate.year;
-    var month = newPlant.lastWaterDate.month.toString().padLeft(2, '0');
-    var day = newPlant.lastWaterDate.day.toString().padLeft(2, '0');
-    var hour = newPlant.lastWaterDate.hour.toString().padLeft(2, '0');
-    var minute = newPlant.lastWaterDate.minute.toString().padLeft(2, '0');
-
-    return '$day-$month-$year $hour:$minute';
-  }
 
   void selectImageFromSource(BuildContext context, ImageSource source) async {
     var pickedImage = await ImagePicker.pickImage(source: source);
@@ -85,7 +69,7 @@ class _AddPlant extends State<AddPlant> {
       String errorMessage;
 
       try {
-        result = api.postUserPlant(newPlant, File(newPlant.imageName));
+        result = PlantenApi.instance.connection.postUserPlant(newPlant, File(newPlant.imageName));
         showDialog(
             context: context,
             barrierDismissible: false,
@@ -126,7 +110,6 @@ class _AddPlant extends State<AddPlant> {
         print(e);
       }
 
-      // TODO: show error when posting failed
       if (result == null) {
         // SocketException occurs before the loading dialog is shown,
         // use try catch to prevent `The getter 'focusScopeNode' was called on null`
@@ -245,11 +228,12 @@ class _AddPlant extends State<AddPlant> {
     return allowed;
   }
 
+  // FIXME: use this function instad of the one in `Utility.dart`
   Future<List<Plant>> _fetchPlants() async {
     var plants;
 
     try {
-      plants = await api.fetchPlants();
+      plants = await PlantenApi.instance.connection.fetchPlants();
     } on ApiConnectionException catch (e) {
       print(e);
       failedFetchPlants = true;
@@ -291,7 +275,6 @@ class _AddPlant extends State<AddPlant> {
                 child: Form(
                   key: _formKey,
                   child: ListView(
-                    // TODO: show the selected plant as text
                     children: <Widget>[
                       Text('Plantsoort'),
                       SizedBox(height: 10),
@@ -452,7 +435,6 @@ class _AddPlant extends State<AddPlant> {
                                   value: hideDatePicker,
                                   onChanged: (bool value) {
                                     hideDatePicker = value;
-                                    // FIXME: find a more maintainable way to enable/disable the submit button
                                     setState(() {});
                                   },
                                 ),

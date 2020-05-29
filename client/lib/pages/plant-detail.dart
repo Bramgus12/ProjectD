@@ -1,16 +1,17 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:plantexpert/api/Plant.dart';
+import 'package:plantexpert/api/UserPlant.dart';
+import 'package:plantexpert/Utility.dart';
 
 import '../MenuNavigation.dart';
 import '../pages/plant-list.dart';
 
 class PlantDetail extends StatelessWidget {
-  final Plant plant;
+  final UserPlant userPlant;
 
-  PlantDetail({this.plant})
-    : assert(plant != null);
+  PlantDetail({this.userPlant})
+    : assert(userPlant != null);
 
   @override
   Widget build(BuildContext context) {
@@ -34,58 +35,68 @@ class PlantDetail extends StatelessWidget {
           width: MediaQuery.of(context).size.width,
           child: ListView(
             children: <Widget>[
-              () {
-                if (plant.imageName.contains('assets/images')) {
-                  return Image.asset(
-                    plant.imageName,
-                    width: 300,
-                    height: 300,
-                  );
-                }
+//              () {
+//                if (userPlant.imageName.contains('assets/images')) {
+//                  return Image.asset(
+//                    userPlant.imageName,
+//                    width: 300,
+//                    height: 300,
+//                  );
+//                }
+//
+//                return Image.file(
+//                  File(userPlant.imageName),
+//                  width: 300,
+//                  height: 300,
+//                );
+//              }(),
+              FutureBuilder(
+                future: getUserPlantImage(userPlant),
+                builder: (_, AsyncSnapshot<Image> snapshot) {
+                  if (snapshot.hasData) {
+                    return Container(
+                        width: 300.0,
+                        height: 300.0,
+                        child: snapshot.data,
+                    );
+                  }
 
-                return Image.file(
-                  File(plant.imageName),
-                  width: 300,
-                  height: 300,
-                );
-              }(),
+                  return CircularProgressIndicator(backgroundColor: theme.accentColor);
+                },
+              ),
               SizedBox(height: 20),
 
               Text('Naam', style: TextStyle(color: theme.accentColor)),
-              Text(plant.name),
+              Text(userPlant.nickname),
               SizedBox(height: 20),
 
-              Row(
-                children: <Widget>[
-                  Text('Hoeveelheid zonlight    ', style: TextStyle(color: theme.accentColor)),
-                  RatingRow(
-                      count: plant.sunScale.toInt(),
-                      filledIcon: Icons.star,
-                      unfilledIcon: Icons.star_border
-                  ),
-                ],
+              Text('Heeft voor het laatst water gekregen op', style: TextStyle(color: theme.accentColor)),
+              Text(
+                  userPlant.lastWaterDate != null
+                      ? formatDate(userPlant.lastWaterDate)
+                      : 'Niet van toepassing',
+                  style: TextStyle(color: Colors.black)),
+              SizedBox(height: 20),
+              Text('Plantsoort', style: TextStyle(color: theme.accentColor)),
+              FutureBuilder(
+                future: getPlantTypeName(userPlant),
+                builder: (_, AsyncSnapshot<String> snapshot) {
+                  bool loading  = true;
+                  String name;
+
+                  if (snapshot.hasData) {
+                    name = snapshot.data;
+                    loading = false;
+                  }
+
+                  return loading
+                      ? Center(
+                        child: CircularProgressIndicator(backgroundColor: theme.accentColor)
+                      )
+                      : Text(name);
+                },
               ),
-              SizedBox(height: 5),
-              Text(plant.sunText),
               SizedBox(height: 20),
-
-              Row(
-                children: <Widget>[
-                  Text('Hoeveelheid water         ', style: TextStyle(color: theme.accentColor)),
-                  RatingRow(
-                      count: plant.waterScale.toInt(),
-                      filledIcon: Icons.star,
-                      unfilledIcon: Icons.star_border
-                  ),
-                ],
-              ),
-              SizedBox(height: 5),
-              Text(plant.waterText),
-              SizedBox(height: 20),
-
-              Text('Omschrijving', style: TextStyle(color: theme.accentColor)),
-              SizedBox(height: 5),
-              Text(plant.description)
             ],
           ),
         ),
