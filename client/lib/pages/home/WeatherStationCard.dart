@@ -26,6 +26,7 @@ class _WeatherStationCardState extends State<WeatherStationCard> {
 
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
     return Card(
       child: Column(
         children: <Widget>[
@@ -38,7 +39,7 @@ class _WeatherStationCardState extends State<WeatherStationCard> {
               else if(status == _Status.loading)
                 return Text("Weer data wordt opgehaald...");
               else if (weatherStation != null) {
-                return Text("Weer in regio ${weatherStation.region}");
+                return Text("Regio ${weatherStation.region}");
               }
               else {
                 return Container();
@@ -51,10 +52,27 @@ class _WeatherStationCardState extends State<WeatherStationCard> {
             else if(weatherStation != null)
               return Column(
                 children: <Widget>[
-                  Image.network(weatherStation.icoonactueel.value),
-                  Container(
-                    child: Text(weatherStation.toString()),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      
+                      children: <Widget>[
+
+                          Text(
+                            "${weatherStation.temperature} °C",
+                            style: theme.textTheme.headline3,
+                          ),
+
+                          Image.network(weatherStation.icoonactueel.value)
+
+                      ],
+                    ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    child: Text(weatherStation.icoonactueel.zin),
+                  )
                 ],
               );
             else
