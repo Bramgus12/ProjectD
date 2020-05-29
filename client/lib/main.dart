@@ -4,7 +4,7 @@ import 'package:global_configuration/global_configuration.dart';
 import 'package:plantexpert/pages/account/Account.dart';
 
 import 'pages/Camera.dart';
-import 'pages/Home.dart';
+import 'pages/home/Home.dart';
 import 'pages/plant-list.dart';
 import 'pages/plant-detail.dart';
 import 'pages/add-plant.dart';
