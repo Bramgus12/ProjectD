@@ -61,7 +61,7 @@ class PlantDetail extends StatelessWidget {
                     );
                   }
 
-                  return CircularProgressIndicator(backgroundColor: theme.accentColor);
+                  return SizedBox.shrink();
                 },
               ),
               SizedBox(height: 20),
@@ -81,19 +81,11 @@ class PlantDetail extends StatelessWidget {
               FutureBuilder(
                 future: getPlantTypeName(userPlant),
                 builder: (_, AsyncSnapshot<String> snapshot) {
-                  bool loading  = true;
-                  String name;
-
                   if (snapshot.hasData) {
-                    name = snapshot.data;
-                    loading = false;
+                    return Text(snapshot.data);
                   }
 
-                  return loading
-                      ? Center(
-                        child: CircularProgressIndicator(backgroundColor: theme.accentColor)
-                      )
-                      : Text(name);
+                  return Text('Wordt geladen...');
                 },
               ),
               SizedBox(height: 20),

@@ -8,8 +8,6 @@ import 'package:plantexpert/Utility.dart';
 
 import '../MenuNavigation.dart';
 
-
-
 class PlantList extends StatelessWidget {
   bool failedFetchingPlants = false;
   // save the fetched plants so they don't have to get fetched multiple times in a row 
@@ -53,12 +51,30 @@ class PlantList extends StatelessWidget {
         child: FutureBuilder(
           future: _fetchUserPlants(),
           builder: (BuildContext context, AsyncSnapshot<List<UserPlant>> snapshot) {
-            if (snapshot.hasData && plantListItems == null) {
-              List<UserPlant> userPlants = snapshot.data;
-              plantListItems = snapshot.data.map((p) => PlantListItem(userPlant: p)).toList();
-              // FIXME: the database contains plants without a nickname
-              plantListItems = plantListItems.where((item) => item.userPlant.nickname != null).toList();
-              //plantListItems = plantListItems.sublist(0, 10);
+            if (snapshot.hasData) {
+              if (plantListItems == null) {
+                plantListItems = snapshot.data
+                    // FIXME: the database contains plants without a nickname
+                    .where((p) => p.nickname != null)
+                    .map((p) => PlantListItem(userPlant: p))
+                    .toList();
+
+                //plantListItems = plantListItems.sublist(0, 10);
+              }
+
+              if (plantListItems.length == 0) {
+                return Center(
+                  child: Text('Geen planten gevonden')
+                );
+              }
+
+              return ListView.builder(
+                  itemBuilder: (_, index) {
+                    return plantListItems[index];
+                  },
+                itemCount: plantListItems.length,
+                physics: AlwaysScrollableScrollPhysics(),
+              );
             }
             else if (snapshot.hasError) {
               print(snapshot.error);
@@ -70,20 +86,17 @@ class PlantList extends StatelessWidget {
                   child: Text('Planten konden niet worden opehaald'),
                 );
               }
-              return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      CircularProgressIndicator(),
-                      SizedBox(height: 10),
-                      Text('Planten worden opgehaald')
-                    ],
-                  )
-              );
             }
 
-            return ListView(
-              children: plantListItems
+            return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    CircularProgressIndicator(),
+                    SizedBox(height: 10),
+                    Text('Planten worden opgehaald')
+                  ],
+                )
             );
           },
         ),
@@ -101,9 +114,6 @@ class PlantList extends StatelessWidget {
 
 class PlantListItem extends StatelessWidget {
   final UserPlant userPlant;
-
-  final double _imageWidth = 150.0;
-  final double _imageHeight = 150.0;
 
   PlantListItem({this.userPlant});
 
@@ -138,12 +148,12 @@ class PlantListItem extends StatelessWidget {
                         return image;
                       }
                       on NetworkImageLoadException catch(e) {
-                        print('There was a proble fetching ${userPlant.imageName}');
+                        print('There was a problem loading `${userPlant.imageName}`');
                       }
                     }
 
                     return Center(
-                        child: CircularProgressIndicator(backgroundColor: theme.accentColor)
+                      child: CircularProgressIndicator(backgroundColor: theme.accentColor)
                     );
                   },
                 ),

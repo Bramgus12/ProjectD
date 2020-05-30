@@ -44,7 +44,7 @@ Future<Image> getUserPlantImage(UserPlant userPlant) async {
     print(e);
   }
   on InvalidCredentialsException catch (e) {
-    print(e);
+    print('Not logged in.');
   }
   on SocketException catch (e) {
     print(e);
