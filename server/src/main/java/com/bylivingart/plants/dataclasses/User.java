@@ -7,19 +7,23 @@ import org.springframework.stereotype.Controller;
 
 import javax.validation.constraints.*;
 import java.sql.Date;
+import java.time.LocalDate;
 
 @Controller
 public class User {
     private int id;
 
-
+    @NotBlank
     private String user_name;
 
-
+    @Pattern(
+            regexp = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%!;]).{8,64})",
+            message = "Password needs to have at least 1 uppercase character, 1 lowercase character, 1 number and 1 of the following symbols: @, #, $, %, ! and ;"
+    )
     private String password;
 
     @NotBlank
-    @Pattern(regexp = "(ROLE_)((ADMIN)|(USER))")
+    @Pattern(regexp = "(ROLE_)((ADMIN)|(USER))", message = "String should be either 'ROLE_ADMIN' or 'ROLE_USER'")
     private String authority;
 
     @NotNull
@@ -28,18 +32,27 @@ public class User {
     @NotBlank
     private String name;
 
-    @Email(message = "Email not valid")
+    @Email(message = "Has to be a valid email")
     private String email;
 
-    @Past
-    private Date dateOfBirth;
+    @PastOrPresent
+    private LocalDate dateOfBirth;
+
+    @NotBlank
     private String streetName;
+
+    @NotNull
     private int houseNumber;
+
     private String addition;
+
+    @NotBlank
     private String city;
+
+    @Pattern(regexp = "\\A[1-9][0-9]{3}[ ]?([A-RT-Za-rt-z][A-Za-z]|[sS][BCbcE-Re-rT-Zt-z])\\z", message = "Postal code must match 1234AB")
     private String postalCode;
 
-    public User(int id, String user_name, String password, String authority, Boolean enabled, String name, String email, Date dateOfBirth, String streetName, int houseNumber, String addition, String city, String postalCode) {
+    public User(int id, String user_name, String password, String authority, Boolean enabled, String name, String email, LocalDate dateOfBirth, String streetName, int houseNumber, String addition, String city, String postalCode) {
         this.id = id;
         this.user_name = user_name;
         this.password = password;
@@ -71,11 +84,11 @@ public class User {
         this.email = email;
     }
 
-    public Date getDateOfBirth() {
+    public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(Date dateOfBirth) {
+    public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 

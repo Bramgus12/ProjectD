@@ -68,14 +68,13 @@ public class HandleException {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    private ResponseEntity<Error> handleMethodArgumentNotValidException(MethodArgumentNotValidException e, HttpServletResponse response) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        HashMap<String, String> errors = new HashMap<>();
+    private ResponseEntity<Error> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        HashMap<String, String> ValidationErrors = new HashMap<>();
         e.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
+            ValidationErrors.put(fieldName, errorMessage);
         });
-        return new ResponseEntity<>(new NotValidError(400, "Bad request", errors, ""), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new NotValidError(400, "Bad request", ValidationErrors, ""), HttpStatus.BAD_REQUEST);
     }
 }

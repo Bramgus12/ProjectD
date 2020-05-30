@@ -3,6 +3,7 @@ package com.bylivingart.plants.controllers;
 import com.bylivingart.plants.DatabaseConnection;
 import com.bylivingart.plants.Exceptions.BadRequestException;
 import com.bylivingart.plants.Exceptions.UnauthorizedException;
+import com.bylivingart.plants.dataclasses.NotValidError;
 import com.bylivingart.plants.dataclasses.User;
 import com.bylivingart.plants.statements.UserStatements;
 import io.swagger.annotations.*;
@@ -55,7 +56,7 @@ public class UserController {
     @ApiOperation("Create a user as a Admin")
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "User created successfully", response = User.class),
-            @ApiResponse(code = 400, message = "Bad request", response = Error.class),
+            @ApiResponse(code = 400, message = "Bad request", response = NotValidError.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = Error.class),
             @ApiResponse(code = 403, message = "Forbidden", response = Error.class),
             @ApiResponse(code = 404, message = "User not found", response = Error.class)
@@ -63,7 +64,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/admin/users/")
     private ResponseEntity<User> createUserAdmin(
-            @RequestBody User user
+            @Valid @RequestBody User user
     ) throws Exception {
         Connection conn = new DatabaseConnection().getConnection();
         ResponseEntity<User> response = new ResponseEntity<>(UserStatements.createUserAdmin(user, conn), HttpStatus.CREATED);
@@ -74,7 +75,7 @@ public class UserController {
     @ApiOperation(value = "Create a new User")
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Successfully retrieved list", response = User.class),
-            @ApiResponse(code = 400, message = "Bad request", response = Error.class),
+            @ApiResponse(code = 400, message = "Bad request", response = NotValidError.class),
             @ApiResponse(code = 401, message = "Invalid credentials", response = Error.class),
             @ApiResponse(code = 403, message = "forbidden", response = Error.class),
             @ApiResponse(code = 404, message = "User not found", response = Error.class)
@@ -100,7 +101,9 @@ public class UserController {
             @ApiResponse(code = 404, message = "User not found", response = Error.class)
     })
     @PutMapping("/admin/users/{id}/")
-    private ResponseEntity<User> updateUserAdmin(@PathVariable Integer id, @RequestBody User user) throws Exception {
+    private ResponseEntity<User> updateUserAdmin(
+            @PathVariable Integer id,
+            @Valid @RequestBody User user) throws Exception {
         if (id.equals(user.getId())) {
             Connection conn = new DatabaseConnection().getConnection();
             ResponseEntity<User> response = new ResponseEntity<>(UserStatements.updateUserAdmin(user, id, conn), HttpStatus.OK);
@@ -123,7 +126,7 @@ public class UserController {
     @PutMapping("/user/users/{id}/")
     private ResponseEntity<User> updateUser(
             @ApiParam(value = "Id of the User that you want to update", required = true) @PathVariable Integer id,
-            @ApiParam(value = "The object with the User that you want to update", required = true) @RequestBody User user,
+            @Valid @ApiParam(value = "The object with the User that you want to update", required = true) @RequestBody User user,
             HttpServletRequest request
     ) throws Exception {
         if (id.equals(user.getId())) {
