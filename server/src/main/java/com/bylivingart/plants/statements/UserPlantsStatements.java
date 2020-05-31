@@ -6,6 +6,7 @@ import com.bylivingart.plants.SecurityConfig;
 import com.bylivingart.plants.dataclasses.UserPlants;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -106,12 +107,12 @@ public class UserPlantsStatements {
     private static PreparedStatement fillPreparedStatement(PreparedStatement ps, UserPlants userPlants, int userId) throws Exception {
         ps.setInt(1, userId);
         ps.setString(2, userPlants.getNickname());
-        ps.setDouble(3, userPlants.getPotVolume());
-        ps.setDouble(4, userPlants.getLat());
-        ps.setDouble(5, userPlants.getLon());
+        ps.setBigDecimal(3, userPlants.getPotVolume());
+        ps.setBigDecimal(4, userPlants.getLat());
+        ps.setBigDecimal(5, userPlants.getLon());
         ps.setString(6, userPlants.getImageName());
         ps.setTimestamp(7, Timestamp.valueOf(userPlants.getLastWaterDate()));
-        ps.setDouble(8, userPlants.getDistanceToWindow());
+        ps.setBigDecimal(8, userPlants.getDistanceToWindow());
         ps.setInt(9, userPlants.getMaxTemp());
         ps.setInt(10, userPlants.getMinTemp());
         ps.setInt(11, userPlants.getPlantId());
@@ -122,12 +123,12 @@ public class UserPlantsStatements {
         int id = rs.getInt("id");
         int userId = rs.getInt("user_id");
         String nickname = rs.getString("nickname");
-        double potVolume = rs.getDouble("pot_volume");
-        double lat = rs.getDouble("lat");
-        double lon = rs.getDouble("lon");
+        BigDecimal potVolume = rs.getBigDecimal("pot_volume");
+        BigDecimal lat = rs.getBigDecimal("lat");
+        BigDecimal lon = rs.getBigDecimal("lon");
         String imageName = rs.getString("image_name");
         LocalDateTime lastWaterDate = rs.getTimestamp("last_water_date").toLocalDateTime();
-        double distanceToWindow = rs.getDouble("distance_to_window");
+        BigDecimal distanceToWindow = rs.getBigDecimal("distance_to_window");
         int maxTemp = rs.getInt("max_temp");
         int minTemp = rs.getInt("min_temp");
         int plantId = rs.getInt("plant_id");

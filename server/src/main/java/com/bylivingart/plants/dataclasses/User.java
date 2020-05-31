@@ -11,6 +11,7 @@ import java.time.LocalDate;
 
 @Controller
 public class User {
+    @Null
     private int id;
 
     @NotBlank
@@ -46,7 +47,7 @@ public class User {
 
     private String addition;
 
-    @NotBlank
+    @NotBlank(message = "Cannot be blank or null")
     private String city;
 
     @Pattern(regexp = "\\A[1-9][0-9]{3}[ ]?([A-RT-Za-rt-z][A-Za-z]|[sS][BCbcE-Re-rT-Zt-z])\\z", message = "Postal code must match 1234AB")

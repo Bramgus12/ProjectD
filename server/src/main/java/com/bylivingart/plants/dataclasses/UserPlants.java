@@ -1,19 +1,51 @@
 package com.bylivingart.plants.dataclasses;
 
+import javax.validation.constraints.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class UserPlants {
+    @Null
     private int id;
+
+    @NotNull
     private int userId;
+
+    @NotBlank
     private String nickname;
-    private double potVolume;
-    private double lat;
-    private double lon;
+
+    @NotNull
+    @Max(5)
+    @Min(0)
+    private BigDecimal potVolume;
+
+    @NotNull
+    private BigDecimal lat;
+
+    @NotNull
+    private BigDecimal lon;
+
+    @NotBlank
     private String imageName;
+
+    @PastOrPresent(message = "Must be a date in the past or the present.")
     private LocalDateTime lastWaterDate;
-    private double distanceToWindow;
+
+    @NotNull
+    @Max(value = 5, message = "Has to be lower than 5.0")
+    @Min(value = 0, message = "Hast to be higher than 0.0")
+    private BigDecimal distanceToWindow;
+
+    @NotNull
+    @Max(value = 55, message = "Temperature has to be lower than 55")
+    @Min(value = -20, message = "Temperature has to be higher than -20")
     private int maxTemp;
+
+    @Max(value = -20, message = "Temperature has to be higher than -20")
+    @Min(value = 55, message = "Temperature has to be lower than 55")
     private int minTemp;
+
+    @NotBlank(message = "Has to be a valid plantId")
     private int plantId;
 
     public UserPlants() {
@@ -23,12 +55,12 @@ public class UserPlants {
             int id,
             int userId,
             String nickname,
-            double potVolume,
-            double lat,
-            double lon,
+            BigDecimal potVolume,
+            BigDecimal lat,
+            BigDecimal lon,
             String imageName,
             LocalDateTime lastWaterDate,
-            double distanceToWindow,
+            BigDecimal distanceToWindow,
             int maxTemp,
             int minTemp,
             int plantId
@@ -64,14 +96,14 @@ public class UserPlants {
     /**
      * @return the distanceToWindow
      */
-    public double getDistanceToWindow() {
+    public BigDecimal getDistanceToWindow() {
         return distanceToWindow;
     }
 
     /**
      * @param distanceToWindow the distanceToWindow to set
      */
-    public void setDistanceToWindow(double distanceToWindow) {
+    public void setDistanceToWindow(BigDecimal distanceToWindow) {
         this.distanceToWindow = distanceToWindow;
     }
 
@@ -120,28 +152,28 @@ public class UserPlants {
     /**
      * @return the lat
      */
-    public double getLat() {
+    public BigDecimal getLat() {
         return lat;
     }
 
     /**
      * @param lat the lat to set
      */
-    public void setLat(double lat) {
+    public void setLat(BigDecimal lat) {
         this.lat = lat;
     }
 
     /**
      * @return the lon
      */
-    public double getLon() {
+    public BigDecimal getLon() {
         return lon;
     }
 
     /**
      * @param lon the lon to set
      */
-    public void setLon(double lon) {
+    public void setLon(BigDecimal lon) {
         this.lon = lon;
     }
 
@@ -204,14 +236,14 @@ public class UserPlants {
     /**
      * @return the potVolume
      */
-    public double getPotVolume() {
+    public BigDecimal getPotVolume() {
         return potVolume;
     }
 
     /**
      * @param potVolume the potVolume to set
      */
-    public void setPotVolume(double potVolume) {
+    public void setPotVolume(BigDecimal potVolume) {
         this.potVolume = potVolume;
     }
 }

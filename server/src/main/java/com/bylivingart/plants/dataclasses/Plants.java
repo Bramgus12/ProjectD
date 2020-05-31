@@ -1,17 +1,42 @@
 package com.bylivingart.plants.dataclasses;
 
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
+
 public class Plants {
+    @Null
     private int id;
+
+    @NotBlank
     private String name;
+
+    @NotNull
     private double waterScale;
+
+    @NotNull
     private double waterNumber;
+
+    @NotBlank
     private String waterText;
+
+    @NotNull
     private double sunScale;
+
+    @NotNull
     private double sunNumber;
+
+    @NotBlank
     private String sunText;
+
+    @NotBlank
     private String description;
+
+    @NotNull
     private int optimumTemp;
+
+    @NotBlank
     private String imageName;
 
     public Plants() {
