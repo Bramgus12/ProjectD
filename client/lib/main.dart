@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/plant-detail': (context) => PlantDetail(plantInfo: ModalRoute.of(context).settings.arguments),
-        '/login' : (context) => Account(),
+        '/account' : (context) => Account(),
       },
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {

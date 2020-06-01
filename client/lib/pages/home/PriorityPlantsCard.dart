@@ -124,6 +124,9 @@ class _PriorityPlantsCardState extends State<PriorityPlantsCard> {
                         ],
                       );
                       break;
+                    case _Status.error:
+                      return Text("Error: $errorMessage");
+                      break;
                     default:
                       return CircularProgressIndicator();
                   }
@@ -214,7 +217,7 @@ class _PriorityPlantsCardState extends State<PriorityPlantsCard> {
     }
 
     // Filter list, keep only user plants that haven't received water in the last 24 hours.
-    // This will later need to be calculated per plant type with a formula.
+    // TODO: Change this to be calculated per plant type with a formula.
     DateTime tooLongWithoutWater = DateTime.now().subtract(Duration(days: 1));
     List<UserPlant> urgentUserPlants = allUserPlants.where((userPlant) => userPlant.lastWaterDate.millisecondsSinceEpoch < tooLongWithoutWater.millisecondsSinceEpoch ).toList();
 

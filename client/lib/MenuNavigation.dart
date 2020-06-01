@@ -2,8 +2,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-
-
 class MenuNavigation extends StatefulWidget{
   MenuNavigation({Key key}) : super(key: key);
 
@@ -11,8 +9,6 @@ class MenuNavigation extends StatefulWidget{
   _MenuNavigation createState() => _MenuNavigation();
 
 }
-
-
 
 class _MenuNavigation extends State<MenuNavigation> {
 
@@ -24,21 +20,18 @@ class _MenuNavigation extends State<MenuNavigation> {
         padding: EdgeInsets.zero,
         children: <Widget>[
           DrawerHeader(
-              child: GestureDetector(
-                child: ListTile(
-                  title: Text( 'Menu',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20
-                  ),
+            child: ListTile(
+                title: Text( 'Menu',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 20
                 ),
-                onTap: () => {
-                  Navigator.pop(context)
-                },
-                leading: Icon(Icons.arrow_back),
               ),
+              onTap: () => {
+                Navigator.pop(context)
+              },
+              leading: Icon(Icons.arrow_back),
             ),
-
             decoration: BoxDecoration(
               color: Colors.white,
             ),
@@ -63,20 +56,17 @@ class _MenuNavigation extends State<MenuNavigation> {
               Navigator.pushReplacementNamed(context, '/my-plants');
             },
             leading: Icon(Icons.featured_play_list, color: ModalRoute.of(context).settings.name == '/my-plants' ? theme.accentColor : Colors.black,),
-
           ),
           ListTile(
             title: Text('Account'),
-            onTap: (){
-              Navigator.pushNamed(context, '/login');
+            onTap: () async{
+              await Navigator.pushNamed(context, '/account');
+              Navigator.pushReplacementNamed(context, ModalRoute.of(context).settings.name);
             },
             leading: Icon(Icons.account_box, color: ModalRoute.of(context).settings.name == '/login' ? theme.accentColor : Colors.black,),
-
           )
-
         ],
       ),
-
     );
   }
 }
@@ -92,8 +82,6 @@ class BottomNavigation extends StatefulWidget{
 
 class _BottomNavigation extends State<BottomNavigation> {
   var indexes = ['/', '/camera', '/my-plants'];
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -116,8 +104,8 @@ class _BottomNavigation extends State<BottomNavigation> {
       selectedItemColor: Theme.of(context).accentColor,
       onTap: (int index) => {
         Navigator.pushReplacementNamed(
-            context,
-            indexes[index],
+          context,
+          indexes[index],
         )
       },
     );

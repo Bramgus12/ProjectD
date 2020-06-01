@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:plantexpert/AccountFunctions.dart';
-import 'package:plantexpert/api/User.dart';
 import 'package:plantexpert/pages/account/LoginTab.dart';
 import 'package:plantexpert/pages/account/RegisterTab.dart';
 
