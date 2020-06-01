@@ -177,6 +177,8 @@ class _WeatherStationCardState extends State<WeatherStationCard> {
     // Fetch closest weather station from api
     try {
       weatherStation = await apiConnection.fetchWeatherStation(locationData.latitude, locationData.longitude);
+      if(!this.mounted)
+        return;
 
       setState(() {
         status = _Status.done;

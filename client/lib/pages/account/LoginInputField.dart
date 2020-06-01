@@ -125,7 +125,7 @@ class _LoginDatePickerState extends State<LoginDatePicker> {
       initialDatePickerMode: DatePickerMode.year,
       fieldLabelText: this.widget.label,
     );
-    if(date == null) return;
+    if(date == null || !this.mounted) return;
 
     setState(() {
       pickedDate = date;

@@ -154,9 +154,13 @@ class _PriorityPlantsCardState extends State<PriorityPlantsCard> {
     try {
       response = await apiConnection.putUserPlant(userPlant);
     } on InvalidCredentialsException catch(e) {
+      if(!this.mounted)
+        return;
       Scaffold.of(context).showSnackBar(SnackBar(content: Text("Niet ingelogd.")));
       return;
     } on StatusCodeException catch(e) {
+      if(!this.mounted)
+        return;
       if (e.reponse.statusCode == 404) {
         Scaffold.of(context).showSnackBar(SnackBar(content: Text("Plant '${userPlant.nickname}' bestaat niet.")));
         setState(() {
@@ -169,10 +173,15 @@ class _PriorityPlantsCardState extends State<PriorityPlantsCard> {
       print(userPlant.toJson());
       return;
     } on ApiConnectionException catch(e) {
+      if(!this.mounted)
+        return;
       Scaffold.of(context).showSnackBar(SnackBar(content: Text("Server error.")));
       print(e);
       return;
     }
+
+    if(!this.mounted)
+      return;
 
     if (response != null && response.statusCode < 300) {
       setState(() {
@@ -190,11 +199,15 @@ class _PriorityPlantsCardState extends State<PriorityPlantsCard> {
     try {
       allUserPlants = await ApiConnection().fetchUserPlants();
     } on InvalidCredentialsException catch(e) {
+      if(!this.mounted)
+        return;
       setState(() {
         status = _Status.notLoggedIn;
       });
       return;
     } on StatusCodeException catch(e) {
+      if(!this.mounted)
+        return;
       if (e.reponse.statusCode == 404) {
         setState(() {
           status = _Status.noPlantsYet;
@@ -209,12 +222,17 @@ class _PriorityPlantsCardState extends State<PriorityPlantsCard> {
       return;
     } on ApiConnectionException catch(e) {
       print(e);
+      if(!this.mounted)
+        return;
       setState(() {
         status = _Status.error;
         errorMessage = "Server connection error.";
       });
       return;
     }
+
+    if(!this.mounted)
+      return;
 
     // Filter list, keep only user plants that haven't received water in the last 24 hours.
     // TODO: Change this to be calculated per plant type with a formula.

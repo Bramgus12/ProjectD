@@ -141,6 +141,8 @@ class _RegisterTabState extends State<RegisterTab> {
 
     try {
       await apiConnection.postUser(user);
+      if(!this.mounted)
+        return;
 
       // Save username and password to shared preferences.
       SharedPreferences sharedPreferences = await SharedPreferences.getInstance();

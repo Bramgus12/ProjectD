@@ -83,6 +83,8 @@ class _LoginTabState extends State<LoginTab> {
     // Server side validation
     try{
       bool validCredentials = await apiConnection.verifyCredentials(usernameController.text, passwordController.text);
+      if(!this.mounted)
+        return;
       if (validCredentials) {
         print("Credentials are valid.");
         // Save username and password to shared preferences.
