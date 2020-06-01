@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:plantexpert/MenuNavigation.dart';
 import 'package:plantexpert/api/ApiConnection.dart';
+import 'package:plantexpert/pages/home/PriorityPlantsCard.dart';
 import 'package:plantexpert/pages/home/WeatherStationCard.dart';
 
 class HomePage extends StatefulWidget {
@@ -28,6 +29,7 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              PriorityPlantsCard(),
               WeatherStationCard()
             ],
           ),

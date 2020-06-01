@@ -66,7 +66,7 @@ class _MenuNavigation extends State<MenuNavigation> {
 
           ),
           ListTile(
-            title: Text('Login'),
+            title: Text('Account'),
             onTap: (){
               Navigator.pushNamed(context, '/login');
             },
