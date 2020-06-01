@@ -170,7 +170,7 @@ class ApiConnection {
   // User 
   Future<User> fetchUser() async {
     /// Fetches the user data of the logged in user.
-    Map<String, String> jsonUser = await _fetchJson("user/users/");
+    Map<String, dynamic> jsonUser = await _fetchJson("user/users/");
     return User.fromJson(jsonUser);
   }
 

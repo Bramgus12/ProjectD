@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:plantexpert/AccountFunctions.dart';
+import 'package:plantexpert/api/User.dart';
 import 'package:plantexpert/pages/account/LoginTab.dart';
 import 'package:plantexpert/pages/account/RegisterTab.dart';
 
@@ -60,7 +61,7 @@ class _AccountState extends State<Account> {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text("Ingelogt als '$loggedInUser'"),
+                  Text("Ingelogd als '$loggedInUser'"),
                   Padding(
                     padding: const EdgeInsets.all(15),
                     child: RaisedButton(
