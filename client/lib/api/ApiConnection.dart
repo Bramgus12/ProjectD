@@ -37,7 +37,7 @@ class ApiConnection {
       headers['Authorization'] = "Basic " + base64.encode(utf8.encode("$username:$password")).replaceAll("=", "");
     }
     headers.putIfAbsent('Accept', () => accept);
-    if(type == "POST") headers['Content-Type'] = contentType;
+    if(type == "POST" || type == "PUT") headers['Content-Type'] = contentType;
     return headers;
   }
 

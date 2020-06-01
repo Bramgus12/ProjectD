@@ -47,7 +47,7 @@ class _PriorityPlantsCardState extends State<PriorityPlantsCard> {
             if (status == _Status.done) {
               return ListView.builder(
                 shrinkWrap: true,
-                itemCount: userPlants.length,
+                itemCount: userPlants.length <= 5 ? userPlants.length : 5,
                 itemBuilder: (context, index) {
                   // String dateString = DateFormat('d MMMM', 'nl_NL').format(userPlants[index].lastWaterDate );
                   Duration sinceLastWaterTime = DateTime.now().difference(userPlants[index].lastWaterDate);
@@ -132,8 +132,10 @@ class _PriorityPlantsCardState extends State<PriorityPlantsCard> {
   }
 
   void updateLastWaterDate(UserPlant userPlant, BuildContext context) async {
+    userPlant.lastWaterDate = DateTime.now();
+    http.Response response;
     try {
-      await apiConnection.putUserPlant(userPlant);
+      response = await apiConnection.putUserPlant(userPlant);
     } on InvalidCredentialsException catch(e) {
       Scaffold.of(context).showSnackBar(SnackBar(content: Text("Niet ingelogd.")));
       return;
@@ -147,6 +149,7 @@ class _PriorityPlantsCardState extends State<PriorityPlantsCard> {
       }
       print(e);
       Scaffold.of(context).showSnackBar(SnackBar(content: Text("Server response: ${e.reponse.statusCode}")));
+      print(userPlant.toJson());
       return;
     } on ApiConnectionException catch(e) {
       Scaffold.of(context).showSnackBar(SnackBar(content: Text("Server error.")));
@@ -154,10 +157,11 @@ class _PriorityPlantsCardState extends State<PriorityPlantsCard> {
       return;
     }
 
-    setState(() {
-      userPlants = userPlants;
-    });
-
+    if (response != null && response.statusCode < 300) {
+      setState(() {
+        userPlants = List.from(userPlants)..remove(userPlant);
+      });
+    }
   }
 
   void getUserPlants() async {

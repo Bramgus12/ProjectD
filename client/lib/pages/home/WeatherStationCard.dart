@@ -56,16 +56,12 @@ class _WeatherStationCardState extends State<WeatherStationCard> {
                     padding: const EdgeInsets.symmetric(vertical: 15),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      
                       children: <Widget>[
-
-                          Text(
-                            "${weatherStation.temperature} °C",
-                            style: theme.textTheme.headline3,
-                          ),
-
-                          Image.network(weatherStation.icoonactueel.value)
-
+                        Text(
+                          "${weatherStation.temperature} °C",
+                          style: theme.textTheme.headline3,
+                        ),
+                        Image.network(weatherStation.icoonactueel.value)
                       ],
                     ),
                   ),
@@ -80,10 +76,18 @@ class _WeatherStationCardState extends State<WeatherStationCard> {
           }(),
           ButtonBar(
             children: <Widget>[
-              FlatButton(onPressed: () => getWeatherStation(promptUser: true), child: Text("Vernieuw")),
+              FlatButton(
+                onPressed: () => getWeatherStation(promptUser: true), 
+                child: Text("Vernieuw"),
+                textColor: theme.accentColor,
+              ),
               Visibility(
                 visible: locationStatus == _LocationStatus.disabled || locationStatus == _LocationStatus.denied,
-                child: FlatButton(onPressed: () => getWeatherStation(promptUser: true), child: Text("Inschakelen"))
+                child: FlatButton(
+                  onPressed: () => getWeatherStation(promptUser: true), 
+                  child: Text("Inschakelen"),
+                  textColor: theme.accentColor
+                )
               )
             ],
           )
