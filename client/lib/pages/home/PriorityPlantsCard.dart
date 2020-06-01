@@ -125,7 +125,16 @@ class _PriorityPlantsCardState extends State<PriorityPlantsCard> {
                 }(),
               );
             }
-          }()
+          }(),
+          ButtonBar(
+            children: <Widget>[
+              FlatButton(
+                onPressed: getUserPlants, 
+                child: Text("Vernieuw"),
+                textColor: theme.accentColor,
+              )
+            ],
+          )
         ],
       ),
     );
@@ -165,6 +174,10 @@ class _PriorityPlantsCardState extends State<PriorityPlantsCard> {
   }
 
   void getUserPlants() async {
+    setState(() {
+        userPlants = null;
+        status = _Status.loading;
+    });
     List<UserPlant> allUserPlants;
     try {
       allUserPlants = await ApiConnection().fetchUserPlants();
