@@ -4,6 +4,7 @@ import 'package:location/location.dart';
 import 'package:plantexpert/api/ApiConnection.dart';
 import 'package:plantexpert/api/ApiConnectionException.dart';
 import 'package:plantexpert/api/WeatherStation.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class WeatherStationCard extends StatefulWidget {
   @override
@@ -68,6 +69,27 @@ class _WeatherStationCardState extends State<WeatherStationCard> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 15),
                     child: Text(weatherStation.icoonactueel.zin),
+                  ),
+                  Center(
+                    child:
+                      GestureDetector(
+                        onTap: () { launch("https://www.buienradar.nl/"); },
+                        child: RichText(
+                          textAlign: TextAlign.center,
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: "Weer gegevens van Buienradar.\n",
+                                style: theme.textTheme.caption
+                              ),
+                              TextSpan(
+                                text: "www.buienradar.nl",
+                                style: theme.textTheme.caption.copyWith(color: Colors.blue),
+                              )
+                            ],
+                          ),
+                        ),
+                      )
                   )
                 ],
               );
