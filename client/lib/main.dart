@@ -40,13 +40,13 @@ class MyApp extends StatelessWidget {
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {
           case '/':
-            return SlideRightRoute(widget: HomePage(), settings:settings);
+            return RouteWithoutTransition(widget: HomePage(), settings:settings);
           case '/camera':
-            return SlideRightRoute(widget: Camera(), settings:settings);
+            return RouteWithoutTransition(widget: Camera(), settings:settings);
           case '/my-plants':
-            return SlideRightRoute(widget: PlantList(), settings:settings);
+            return RouteWithoutTransition(widget: PlantList(), settings:settings);
           case '/add-plant':
-            return SlideRightRoute(widget: AddPlant(), settings:settings);
+            return RouteWithoutTransition(widget: AddPlant(), settings:settings);
           default:
             return null;
         }
@@ -55,27 +55,14 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class SlideRightRoute extends PageRouteBuilder {
+class RouteWithoutTransition extends PageRouteBuilder {
   final Widget widget;
   final RouteSettings settings;
-  SlideRightRoute({this.widget, this.settings})
-      : super(
-    pageBuilder: (BuildContext context, Animation<double> animation,
-        Animation<double> secondaryAnimation) {
+  RouteWithoutTransition({this.widget, this.settings}) 
+    : super(
+      pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
       return widget;
     },
-    transitionsBuilder: (BuildContext context,
-        Animation<double> animation,
-        Animation<double> secondaryAnimation,
-        Widget child) {
-      return new SlideTransition(
-        position: new Tween<Offset>(
-          begin: Offset.zero,
-          end: Offset.zero,
-        ).animate(animation),
-        child: child,
-      );
-    },
-    settings: settings
+    transitionDuration: Duration(seconds: 0)
   );
 }
