@@ -84,7 +84,10 @@ class _PriorityPlantsCardState extends State<PriorityPlantsCard> {
                     case _Status.notLoggedIn:
                       return Column(
                         children: <Widget>[
-                          Text("Je bent niet ingelogd. Log in om planten toe te voegen."),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 15),
+                            child: Text("Je bent niet ingelogd. Log in om planten toe te voegen."),
+                          ),
                           RaisedButton(
                             onPressed: () => Navigator.pushNamed(context, '/login'),
                             child: Text("Inloggen"),

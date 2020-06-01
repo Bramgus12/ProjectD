@@ -9,7 +9,10 @@ class WebsiteLinkCard extends StatelessWidget {
       child: Column(
         children: <Widget>[
           ListTile(
-            leading: Icon(Icons.public),
+            leading: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Image.asset("assets/images/by_living_art_logo_large.png"),
+            ),
             title: Text("By Living Art"),
             subtitle: Text("Bezoek de website."),
             trailing: RaisedButton(
