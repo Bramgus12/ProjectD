@@ -3,6 +3,7 @@ import 'package:plantexpert/MenuNavigation.dart';
 import 'package:plantexpert/api/ApiConnection.dart';
 import 'package:plantexpert/pages/home/PriorityPlantsCard.dart';
 import 'package:plantexpert/pages/home/WeatherStationCard.dart';
+import 'package:plantexpert/pages/home/WebsiteLinkCard.dart';
 
 class HomePage extends StatefulWidget {
 
@@ -25,13 +26,16 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
       ),
       body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              PriorityPlantsCard(),
-              WeatherStationCard()
-            ],
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                PriorityPlantsCard(),
+                WebsiteLinkCard(),
+                WeatherStationCard()
+              ],
+            ),
           ),
         ),
       ),

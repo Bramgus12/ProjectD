@@ -46,6 +46,8 @@ class _PriorityPlantsCardState extends State<PriorityPlantsCard> {
           (){
             if (status == _Status.done) {
               return ListView.builder(
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                physics: NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 itemCount: userPlants.length <= 5 ? userPlants.length : 5,
                 itemBuilder: (context, index) {
