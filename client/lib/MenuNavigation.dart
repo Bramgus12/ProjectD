@@ -1,5 +1,4 @@
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class MenuNavigation extends StatefulWidget{
@@ -15,57 +14,71 @@ class _MenuNavigation extends State<MenuNavigation> {
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          DrawerHeader(
-            child: ListTile(
-                title: Text( 'Menu',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20
+    String currentRoute = ModalRoute.of(context).settings.name;
+    // theme.accentColor : Colors.black
+    return Theme(
+      data: Theme.of(context).copyWith(
+        primaryColor: theme.accentColor
+      ),
+      child: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              child: ListTile(
+                  title: Text( 'Menu',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20
+                  ),
+                ),
+                onTap: () => {
+                  Navigator.pop(context)
+                },
+                leading: Icon(
+                  Icons.arrow_back,
+                  color: Colors.white,
                 ),
               ),
-              onTap: () => {
-                Navigator.pop(context)
+              decoration: BoxDecoration(
+                color: theme.accentColor
+              ),
+            ),
+            ListTile(
+              selected: currentRoute == '/',
+              title: Text('Home'),
+              onTap: (){
+                Navigator.pushReplacementNamed(context, '/');
               },
-              leading: Icon(Icons.arrow_back),
+              leading: Icon(Icons.home),
             ),
-            decoration: BoxDecoration(
-              color: Colors.white,
+            ListTile(
+              selected: currentRoute == '/camera',
+              title: Text('Camera'),
+              onTap: (){
+                Navigator.pushReplacementNamed(context, '/camera');
+              },
+              leading: Icon(Icons.camera_alt),
             ),
-          ),
-          ListTile(
-            title: Text('Home'),
-            onTap: (){
-              Navigator.pushReplacementNamed(context, '/');
-            },
-            leading: Icon(Icons.home, color: ModalRoute.of(context).settings.name == '/' ? theme.accentColor : Colors.black,),
-          ),
-          ListTile(
-            title: Text('Camera'),
-            onTap: (){
-              Navigator.pushReplacementNamed(context, '/camera');
-            },
-            leading: Icon(Icons.camera_alt, color: ModalRoute.of(context).settings.name == '/camera' ? theme.accentColor : Colors.black,),
-          ),
-          ListTile(
-            title: Text('Mijn planten'),
-            onTap: (){
-              Navigator.pushReplacementNamed(context, '/my-plants');
-            },
-            leading: Icon(Icons.featured_play_list, color: ModalRoute.of(context).settings.name == '/my-plants' ? theme.accentColor : Colors.black,),
-          ),
-          ListTile(
-            title: Text('Account'),
-            onTap: () async{
-              await Navigator.pushNamed(context, '/account');
-              Navigator.pushReplacementNamed(context, ModalRoute.of(context).settings.name);
-            },
-            leading: Icon(Icons.account_box, color: ModalRoute.of(context).settings.name == '/login' ? theme.accentColor : Colors.black,),
-          )
-        ],
+            ListTile(
+              selected: currentRoute == '/my-plants',
+              title: Text('Mijn planten'),
+              onTap: (){
+                Navigator.pushReplacementNamed(context, '/my-plants');
+              },
+              leading: Icon(Icons.featured_play_list),
+            ),
+            ListTile(
+              selected: currentRoute == '/account',
+              title: Text('Account'),
+              onTap: () async{
+                await Navigator.pushNamed(context, '/account');
+                Navigator.pushReplacementNamed(context, ModalRoute.of(context).settings.name);
+              },
+              leading: Icon(Icons.account_box),
+            )
+          ],
+        ),
       ),
     );
   }
