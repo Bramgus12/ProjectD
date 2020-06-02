@@ -1,5 +1,7 @@
 
 import 'package:flutter/material.dart';
+import 'package:plantexpert/AccountFunctions.dart';
+import 'package:plantexpert/api/User.dart';
 
 class MenuNavigation extends StatefulWidget{
   MenuNavigation({Key key}) : super(key: key);
@@ -10,6 +12,19 @@ class MenuNavigation extends StatefulWidget{
 }
 
 class _MenuNavigation extends State<MenuNavigation> {
+  User loggedInUser;
+
+  @override
+  void initState() {
+    super.initState();
+    getLoggedInUser().then((user){
+      if (!this.mounted)
+        return;
+      setState(() {
+        loggedInUser = user;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,20 +40,37 @@ class _MenuNavigation extends State<MenuNavigation> {
           padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
-              child: ListTile(
-                  title: Text( 'Menu',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                      child: ListTile(
+                        title: Text( 'Menu',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20
+                        ),
+                      ),
+                      onTap: () => {
+                        Navigator.pop(context)
+                      },
+                      leading: Icon(
+                        Icons.arrow_back,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
-                ),
-                onTap: () => {
-                  Navigator.pop(context)
-                },
-                leading: Icon(
-                  Icons.arrow_back,
-                  color: Colors.white,
-                ),
+                  GestureDetector(
+                    onTap: loggedInUser == null ? null : openAccountPage,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text( 
+                        loggedInUser == null ? "" : "Ingelogd als ${loggedInUser.username}",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  )
+                ],
               ),
               decoration: BoxDecoration(
                 color: theme.accentColor
@@ -71,16 +103,20 @@ class _MenuNavigation extends State<MenuNavigation> {
             ListTile(
               selected: currentRoute == '/account',
               title: Text('Account'),
-              onTap: () async{
-                await Navigator.pushNamed(context, '/account');
-                Navigator.pushReplacementNamed(context, ModalRoute.of(context).settings.name);
-              },
+              onTap: openAccountPage,
               leading: Icon(Icons.account_box),
             )
           ],
         ),
       ),
     );
+  }
+
+  void openAccountPage() async {
+    await Navigator.pushNamed(context, '/account');
+    // The current page needs to be refreshed after returning from the login page,
+    // this will reload all widgets which require the user to be logged in.
+    Navigator.pushReplacementNamed(context, ModalRoute.of(context).settings.name);
   }
 }
 
