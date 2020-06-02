@@ -30,13 +30,13 @@ class MyApp extends StatelessWidget {
       title: 'Plant Expert',
       theme: ThemeData(
         primaryColor: Colors.white,
-        accentColor: Color(0xff119543)
+        accentColor: Color(0xff119543),
       ),
       initialRoute: '/',
-      routes: {
-        '/plant-detail': (context) => PlantDetail(userPlant: ModalRoute.of(context).settings.arguments),
-        '/login' : (context) => Account(),
-      },
+//      routes: {
+//        '/plant-detail': (context) => ModalRoute.of(context).settings.arguments,
+//        '/login' : (context) => Account(),
+//      },
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {
           case '/':
@@ -47,6 +47,10 @@ class MyApp extends StatelessWidget {
             return SlideRightRoute(widget: PlantList(), settings:settings);
           case '/add-plant':
             return SlideRightRoute(widget: AddPlant(), settings:settings);
+          case '/plant-detail':
+            return SlideRightRoute(widget: settings.arguments, settings:settings);
+          case '/login':
+            return SlideRightRoute(widget: Account(), settings:settings);
           default:
             return null;
         }

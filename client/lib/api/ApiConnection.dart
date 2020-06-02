@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:global_configuration/global_configuration.dart';
@@ -117,6 +118,21 @@ class ApiConnection {
     headers = await _createHeaders(headers: headers, accept: "image/jpeg", contentType: "image/jpeg");
     String fullUrl = baseUrl + url;
     return Image.network(fullUrl, headers: headers);
+  }
+
+  // Fetch image from api and return a (cached) resource.
+  Future<CachedNetworkImage> _fetchCachedImage(String url, { Map<String, String> headers }) async {
+    headers = await _createHeaders(headers: headers, accept: "image/jpeg", contentType: "image/jpeg");
+    String fullUrl = baseUrl + url;
+    return CachedNetworkImage(
+      imageUrl: fullUrl,
+      httpHeaders: headers,
+      height: 400,
+      placeholder: (BuildContext context, String url) =>
+          Image.asset("assets/images/image-placeholder.png"),
+      errorWidget: (context, url, error) =>
+          Image.asset("assets/images/image-placeholder.png"),
+    );
   }
 
   // Convert http response body to json with error handling.
@@ -243,6 +259,10 @@ class ApiConnection {
 
   Future<Image> fetchUserPlantImage(UserPlant userPlant) async {
     return await _fetchImage("user/userplants/${userPlant.id}/${userPlant.imageName}/");
+  }
+
+  Future<CachedNetworkImage> fetchCachedPlantImage(UserPlant userPlant) async {
+    return _fetchCachedImage("user/userplants/${userPlant.id}/${userPlant.imageName}/");
   }
 
   // Login

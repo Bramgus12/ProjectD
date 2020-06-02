@@ -33,57 +33,6 @@ String randomString(int length) {
   return generatedString;
 }
 
-Future<Image> getUserPlantImage(UserPlant userPlant) async {
-  try {
-    return await PlantenApi.instance.connection.fetchUserPlantImage(userPlant);
-  }
-  on ApiConnectionException catch (e) {
-    print(e);
-  }
-  on TimeoutException catch (e) {
-    print(e);
-  }
-  on InvalidCredentialsException catch (e) {
-    print('Not logged in.');
-  }
-  on SocketException catch (e) {
-    print(e);
-  }
-  on NetworkImageLoadException catch (e) {
-    print('There was a problem loading `${userPlant.imageName}`.');
-  }
-
-  return null;
-}
-
-Future<List<Plant>> fetchPlants() async {
-  try {
-    return await PlantenApi.instance.connection.fetchPlants();
-  } on ApiConnectionException catch (e) {
-    print(e);
-  } on TimeoutException catch (e) {
-    print(e);
-  }
-
-  return null;
-}
-
-Future<String> getPlantTypeName(UserPlant userPlant) async {
-  List<Plant> plants = await fetchPlants();
-
-  if (plants == null) {
-    return null;
-  }
-
-  plants = plants.where((p) => p.id == userPlant.plantId).toList();
-
-  if (plants.length == 0) {
-    return 'Onbekend';
-  }
-
-  return plants[0].name;
-}
-
 // dd-MM-yyyy HH:mm
 String formatDate(DateTime date) {
   if (date == null) {

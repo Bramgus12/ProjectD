@@ -7,6 +7,7 @@ import 'package:plantexpert/api/ApiConnectionException.dart';
 import 'package:plantexpert/api/Plant.dart';
 import 'package:plantexpert/api/UserPlant.dart';
 import 'package:plantexpert/Utility.dart';
+import 'package:plantexpert/widgets/AddPlantTextField.dart';
 
 import '../MenuNavigation.dart';
 
@@ -41,6 +42,10 @@ class _AddPlant extends State<AddPlant> {
   Future<List<Plant>> _fetchedPlants;
   // save the selected name of the plant type (built-in dropdown only saves the selected value)
   String plantTypeName;
+
+  int optimalPlantTemperature;
+
+  List<Plant> listOfPlants;
 
   void selectImageFromSource(BuildContext context, ImageSource source) async {
     var pickedImage = await ImagePicker.pickImage(source: source);
@@ -178,6 +183,7 @@ class _AddPlant extends State<AddPlant> {
       setState(() => {selectedDate = picked});
       print('picked date: $selectedDate');
       _combinePickedDateAndTime();
+      pickTime(context);
     }
   }
 
@@ -185,6 +191,14 @@ class _AddPlant extends State<AddPlant> {
     TimeOfDay picked = await showTimePicker(
       context: context,
       initialTime: selectedTime ?? TimeOfDay.now(),
+      builder: (BuildContext context, Widget child) {
+
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child,
+        );
+      },
+
     );
 
     if (picked != null) {
@@ -228,7 +242,6 @@ class _AddPlant extends State<AddPlant> {
     return allowed;
   }
 
-  // FIXME: use this function instad of the one in `Utility.dart`
   Future<List<Plant>> _fetchPlants() async {
     var plants;
 
@@ -250,7 +263,7 @@ class _AddPlant extends State<AddPlant> {
     super.initState();
     // prevent fetching plants twice
     _fetchedPlants = _fetchPlants();
-    newPlant.distanceToWindow = 1.0;
+    newPlant.distanceToWindow = 3;
   }
 
   @override
@@ -276,7 +289,7 @@ class _AddPlant extends State<AddPlant> {
                   key: _formKey,
                   child: ListView(
                     children: <Widget>[
-                      Text('Plantsoort'),
+                      Text('Plantsoort', style: TextStyle(color: theme.accentColor, fontSize: 18),),
                       SizedBox(height: 10),
                       FutureBuilder(
                         future: _fetchedPlants,
@@ -290,6 +303,7 @@ class _AddPlant extends State<AddPlant> {
                           ];
 
                           if (snapshot.hasData) {
+                            listOfPlants = snapshot.data;
                             items = snapshot.data
                                 .map((p) => DropdownMenuItem(
                                     child: Text(p.name), value: p.id))
@@ -306,13 +320,16 @@ class _AddPlant extends State<AddPlant> {
 
                           return DropdownButtonFormField(
                             items: items,
-                            hint: Text(plantTypeName ?? 'Kies het soort plant.'),
+                            hint: Text(plantTypeName ?? 'Kies de plantensoort.'),
                             onChanged: (value) {
                               Text t = items.where((item) => item.value == value).elementAt(0).child;
                               plantTypeName = t.data;
                               print('selected $value $plantTypeName');
-                              newPlant.plantId = value;
-                              setState(() {});
+
+                              setState(() {
+                                optimalPlantTemperature = listOfPlants.firstWhere((plant) => plant.id == value).optimalTemp;
+                                newPlant.plantId = value;
+                              });
                             },
                             value: null,
                           );
@@ -320,29 +337,20 @@ class _AddPlant extends State<AddPlant> {
                       ),
                       SizedBox(height: 20),
 
-                      Text('Afbeelding'),
+                      Text('Afbeelding', style: TextStyle(color: theme.accentColor, fontSize: 18)),
                       SizedBox(height: 10),
                       Row(
                         children: <Widget>[
                           Expanded(
                             flex: 4,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                () {
-                                  if (newPlant.imageName != null && File(newPlant.imageName).existsSync()) {
-                                    // TODO: not all images are .jpeg
-                                    return Image.file(
-                                      File(newPlant.imageName),
-                                      width: 150,
-                                      height: 150,
-                                    );
-                                  } else {
-                                    return SizedBox.shrink();
-                                  }
-                                }()
-                              ],
-                            ),
+                            child: newPlant.imageName != null &&
+                                File(newPlant.imageName).existsSync()
+                                ? Image.file(
+                                    File(newPlant.imageName),
+                                    width: 150,
+                                    height: 150,
+                                  )
+                                : Image.asset("assets/images/image-placeholder.png")
                           ),
                           Expanded(
                             flex: 6,
@@ -383,7 +391,10 @@ class _AddPlant extends State<AddPlant> {
                       ),
                       SizedBox(height: 20),
                       AddPlantTextField(
-                        label: 'Bijnaam',
+                        title: "Bijnaam",
+                        label: 'Dit is de bijnaam die uw plant in de applicatie krijgt. ',
+                        inputType: String,
+
                         validator: (String value) {
                           if (value.isEmpty) {
                             return 'Mag niet leeg zijn.';
@@ -392,15 +403,21 @@ class _AddPlant extends State<AddPlant> {
                           return null;
                         },
                         onSaved: (String value) {
-                          newPlant.nickname = value;
+                          setState(() {
+                            newPlant.nickname = value;
+                          });
                         },
                         onChanged: (String value) {
-                          newPlant.nickname = value;
+                          setState(() {
+                            newPlant.nickname = value;
+                          });
                         },
                         initialValue: newPlant.nickname ?? ''
                       ),
                       AddPlantTextField(
-                        label: 'Inhoud pot',
+                        title: "Inhoud plantenpot",
+                        label: 'Dit is de inhoud van uw plantenpot in liters. ',
+                        inputType: double,
                         keyboardType: TextInputType.number,
                         validator: (String value) {
                           double temp = double.tryParse(value);
@@ -412,20 +429,22 @@ class _AddPlant extends State<AddPlant> {
                           return null;
                         },
                         onSaved: (String value) {
-                          newPlant.potVolume = double.parse(value);
+                          setState(() {
+                            newPlant.potVolume = double.parse(value);
+                          });
                         },
                         onChanged: (String value) {
-                          newPlant.potVolume = double.tryParse(value);
+                          setState(() {
+                            newPlant.potVolume = double.parse(value);
+                          });
                         },
                         initialValue: newPlant.potVolume?.toString() ?? ''
                       ),
+                      Text(
+                          'Wanneer heeft de plant voor het laatst water gekregen?',
+                          style: TextStyle(color: theme.accentColor, fontSize: 18)),
                       Row(
                         children: <Widget>[
-                          Expanded(
-                            flex: 5,
-                            child: Text(
-                                'Wanneer heeft de plant voor het laatst water gekregen?'),
-                          ),
                           Expanded(
                             flex: 5,
                             child: Row(
@@ -434,8 +453,10 @@ class _AddPlant extends State<AddPlant> {
                                 Checkbox(
                                   value: hideDatePicker,
                                   onChanged: (bool value) {
-                                    hideDatePicker = value;
-                                    setState(() {});
+                                    setState(() {
+                                      hideDatePicker = value;
+                                      newPlant.lastWaterDate = DateTime.fromMillisecondsSinceEpoch(0);
+                                    });
                                   },
                                 ),
                               ],
@@ -457,11 +478,17 @@ class _AddPlant extends State<AddPlant> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: <Widget>[
-                                      FlatButton(
-                                        child: Icon(Icons.date_range,
-                                            color: Colors.white),
-                                        onPressed: () => pickDate(context),
-                                        color: theme.accentColor,
+                                      RawMaterialButton(
+                                        onPressed: () { pickDate(context); },
+                                        elevation: 2.0,
+                                        fillColor: theme.accentColor,
+                                        child: Icon(
+                                          Icons.date_range,
+                                          size: 20,
+                                          color: Colors.white,
+                                        ),
+                                        padding: EdgeInsets.all(15.0),
+                                        shape: CircleBorder(),
                                       ),
                                       SizedBox(height: 10),
                                       Text(selectedDate != null
@@ -476,11 +503,17 @@ class _AddPlant extends State<AddPlant> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: <Widget>[
-                                      FlatButton(
-                                        child: Icon(Icons.timer,
-                                            color: Colors.white),
-                                        onPressed: () => pickTime(context),
-                                        color: theme.accentColor,
+                                      RawMaterialButton(
+                                        onPressed: () { pickTime(context); },
+                                        elevation: 2.0,
+                                        fillColor: theme.accentColor,
+                                        child: Icon(
+                                          Icons.timer,
+                                          size: 20,
+                                          color: Colors.white,
+                                        ),
+                                        padding: EdgeInsets.all(15.0),
+                                        shape: CircleBorder(),
                                       ),
                                       SizedBox(height: 10),
                                       () {
@@ -505,9 +538,8 @@ class _AddPlant extends State<AddPlant> {
                         }
                       }(),
 
-                      // AddPlantTextField(
                       SizedBox(height: 50),
-                      Text('Afstand tot het raam'),
+                      Text('Afstand tot het raam', style: TextStyle(color: theme.accentColor, fontSize: 18)),
                       SizedBox(height: 10),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -534,71 +566,75 @@ class _AddPlant extends State<AddPlant> {
                         ],
                       ),
                       SizedBox(height: 25),
+                      AddPlantTextField(
+                          title: "Minimale temperatuur",
+                          label: 'Minimale temperatuur in de kamer in celsius.',
+                          keyboardType: TextInputType.number,
+                          inputType: double,
+                          validator: (String value) {
+                            int temp = int.tryParse(value);
 
-                      Row(children: <Widget>[
-                        Expanded(
-                            flex: 9,
-                            child: AddPlantTextField(
-                              label: 'Minimale temperatuur in de kamer',
-                              keyboardType: TextInputType.number,
-                              validator: (String value) {
-                                int temp = int.tryParse(value);
+                            if (temp == null) {
+                              return 'De waarde moet een posiftief getal zijn.';
+                            } else if (newPlant.maxTemp != null && newPlant.maxTemp < temp) {
+                              return 'Mag niet hoger zijn dan de maximale temperatuur.';
+                            }
 
-                                if (temp == null) {
-                                  return 'Moet een getal zijn.';
-                                }
+                            newPlant.minTemp = temp;
+                            return null;
+                          },
+                          onSaved: (String value) {
+                            setState(() {
+                              newPlant.minTemp = int.parse(value);
+                            });
+                          },
+                          onChanged: (String value) {
+                            setState(() {
+                              newPlant.minTemp = int.parse(value);
+                            });
+                          },
+                          initialValue: newPlant.minTemp?.toString() ?? ''
+                      ),
+                      SizedBox(height: 20),
+                      AddPlantTextField(
+                          title: "Maximale temperatuur",
+                          label: 'Maximale temperatuur in de kamer, in celsius. ',
+                          keyboardType: TextInputType.number,
+                          inputType: double,
+                          validator: (String value) {
+                            int temp = int.tryParse(value);
 
-                                if (newPlant.maxTemp != null && newPlant.maxTemp < temp) {
-                                  return 'Mag niet hoger zijn\n dan de maximale temperatuur.';
-                                }
+                            if (temp == null) {
+                              return 'Moet een getal zijn.';
+                            }
 
-                                newPlant.minTemp = temp;
-                                return null;
-                              },
-                              onSaved: (String value) {
-                                newPlant.minTemp = int.parse(value);
-                              },
-                              onChanged: (String value) {
-                                newPlant.minTemp = int.tryParse(value);
-                              },
-                              initialValue: newPlant.minTemp?.toString() ?? ''
-                            )),
-                        Expanded(
-                          flex: 2,
-                          child: SizedBox.shrink(),
-                        ),
-                        Expanded(
-                            flex: 9,
-                            child: AddPlantTextField(
-                              label: 'Maximale temperatuur in de kamer',
-                              keyboardType: TextInputType.number,
-                              validator: (String value) {
-                                int temp = int.tryParse(value);
+                            if (newPlant.minTemp != null && newPlant.minTemp > temp) {
+                              return 'Mag niet lager zijn dan de minimale temperatuur';
+                            }
 
-                                if (temp == null) {
-                                  return 'Moet een getal zijn.';
-                                }
+                            newPlant.maxTemp = temp;
+                            return null;
+                          },
+                          onSaved: (String value) {
+                            setState(() {
+                              newPlant.maxTemp = int.parse(value);
+                            });
+                          },
+                          onChanged: (String value) {
+                            setState(() {
+                              newPlant.maxTemp = int.parse(value);
+                            });
+                          },
+                          initialValue: newPlant.maxTemp?.toString() ?? ''
+                      ),
+                      SizedBox(height: 20),
+                      Text(optimalPlantTemperature != null ? "Let Op: De gemiddelde temperatuur voor de plant is rond de ${optimalPlantTemperature}℃." : ""),
+                      SizedBox(height: 20),
 
-                                if (newPlant.minTemp != null && newPlant.minTemp > temp) {
-                                  return 'Mag niet lager zijn\n dan de minimale temperatuur';
-                                }
-
-                                newPlant.maxTemp = temp;
-                                return null;
-                              },
-                              onSaved: (String value) {
-                                newPlant.maxTemp = int.parse(value);
-                              },
-                              onChanged: (String value) {
-                                newPlant.maxTemp = int.tryParse(value);
-                              },
-                              initialValue: newPlant.maxTemp?.toString() ?? ''
-                            ))
-                      ]),
                       // TODO: allow submission if all required fields are filled
-                      RaisedButton(
-                        child: Text('Voeg toe',
-                            style: theme.accentTextTheme.button),
+                      FlatButton(
+                        child: Text('Aanmaken',
+                          style: theme.accentTextTheme.button),
                         onPressed: _checkAllowedToSubmit() ? submit : null,
                         color: theme.accentColor,
                         disabledColor: theme.disabledColor,
@@ -611,51 +647,3 @@ class _AddPlant extends State<AddPlant> {
   }
 }
 
-class AddPlantTextField extends StatelessWidget {
-  final String label;
-  final String initialValue;
-  final TextInputType keyboardType;
-  final Function(String) validator;
-  final Function(String) onSaved;
-  final Function(String) onChanged;
-
-  AddPlantTextField(
-      {this.label, this.initialValue = '', this.keyboardType, this.validator, this.onSaved, this.onChanged});
-
-  @override
-  Widget build(BuildContext context) {
-    ThemeData theme = Theme.of(context);
-
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(label),
-          SizedBox(height: 10),
-          TextFormField(
-            initialValue: this.initialValue,
-            decoration: InputDecoration(
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: theme.accentColor),
-              ),
-              enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: theme.accentColor)),
-              errorBorder:
-                  OutlineInputBorder(borderSide: BorderSide(color: Colors.red)),
-              filled: true,
-              fillColor: Colors.white,
-            ),
-            keyboardType: this.keyboardType ?? TextInputType.text,
-            validator: this.validator,
-            onSaved: this.onSaved,
-            onChanged: this.onChanged
-          ),
-          SizedBox(
-            height: 20,
-          )
-        ],
-      ),
-    );
-  }
-}

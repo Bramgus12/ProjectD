@@ -112,7 +112,8 @@ class _BottomNavigation extends State<BottomNavigation> {
           title: Text('Mijn planten'),
         ),
       ],
-      currentIndex: indexes.indexOf(ModalRoute.of(context).settings.name),
+      currentIndex: indexes.indexOf(ModalRoute.of(context).settings.name) != -1 ?
+      indexes.indexOf(ModalRoute.of(context).settings.name) : indexes.length-1,
       selectedItemColor: Theme.of(context).accentColor,
       onTap: (int index) => {
         Navigator.pushReplacementNamed(

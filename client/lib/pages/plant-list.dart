@@ -1,36 +1,54 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:plantexpert/api/ApiConnection.dart';
 import 'package:plantexpert/api/ApiConnectionException.dart';
+import 'package:plantexpert/api/Plant.dart';
 import 'package:plantexpert/api/UserPlant.dart';
 import 'package:plantexpert/Utility.dart';
+import 'package:plantexpert/pages/plant-detail.dart';
+import 'package:plantexpert/widgets/stateful-wrapper.dart';
 
 import '../MenuNavigation.dart';
 
+Future<CachedNetworkImage> _getUserPlantImage(UserPlant userPlant) async {
+  try {
+    CachedNetworkImage img = await PlantenApi.instance.connection.fetchCachedPlantImage(userPlant);
+    return img;
+  }
+  on ApiConnectionException catch (e) {
+    print("API image fetch error: " + e.toString());
+  }
+  on InvalidCredentialsException catch (e) {
+    print('Not logged in.');
+  }
+  on NetworkImageLoadException catch (e) {
+    print('There was a problem loading `${userPlant.imageName}`.');
+  }
+
+  return null;
+}
+
 class PlantList extends StatelessWidget {
-  bool failedFetchingPlants = false;
+  String failedFetchingPlants;
+
   // save the fetched plants so they don't have to get fetched multiple times in a row 
   List<PlantListItem> plantListItems;
 
   Future<List<UserPlant>> _fetchUserPlants() async {
+    failedFetchingPlants = null;
+
     try {
       return await PlantenApi.instance.connection.fetchUserPlants();
     }
     on ApiConnectionException catch (e) {
-      failedFetchingPlants = true;
-      print(e);
-    }
-    on TimeoutException catch (e) {
-      failedFetchingPlants = true;
+      failedFetchingPlants = "Het lijkt er op dat er momenteel geen verbinding met de server gemaakt kan worden, probeer het later nog een keer.";
       print(e);
     }
     on InvalidCredentialsException catch (e) {
-      failedFetchingPlants = true;
-      print(e);
-    }
-    on SocketException catch (e) {
-      failedFetchingPlants = true;
+      failedFetchingPlants = "Het lijkt er op dat u niet bent ingelogd, log in of maak een nieuw account aan.";
       print(e);
     }
 
@@ -43,180 +61,190 @@ class PlantList extends StatelessWidget {
       drawer: MenuNavigation(),
       bottomNavigationBar: BottomNavigation(),
       appBar: AppBar(
-        title: Text("Plant list", style: TextStyle(fontFamily: 'Libre Baskerville')),
+        title: Text("Mijn Planten Lijst", style: TextStyle(fontFamily: 'Libre Baskerville')),
         centerTitle: true,
       ),
       body: Container(
         width: MediaQuery.of(context).size.width,
-        child: FutureBuilder(
-          future: _fetchUserPlants(),
-          builder: (BuildContext context, AsyncSnapshot<List<UserPlant>> snapshot) {
-            if (snapshot.hasData) {
-              if (plantListItems == null) {
-                plantListItems = snapshot.data
-                    // FIXME: the database contains plants without a nickname
-                    .where((p) => p.nickname != null)
-                    .map((p) => PlantListItem(userPlant: p))
-                    .toList();
+        child: new RefreshIndicator(
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              child: FutureBuilder(
+                future: _fetchUserPlants(),
+                builder: (BuildContext context, AsyncSnapshot<List<UserPlant>> snapshot) {
+                  if (snapshot.hasData) {
+                    if (plantListItems == null) {
+                      plantListItems = snapshot.data
+                      // FIXME: the database contains plants without a nickname
+                          .where((p) => p.nickname != null)
+                          .map((p) => PlantListItem(userPlant: p, plantImage: _getUserPlantImage(p),))
+                          .toList();
+                    } else if (plantListItems.length == 0) {
+                      return Center(
+                          child: Text('Er zijn geen planten gevonden, \n'
+                              'voeg nu uw eerste plant toe! ', maxLines: 3,)
+                      );
+                    }
 
-                //plantListItems = plantListItems.sublist(0, 10);
-              }
+                    return ListView(
+                      children: plantListItems,
+                      physics: AlwaysScrollableScrollPhysics(),
+                    );
+                  }
+                  else if (snapshot.hasError) {
+                    // print(snapshot.error);
+                  }
 
-              if (plantListItems.length == 0) {
-                return Center(
-                  child: Text('Geen planten gevonden')
-                );
-              }
+                  if (plantListItems == null) {
+                    if (failedFetchingPlants != null) {
+                      return Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Text(failedFetchingPlants),
+                        ),
+                      );
+                    }
+                  }
 
-              return ListView.builder(
-                  itemBuilder: (_, index) {
-                    return plantListItems[index];
-                  },
-                itemCount: plantListItems.length,
-                physics: AlwaysScrollableScrollPhysics(),
-              );
-            }
-            else if (snapshot.hasError) {
-              print(snapshot.error);
-            }
+                  return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          CircularProgressIndicator(),
+                          SizedBox(height: 10),
+                          Text('Even geduld terwijl wij opzoek zijn naar uw planten. ')
+                        ],
+                      )
+                  );
+                },
+              ),
+            ),
+            onRefresh: _fetchUserPlants)
 
-            if (plantListItems == null) {
-              if (failedFetchingPlants) {
-                return Center(
-                  child: Text('Planten konden niet worden opehaald'),
-                );
-              }
-            }
-
-            return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    CircularProgressIndicator(),
-                    SizedBox(height: 10),
-                    Text('Planten worden opgehaald')
-                  ],
-                )
-            );
-          },
-        ),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: failedFetchingPlants == null ? null : FloatingActionButton(
         onPressed: () => Navigator.pushNamed(context, '/add-plant'),
         backgroundColor: Colors.blue,
         child: Icon(
-          Icons.control_point
+            Icons.control_point
         ),
-    ),
+      ),
     );
   }
 }
 
 class PlantListItem extends StatelessWidget {
   final UserPlant userPlant;
+  final Future<CachedNetworkImage> plantImage;
+  Plant plant;
 
-  PlantListItem({this.userPlant});
+  PlantListItem({this.userPlant, this.plantImage});
+
+  Future<String> _fetchPlantKind(int id) async {
+    plant = (await PlantenApi.instance.connection.fetchPlant(id));
+    return plant.name.toString();
+  }
 
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
-    return DefaultTextStyle(
-      child: GestureDetector(
-        onTap: () => Navigator.pushNamed(context, '/plant-detail', arguments: userPlant),
-        child: Container(
-          padding: EdgeInsets.all(10.0),
-          height: 250,
-          decoration: BoxDecoration(
-              border: Border(
-                  bottom: BorderSide(
-                      width: 1.0,
-                      color: theme.accentColor
-                  )
-              ),
-          ),
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                flex: 4,
-                //child: SizedBox.shrink(),
-                child: FutureBuilder(
-                  future: getUserPlantImage(userPlant),
-                  builder: (BuildContext context, AsyncSnapshot<Image> snapshot) {
-                    if (snapshot.hasData) {
-                      try {
-                        Image image = snapshot.data;
-                        return image;
-                      }
-                      on NetworkImageLoadException catch(e) {
-                        print('There was a problem loading `${userPlant.imageName}`');
-                      }
-                    }
 
-                    return Center(
-                      child: CircularProgressIndicator(backgroundColor: theme.accentColor)
-                    );
-                  },
+    return StatefulWrapper(
+      onInit: () {
+      },
+      child: DefaultTextStyle(
+        child: GestureDetector(
+          onTap: () => Navigator.pushNamed(context, '/plant-detail', arguments: PlantDetail(userPlant, plant, _fetchPlantKind, _getUserPlantImage) ),
+          child: Container(
+            padding: EdgeInsets.all(10.0),
+            height: 250,
+            decoration: BoxDecoration(
+                border: Border(
+                    bottom: BorderSide(
+                        width: 1.0,
+                        color: theme.accentColor
+                    )
                 ),
-              ),
-              // space between image and text
-              Expanded(
-                flex: 1,
-                child: SizedBox.shrink(),
-              ),
-              Expanded(
-                flex: 5,
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        'Naam',
-                        style: TextStyle(color: theme.accentColor)
-                      ),
-                      Text(userPlant.nickname ?? 'leeg', style: TextStyle(color: Colors.black)),
-                      SizedBox(height: 10),
-
-                      Text(
-                        'Heeft voor het laatst water gekregen op',
-                        style: TextStyle(color: theme.accentColor),
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                          userPlant.lastWaterDate != null
-                              ? formatDate(userPlant.lastWaterDate)
-                              : 'Niet van toepassing',
-                          style: TextStyle(color: Colors.black)
-                      ),
-                      SizedBox(height: 10),
-
-                      Text(
-                        'Plantsoort',
-                        style: TextStyle(color: theme.accentColor),
-                      ),
-                      FutureBuilder(
-                        future: getPlantTypeName(userPlant),
-                        builder: (_, AsyncSnapshot<String> snapshot) {
-                          String name = 'Plantsoort wordt opgehaald';
-
-                          if (snapshot.hasData) {
-                            name = snapshot.data;
-                          }
-                          else if (snapshot.hasError) {
-                            name = 'Plantsoort kon niet worden opgehaald.';
-                          }
-
-                          return Text(name, style: TextStyle(color: Colors.black));
-                        },
-                      ),
-                    ],
-                  )
-                )
-              ],
             ),
-        )
-      ),
-      style: TextStyle(
-          fontFamily: 'Libre Baskerville',
-          color: Colors.white
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  flex: 4,
+                  //child: SizedBox.shrink(),
+                  child:
+                  Container(
+                    height: 200,
+                    child: FutureBuilder (
+                      future: plantImage,
+                        builder: (context, snapshot) {
+                          if(snapshot.hasData)
+                            return snapshot.data;
+                          return Text("");
+                        }
+
+                    )
+                  ),
+                ),
+                // space between image and text
+                Expanded(
+                  flex: 1,
+                  child: SizedBox.shrink(),
+                ),
+                Expanded(
+                  flex: 5,
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          'Naam',
+                          style: TextStyle(color: theme.accentColor)
+                        ),
+                        Text(userPlant.nickname ?? 'leeg', style: TextStyle(color: Colors.black)),
+                        SizedBox(height: 10),
+
+                        Text(
+                          'Heeft voor het laatst water gekregen op',
+                          style: TextStyle(color: theme.accentColor),
+                        ),
+                        SizedBox(height: 5),
+                        Text(
+                            userPlant.lastWaterDate != null
+                                ? formatDate(userPlant.lastWaterDate)
+                                : 'Niet van toepassing',
+                            style: TextStyle(color: Colors.black)
+                        ),
+                        SizedBox(height: 10),
+
+                        Text(
+                          'Plantsoort',
+                          style: TextStyle(color: theme.accentColor),
+                        ),
+                        FutureBuilder(
+                          future: _fetchPlantKind(userPlant.plantId),
+                          builder: (_, AsyncSnapshot<String> snapshot) {
+                            String name = 'Plantsoort wordt opgehaald';
+
+                            if (snapshot.hasData) {
+                              name = snapshot.data;
+                            }
+                            else if (snapshot.hasError) {
+                              name = 'Plantsoort kon niet worden opgehaald.';
+                            }
+
+                            return Text(name, style: TextStyle(color: Colors.black));
+                          },
+                        ),
+                      ],
+                    )
+                  )
+                ],
+              ),
+          )
+        ),
+        style: TextStyle(
+            fontFamily: 'Libre Baskerville',
+            color: Colors.white
+        ),
       ),
     );
   }
