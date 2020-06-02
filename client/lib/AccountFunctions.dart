@@ -3,12 +3,11 @@ import 'package:plantexpert/api/ApiConnectionException.dart';
 import 'package:plantexpert/api/User.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-Future<String> getLoggedInUser() async {
+Future<User> getLoggedInUser() async {
   /// Returns the username logged in user, or null if the user is not logged in.
-  String username;
+  User user;
   try {
-    User user = await ApiConnection().fetchUser();
-    username = user.username;
+    user = await ApiConnection().fetchUser();
   } on InvalidCredentialsException {
     return null;
   } on StatusCodeException catch(e) {
@@ -16,13 +15,17 @@ Future<String> getLoggedInUser() async {
   } on ApiConnectionException {
     // Connection to server failed, check if a username and password are saved in shared preferences.
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    username = sharedPreferences.getString("username");
+    String username = sharedPreferences.getString("username");
     String password = sharedPreferences.getString("password");
     if(username == null || password == null) {
       return null;
     }
+    user = User(
+      username: username,
+    );
   }
-  return username;
+
+  return user;
 }
 
 void userLogin(String username, String password) async {

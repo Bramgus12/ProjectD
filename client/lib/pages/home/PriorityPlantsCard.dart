@@ -226,7 +226,7 @@ class _PriorityPlantsCardState extends State<PriorityPlantsCard> {
         return;
       setState(() {
         status = _Status.error;
-        errorMessage = "Server connection error.";
+        errorMessage = "Fout bij verbinden met server.";
       });
       return;
     }

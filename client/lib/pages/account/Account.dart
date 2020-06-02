@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:plantexpert/AccountFunctions.dart';
+import 'package:plantexpert/api/User.dart';
 import 'package:plantexpert/pages/account/LoginTab.dart';
 import 'package:plantexpert/pages/account/RegisterTab.dart';
 
@@ -16,7 +17,7 @@ class Account extends StatefulWidget{
 
 class _AccountState extends State<Account> {
   _Status status = _Status.loading;
-  String loggedInUser;
+  User loggedInUser;
 
   @override void initState() {
     super.initState();
@@ -36,44 +37,42 @@ class _AccountState extends State<Account> {
         appBar: AppBar(
           title: Text('Account', style: TextStyle(fontFamily: 'Libre Baskerville')),
           centerTitle: true,
-          bottom: status == _Status.loggedout ? TabBar(tabs: [
+          bottom: status != _Status.loading ? TabBar(tabs: [
             Tab(
               icon: Icon(Icons.account_box),
-              text: "Login"
+              text: loggedInUser == null ? "Login" : "Uitloggen"
             ),
             Tab(
-              icon: Icon(Icons.add_box),
-              text: "Registreer"
+              icon: Icon(loggedInUser == null ? Icons.add_box : Icons.edit),
+              text: loggedInUser == null ? "Registreer" : "Aanpassen"
             )
           ]) : null,
         ),
         body: Center(
           child: (){ 
-            if(status == _Status.loggedout)
-              return TabBarView(
-                children: [
-                LoginTab(),
-                RegisterTab()
-                ]
-              );
-            else if(status == _Status.loggedin) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text("Ingelogd als '$loggedInUser'"),
-                  Padding(
-                    padding: const EdgeInsets.all(15),
-                    child: RaisedButton(
-                      onPressed: logout,
-                      child: Text("Uitloggen"),
-                    ),
-                  )
-                ],
-              );
-            }
-            else {
+            if (status == _Status.loading) {
               return CircularProgressIndicator();
             }
+            else
+              return TabBarView(
+                children: [
+                status == _Status.loggedout ? LoginTab() :
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text("Ingelogd als '${loggedInUser.username}'"),
+                    Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: RaisedButton(
+                        onPressed: logout,
+                        child: Text("Uitloggen"),
+                      ),
+                    )
+                  ],
+                ),
+                RegisterTab(loggedInUser: this.loggedInUser)
+                ]
+              );
           }()
         ) 
       )

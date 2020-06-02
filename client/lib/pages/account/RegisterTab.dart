@@ -10,6 +10,11 @@ import 'package:plantexpert/widgets/StatusBox.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RegisterTab extends StatefulWidget {
+
+  final User loggedInUser;
+
+  RegisterTab({this.loggedInUser});
+
   @override
   _RegisterTabState createState() => _RegisterTabState();
 }
@@ -21,19 +26,37 @@ class _RegisterTabState extends State<RegisterTab> {
   Status _status = Status.none;
   String _statusMessage = "";
 
-  TextEditingController emailController = new TextEditingController();
-  TextEditingController nameController = new TextEditingController();
-  TextEditingController usernameController = new TextEditingController();
-  TextEditingController passwordController = new TextEditingController();
-  TextEditingController streetController = new TextEditingController();
-  TextEditingController homeNumberController = new TextEditingController();
-  TextEditingController homeAdditionController = new TextEditingController();
-  TextEditingController cityController = new TextEditingController();
-  TextEditingController zipController = new TextEditingController();
+  TextEditingController emailController;
+  TextEditingController nameController;
+  TextEditingController usernameController;
+  TextEditingController passwordController;
+  TextEditingController streetController;
+  TextEditingController homeNumberController;
+  TextEditingController homeAdditionController;
+  TextEditingController cityController;
+  TextEditingController zipController;
   DateTime birthDay;
 
   bool birthdayError = false;
   String birthdayErrorMessage = "";
+
+  bool editingExistingUser;
+
+  @override
+  void initState() {
+    super.initState();  
+    editingExistingUser = widget.loggedInUser != null && widget.loggedInUser.id != null;
+    emailController = new TextEditingController(text: editingExistingUser ? widget.loggedInUser.email: null);
+    nameController = new TextEditingController(text: editingExistingUser ? widget.loggedInUser.name : null);
+    usernameController = new TextEditingController(text: editingExistingUser ? widget.loggedInUser.username : null);
+    passwordController = new TextEditingController();
+    streetController = new TextEditingController(text: editingExistingUser ? widget.loggedInUser.streetName : null);
+    homeNumberController = new TextEditingController(text: editingExistingUser ? widget.loggedInUser.houseNumber.toString() : null);
+    homeAdditionController = new TextEditingController(text: editingExistingUser ? widget.loggedInUser.addition : null);
+    cityController = new TextEditingController(text: editingExistingUser ? widget.loggedInUser.city : null);
+    zipController = new TextEditingController(text: editingExistingUser ? widget.loggedInUser.postalCode : null);
+    birthDay = editingExistingUser ? widget.loggedInUser.dateOfBirth : null;
+  }
 
   void showErrorMessage(String errorMessage) {
     setState(() {
@@ -55,52 +78,59 @@ class _RegisterTabState extends State<RegisterTab> {
       child: Container(
         constraints: BoxConstraints(),
         padding: EdgeInsets.all(20),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Text("Registreer", style: TextStyle(fontSize: 18)),
-              ),
-              LoginInputField(emailController, hintText: "Email", keyboardType: TextInputType.emailAddress, validator: validateEmail,),
-              LoginInputField(usernameController, hintText: "Gebruikersnaam", validator: validateUsername,),
-              LoginInputField(passwordController, hintText: "Wachtwoord", obfuscated: true, validator: validatePassword,),
-              LoginInputField(nameController, hintText: "Naam", validator: validateName,),
-              LoginDatePicker((date) => setState((){ birthDay = date; }), label: "Geboortedatum", validationError: birthdayError, validationMessage: birthdayErrorMessage,),
-              LoginInputField(streetController, hintText: "Straat", validator: validateStreet,),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
+        child: (){
+          if (widget.loggedInUser == null || widget.loggedInUser.id != null )
+            return Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Expanded(
-                    flex: 2,
-                    child: Container(
-                      margin: EdgeInsets.only(right: 15), 
-                      child: LoginInputField(homeNumberController, hintText: "Huisnummer", keyboardType: TextInputType.number, inputType: int, validator: validateHomeNumber,)
-                    )
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Text( widget.loggedInUser == null ? "Registreer" : "Gegevens aanpassen", style: TextStyle(fontSize: 18)),
                   ),
-                  Expanded(
-                    flex: 1,
-                    child: LoginInputField(homeAdditionController, hintText: "Toevoeging")
+                  LoginInputField(emailController, hintText: "Email", keyboardType: TextInputType.emailAddress, validator: validateEmail, ),
+                  LoginInputField(usernameController, hintText: "Gebruikersnaam", validator: validateUsername, ),
+                  LoginInputField(passwordController, hintText: "Wachtwoord", obfuscated: true, validator: editingExistingUser ? null : validatePassword, ),
+                  LoginInputField(nameController, hintText: "Naam", validator: validateName, ),
+                  LoginDatePicker((date) => setState((){ birthDay = date; }), label: "Geboortedatum", validationError: birthdayError, validationMessage: birthdayErrorMessage, initialDate: birthDay, ),
+                  LoginInputField(streetController, hintText: "Straat", validator: validateStreet, ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Expanded(
+                        flex: 2,
+                        child: Container(
+                          margin: EdgeInsets.only(right: 15), 
+                          child: LoginInputField(homeNumberController, hintText: "Huisnummer", keyboardType: TextInputType.number, inputType: int, validator: validateHomeNumber, )
+                        )
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: LoginInputField(homeAdditionController, hintText: "Toevoeging", )
+                      ),
+                    ]
                   ),
-                ]
+                  LoginInputField(cityController, hintText: "Stad", validator: validateCity, ),
+                  LoginInputField(zipController, hintText: "Postcode", validator: validateZipCode, ),
+                  StatusBox(message: _statusMessage, status: _status),
+                  RaisedButton(
+                    color: theme.accentColor,
+                    onPressed: _status == Status.loading ? null : register,
+                    child: Text(
+                      editingExistingUser ? "Opslaan" : "Registreer",
+                      style: theme.accentTextTheme.button
+                      )
+                  ),
+                ],
               ),
-              LoginInputField(cityController, hintText: "Stad", validator: validateCity,),
-              LoginInputField(zipController, hintText: "Postcode", validator: validateZipCode,),
-              StatusBox(message: _statusMessage, status: _status),
-              RaisedButton(
-                color: theme.accentColor,
-                onPressed: _status == Status.loading ? null : register,
-                child: Text(
-                  "Registreer",
-                  style: theme.accentTextTheme.button
-                  )
-              ),
-            ],
-          ),
-        )
+            );
+          else
+            return Center(
+              child: Text("Fout bij verbinden met server, account gegevens konden niet worden opgehaald."),
+            );
+        }()
       ),
     );
   }
@@ -126,7 +156,7 @@ class _RegisterTabState extends State<RegisterTab> {
     
     // Create user object from form data
     User user = User(
-      id: 0,
+      id: editingExistingUser ? widget.loggedInUser.id : 0,
       username: usernameController.text,
       password: passwordController.text,
       name: nameController.text,
@@ -140,17 +170,32 @@ class _RegisterTabState extends State<RegisterTab> {
     );
 
     try {
-      await apiConnection.postUser(user);
+      SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+      if (editingExistingUser){
+        if (user.password == null || user.password == "")
+          user.password = sharedPreferences.getString("password");
+        await apiConnection.putUser(user);
+      }
+      else
+        await apiConnection.postUser(user);
+      
       if(!this.mounted)
         return;
 
       // Save username and password to shared preferences.
-      SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-      sharedPreferences.setString("username", usernameController.text);
-      sharedPreferences.setString("password", passwordController.text);
+      sharedPreferences.setString("username", user.username);
+      if(user.password != null && user.password != "")
+        sharedPreferences.setString("password", user.password);
 
       hideErrorMessage();
-      Navigator.pop(context);
+      if (editingExistingUser) {
+        setState(() {
+          _status = Status.message;
+          _statusMessage = "Account gegevens zijn bijgewerkt.";
+        });
+      }
+      else
+        Navigator.pop(context);
 
     } on ApiConnectionException catch(e) {
       print(e);
@@ -162,7 +207,7 @@ class _RegisterTabState extends State<RegisterTab> {
         try{
           Map<String, dynamic> serverResponse = json.decode(e.reponse.body);
           if(serverResponse['message'] == "User already exists.")
-            showErrorMessage("De gebruikersnaam '${usernameController.text}' is niet beschikbaar.");
+            showErrorMessage("De gebruikersnaam '${usernameController.text}' is al in gebruik.");
           else
             showErrorMessage("Server response: ${serverResponse['message']}");
         } catch(jsonException) {

@@ -177,6 +177,10 @@ class ApiConnection {
   Future<http.Response> postUser(User user) async {
     return await _postJson("users/", user);
   }
+
+  Future<http.Response> putUser(User user) async {
+    return await _putJson("user/users/${user.id}/", user);
+  }
   
   // Weather stations
   Future<List<WeatherStation>> fetchWeatherStations(String region) async {
