@@ -12,17 +12,14 @@ import '../pages/plant-list.dart';
 class PlantDetail extends StatelessWidget {
   final UserPlant userPlant;
   final Plant plant;
-  final Function fetchPlantKind;
   final Function getUserPlantImage;
 
   PlantDetail(
     this.userPlant,
     this.plant,
-    this.fetchPlantKind,
     this.getUserPlantImage
   ) : assert(userPlant != null),
         assert(plant != null),
-        assert(fetchPlantKind != null),
         assert(getUserPlantImage != null);
 
   @override
@@ -66,28 +63,39 @@ class PlantDetail extends StatelessWidget {
               SizedBox(height: 20),
 
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  Column(
-                    children: <Widget>[
-                      Text('Bijnaam', style: TextStyle(color: theme.accentColor, fontSize: 18)),
-                      Text(userPlant.nickname),
-                      SizedBox(height: 20),
-                    ],
+                  Expanded(
+                    flex: 0,
+                    child: Column(
+                      children: <Widget>[
+                        Text('Bijnaam', style: TextStyle(color: theme.accentColor, fontSize: 18),),
+                        Text(userPlant.nickname),
+                        SizedBox(height: 20),
+                      ],
+                    ),
                   ),
 
-                  RawMaterialButton(
-                    onPressed: () { },
-                    elevation: 2.0,
-                    fillColor: theme.accentColor,
-                    child: Icon(
-                      Icons.edit,
-                      size: 20,
-                      color: Colors.white,
-                    ),
-                    padding: EdgeInsets.all(15.0),
-                    shape: CircleBorder(),
-                  ),
+
+                  Expanded(
+                    flex: 3,
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: RawMaterialButton(
+                        onPressed: () { },
+                        elevation: 2.0,
+                        fillColor: theme.accentColor,
+                        child: Icon(
+                          Icons.edit,
+                          size: 20,
+                          color: Colors.white,
+                        ),
+                        padding: EdgeInsets.all(15.0),
+                        shape: CircleBorder(),
+                      ),
+                    )
+                  )
                 ],
               ),
 
@@ -99,16 +107,7 @@ class PlantDetail extends StatelessWidget {
                   style: TextStyle(color: Colors.black)),
               SizedBox(height: 20),
               Text('Plantsoort', style: TextStyle(color: theme.accentColor, fontSize: 18)),
-              FutureBuilder(
-                future: fetchPlantKind(userPlant.plantId),
-                builder: (_, AsyncSnapshot<String> snapshot) {
-                  if (snapshot.hasData) {
-                    return Text(snapshot.data);
-                  }
-
-                  return Text('Wordt geladen...');
-                },
-              ),
+              Text(plant.name),
               SizedBox(height: 20),
               Text('Temperatuur', style: TextStyle(color: theme.accentColor, fontSize: 18)),
               Text("De temperatuur van de ruimte waar de plant zich bevind liggen tussen de ${userPlant.minTemp}℃ en de ${userPlant.maxTemp}℃."),

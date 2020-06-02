@@ -11,9 +11,10 @@ class AddPlantTextField extends StatelessWidget {
   final Function(String) validator;
   final Function(String) onSaved;
   final Function(String) onChanged;
+  final Key key;
 
   AddPlantTextField(
-      {this.title, this.label, this.initialValue = '', this.keyboardType, this.inputType, this.validator, this.onSaved, this.onChanged});
+      {this.key, this.title, this.label, this.initialValue = '', this.keyboardType, this.inputType, this.validator, this.onSaved, this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +29,7 @@ class AddPlantTextField extends StatelessWidget {
           Text(label),
           SizedBox(height: 10),
           TextFormField(
+              key: key,
               initialValue: this.initialValue,
               decoration: InputDecoration(
                 focusedBorder: OutlineInputBorder(

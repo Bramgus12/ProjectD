@@ -31,28 +31,62 @@ Future<CachedNetworkImage> _getUserPlantImage(UserPlant userPlant) async {
   return null;
 }
 
-class PlantList extends StatelessWidget {
+class PlantList extends StatefulWidget {
+  PlantList({Key key}) : super(key: key);
+
+  @override
+  _PlantListState createState() => _PlantListState();
+
+}
+
+class _PlantListState extends State<PlantList> {
   String failedFetchingPlants;
 
   // save the fetched plants so they don't have to get fetched multiple times in a row 
   List<PlantListItem> plantListItems;
 
-  Future<List<UserPlant>> _fetchUserPlants() async {
+  void initState() {
+    super.initState();
+    _fetchUserPlants();
+  }
+
+  Future<void> _reloadUserPlants() async {
+    return _fetchUserPlants();
+  }
+
+  Future<List<Plant>> _fetchPlants() async {
+    return PlantenApi.instance.connection.fetchPlants();
+  }
+
+  void _fetchUserPlants() async {
     failedFetchingPlants = null;
 
     try {
-      return await PlantenApi.instance.connection.fetchUserPlants();
+      List<UserPlant> pli = await PlantenApi.instance.connection.fetchUserPlants();
+        _fetchPlants().then((listOfPlants) {
+          setState(() {
+            plantListItems = pli
+                        // FIXME: the database contains plants without a nickname
+              .where((p) => p.nickname != null)
+              .map((p) => PlantListItem(userPlant: p, plantImage: _getUserPlantImage(p), plant: listOfPlants.elementAt(listOfPlants.indexWhere((element) => element.id == p.plantId)),))
+              .toList();
+        });
+      });
     }
     on ApiConnectionException catch (e) {
-      failedFetchingPlants = "Het lijkt er op dat er momenteel geen verbinding met de server gemaakt kan worden, probeer het later nog een keer.";
+      setState(() {
+        failedFetchingPlants = "Het lijkt er op dat er momenteel geen verbinding met de server gemaakt kan worden, probeer het later nog een keer.";
+      });
       print(e);
     }
     on InvalidCredentialsException catch (e) {
-      failedFetchingPlants = "Het lijkt er op dat u niet bent ingelogd, log in of maak een nieuw account aan.";
+      setState(() {
+        failedFetchingPlants = "Het lijkt er op dat u niet bent ingelogd, log in of maak een nieuw account aan.";
+      });
       print(e);
     }
 
-    return null;
+    //return null;
   }
 
   @override
@@ -64,39 +98,22 @@ class PlantList extends StatelessWidget {
         title: Text("Mijn Planten Lijst", style: TextStyle(fontFamily: 'Libre Baskerville')),
         centerTitle: true,
       ),
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        child: new RefreshIndicator(
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              child: FutureBuilder(
-                future: _fetchUserPlants(),
-                builder: (BuildContext context, AsyncSnapshot<List<UserPlant>> snapshot) {
-                  if (snapshot.hasData) {
-                    if (plantListItems == null) {
-                      plantListItems = snapshot.data
-                      // FIXME: the database contains plants without a nickname
-                          .where((p) => p.nickname != null)
-                          .map((p) => PlantListItem(userPlant: p, plantImage: _getUserPlantImage(p),))
-                          .toList();
-                    } else if (plantListItems.length == 0) {
-                      return Center(
-                          child: Text('Er zijn geen planten gevonden, \n'
-                              'voeg nu uw eerste plant toe! ', maxLines: 3,)
+      body: StatefulWrapper(
+        onInit: null,
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          child: new RefreshIndicator(
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                  child:
+                  (){
+                    if(plantListItems != null){
+                      return ListView(
+                        children: plantListItems,
                       );
                     }
 
-                    return ListView(
-                      children: plantListItems,
-                      physics: AlwaysScrollableScrollPhysics(),
-                    );
-                  }
-                  else if (snapshot.hasError) {
-                    // print(snapshot.error);
-                  }
-
-                  if (plantListItems == null) {
-                    if (failedFetchingPlants != null) {
+                    if(failedFetchingPlants != null){
                       return Center(
                         child: Padding(
                           padding: EdgeInsets.all(16),
@@ -104,31 +121,30 @@ class PlantList extends StatelessWidget {
                         ),
                       );
                     }
-                  }
 
-                  return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          CircularProgressIndicator(),
-                          SizedBox(height: 10),
-                          Text('Even geduld terwijl wij opzoek zijn naar uw planten. ')
-                        ],
-                      )
-                  );
-                },
+                    return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            CircularProgressIndicator(),
+                            SizedBox(height: 10),
+                            Text('Even geduld terwijl wij opzoek zijn naar uw planten. ')
+                          ],
+                        )
+                    );
+                  }(),
               ),
-            ),
-            onRefresh: _fetchUserPlants)
+              onRefresh: _reloadUserPlants)
 
+        ),
       ),
-      floatingActionButton: failedFetchingPlants == null ? null : FloatingActionButton(
-        onPressed: () => Navigator.pushNamed(context, '/add-plant'),
+      floatingActionButton: failedFetchingPlants == null ? FloatingActionButton(
+        onPressed: () => Navigator.pushNamed(context, '/add-plant').then((value) => _fetchUserPlants()),
         backgroundColor: Colors.blue,
         child: Icon(
             Icons.control_point
         ),
-      ),
+      ) : null,
     );
   }
 }
@@ -136,14 +152,10 @@ class PlantList extends StatelessWidget {
 class PlantListItem extends StatelessWidget {
   final UserPlant userPlant;
   final Future<CachedNetworkImage> plantImage;
-  Plant plant;
+  final Plant plant;
 
-  PlantListItem({this.userPlant, this.plantImage});
 
-  Future<String> _fetchPlantKind(int id) async {
-    plant = (await PlantenApi.instance.connection.fetchPlant(id));
-    return plant.name.toString();
-  }
+  PlantListItem({this.userPlant, this.plantImage, this.plant});
 
   @override
   Widget build(BuildContext context) {
@@ -154,7 +166,7 @@ class PlantListItem extends StatelessWidget {
       },
       child: DefaultTextStyle(
         child: GestureDetector(
-          onTap: () => Navigator.pushNamed(context, '/plant-detail', arguments: PlantDetail(userPlant, plant, _fetchPlantKind, _getUserPlantImage) ),
+          onTap: () => Navigator.pushNamed(context, '/plant-detail', arguments: PlantDetail(userPlant, plant, _getUserPlantImage) ),
           child: Container(
             padding: EdgeInsets.all(10.0),
             height: 250,
@@ -219,21 +231,7 @@ class PlantListItem extends StatelessWidget {
                           'Plantsoort',
                           style: TextStyle(color: theme.accentColor),
                         ),
-                        FutureBuilder(
-                          future: _fetchPlantKind(userPlant.plantId),
-                          builder: (_, AsyncSnapshot<String> snapshot) {
-                            String name = 'Plantsoort wordt opgehaald';
-
-                            if (snapshot.hasData) {
-                              name = snapshot.data;
-                            }
-                            else if (snapshot.hasError) {
-                              name = 'Plantsoort kon niet worden opgehaald.';
-                            }
-
-                            return Text(name, style: TextStyle(color: Colors.black));
-                          },
-                        ),
+                        Text(plant.name, style: TextStyle(color: Colors.black)),
                       ],
                     )
                   )

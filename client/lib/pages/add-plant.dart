@@ -18,11 +18,12 @@ class AddPlant extends StatefulWidget {
 
 class _AddPlant extends State<AddPlant> {
   final _formKey = GlobalKey<FormState>();
+
   final UserPlant newPlant = new UserPlant();
   final _distanceToWindowText = <String>[
     '2 meter of meer',
-    'Maximaal 1,5 meter',
-    'Maximaal 1 meter',
+    'Tussen 1,50 meter en 2 meter',
+    'Tussen 1 meter en 1,50 meter',
     'Tussen 30 cm en 1 meter',
     '30 cm of minder'
   ];
@@ -46,6 +47,7 @@ class _AddPlant extends State<AddPlant> {
   int optimalPlantTemperature;
 
   List<Plant> listOfPlants;
+  String _serverErrorMessage;
 
   void selectImageFromSource(BuildContext context, ImageSource source) async {
     var pickedImage = await ImagePicker.pickImage(source: source);
@@ -65,13 +67,9 @@ class _AddPlant extends State<AddPlant> {
     print(newPlant);
 
     if (this._formKey.currentState.validate() && _checkAllowedToSubmit()) {
-      formSubmitted = true;
-      // disable the submit button
-      setState(() {});
       _formKey.currentState.save();
       var result;
       ThemeData theme = Theme.of(context);
-      String errorMessage;
 
       try {
         result = PlantenApi.instance.connection.postUserPlant(newPlant, File(newPlant.imageName));
@@ -95,80 +93,22 @@ class _AddPlant extends State<AddPlant> {
         );
         await result;
       } on ApiConnectionException catch (e) {
-        errorMessage = 'Fout bij het verbinden van de server';
-        result = null;
-        print(e);
-      } on TimeoutException catch (e) {
-        print(e);
-      }
-      on SocketException catch (e) {
-        errorMessage = 'Fout bij het verbinden van de server';
+        _serverErrorMessage = 'Er is wat fout gegaan bij het aanmaken van uw plant, controleer uw internet en probeer het later nog een keer.';
         result = null;
         print(e);
       }
       on InvalidCredentialsException catch (e) {
-        errorMessage = 'Je moet ingelogd zijn om planten te kunnen toevoegen';
+        _serverErrorMessage = 'U moet ingelogd zijn voordat u planten toe kunt voegen.';
         result = null;
         print(e);
       }
-      on StatusCodeException catch (e) {
-        print(e);
-      }
 
-      if (result == null) {
+      if (result != null) {
         // SocketException occurs before the loading dialog is shown,
         // use try catch to prevent `The getter 'focusScopeNode' was called on null`
-        try {
-          Navigator.pop(context);
-        }
-        on NoSuchMethodError catch (e) {
+        Navigator.pop(context, "addedPlant");
 
-        }
-
-        await showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return Dialog(
-                child: Container(
-                    color: Colors.red,
-                    height: MediaQuery.of(context).size.height / 4,
-                    child: Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Text(
-                            errorMessage ?? 'Kon niet worden toegevoegd',
-                            style: TextStyle(color: Colors.white, fontSize: 16)
-                        )
-                      )
-                    )
-                ),
-              );
-            }
-        );
-        formSubmitted = false;
-        // enable the submit button
-        setState(() {});
-        return;
       }
-
-      print(result);
-
-      await showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return Dialog(
-                child: Container(
-                  color: theme.accentColor,
-                  height: MediaQuery.of(context).size.height / 4,
-                  child: Center(
-                    child: Text('Succesvol toegevoegd', style: TextStyle(color: Colors.white, fontSize: 16)),
-                  )
-                ),
-            );
-          }
-      );
-
-      Navigator.pushNamed(context, '/my-plants');
     }
   }
 
@@ -455,7 +395,10 @@ class _AddPlant extends State<AddPlant> {
                                   onChanged: (bool value) {
                                     setState(() {
                                       hideDatePicker = value;
-                                      newPlant.lastWaterDate = DateTime.fromMillisecondsSinceEpoch(0);
+                                      if(value)
+                                        newPlant.lastWaterDate = DateTime.fromMillisecondsSinceEpoch(0);
+                                      else
+                                        _combinePickedDateAndTime();
                                     });
                                   },
                                 ),
@@ -492,42 +435,20 @@ class _AddPlant extends State<AddPlant> {
                                       ),
                                       SizedBox(height: 10),
                                       Text(selectedDate != null
-                                          ? '${selectedDate.day.toString().padLeft(2, '0')}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.year}'
-                                          : '')
-                                    ],
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 5,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      RawMaterialButton(
-                                        onPressed: () { pickTime(context); },
-                                        elevation: 2.0,
-                                        fillColor: theme.accentColor,
-                                        child: Icon(
-                                          Icons.timer,
-                                          size: 20,
-                                          color: Colors.white,
-                                        ),
-                                        padding: EdgeInsets.all(15.0),
-                                        shape: CircleBorder(),
-                                      ),
-                                      SizedBox(height: 10),
+                                          ? 'Datum: ${selectedDate.day.toString().padLeft(2, '0')}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.year}'
+                                          : ''),
                                       () {
                                         if (!showFutureTimeWarning) {
                                           return Text(selectedTime != null
-                                              ? '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}'
+                                              ? 'Tijd: ${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}'
                                               : '');
                                         }
 
                                         return Text(
                                             '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}'
-                                            '\n\nDe gekozen tijd is in de toekomst.',
+                                                '\n\nDe gekozen tijd is in de toekomst.',
                                             style:
-                                                TextStyle(color: Colors.red));
+                                            TextStyle(color: Colors.red));
                                       }()
                                     ],
                                   ),
@@ -584,6 +505,7 @@ class _AddPlant extends State<AddPlant> {
                             return null;
                           },
                           onSaved: (String value) {
+                            print(this);
                             setState(() {
                               newPlant.minTemp = int.parse(value);
                             });
@@ -627,8 +549,32 @@ class _AddPlant extends State<AddPlant> {
                           },
                           initialValue: newPlant.maxTemp?.toString() ?? ''
                       ),
-                      SizedBox(height: 20),
-                      Text(optimalPlantTemperature != null ? "Let Op: De gemiddelde temperatuur voor de plant is rond de ${optimalPlantTemperature}℃." : ""),
+
+                      (){
+                        if(optimalPlantTemperature != null)
+                          return Text("Let Op: De gemiddelde temperatuur voor de plant is rond de $optimalPlantTemperature℃.");
+                        return SizedBox();
+                      }(),
+                      () {
+                        if(_serverErrorMessage != null)
+                          return Container(
+                            color: Colors.transparent,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.orange[300],
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(8),
+                                  )
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.all(24),
+                                child: Text(_serverErrorMessage, style: TextStyle(fontSize: 16),),
+                              ),
+                            ),
+                          );
+
+                        return SizedBox();
+                      }(),
                       SizedBox(height: 20),
 
                       // TODO: allow submission if all required fields are filled
