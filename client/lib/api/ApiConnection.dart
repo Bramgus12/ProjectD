@@ -25,7 +25,7 @@ class ApiConnection {
   final String baseUrl;
 
   ApiConnection()
-    : baseUrl = 'http://${GlobalConfiguration().getString("server")}:${GlobalConfiguration().getInt("port")}/';
+    : baseUrl = 'http${GlobalConfiguration().getBool("ssl") ? "s" : ""}://${GlobalConfiguration().getString("server")}:${GlobalConfiguration().getInt("port")}/';
 
   // Basic headers
   Future<Map<String, String>> _createHeaders({Map<String, String> headers, String type="GET", String accept="application/json", contentType="application/json"}) async {
