@@ -18,6 +18,8 @@ class _WeatherStationCardState extends State<WeatherStationCard> {
   _LocationStatus locationStatus = _LocationStatus.unknown;
   WeatherStation weatherStation;
 
+  static LocationData lastLocationData; // Static variable used to cache last location for performance improvements
+
   @override
   void initState() {
     super.initState();
@@ -99,7 +101,7 @@ class _WeatherStationCardState extends State<WeatherStationCard> {
           ButtonBar(
             children: <Widget>[
               FlatButton(
-                onPressed: () => getWeatherStation(promptUser: true), 
+                onPressed: () => getWeatherStation(promptUser: true, userRefresh: true), 
                 child: Text("Vernieuw"),
                 textColor: theme.accentColor,
               ),
@@ -158,7 +160,7 @@ class _WeatherStationCardState extends State<WeatherStationCard> {
     return locationStatus;
   }
 
-  void getWeatherStation({bool promptUser = false}) async {
+  void getWeatherStation({bool promptUser=false, bool userRefresh=false}) async {
     /// Retrieves the weatherstation closest to the current location and updated the weatherStation property
     setState(() {
       status = _Status.loading;
@@ -171,12 +173,15 @@ class _WeatherStationCardState extends State<WeatherStationCard> {
     }
 
     // Get the location
-    Location location = new Location();
-    LocationData locationData = await location.getLocation();
+    if ( userRefresh || lastLocationData == null || lastLocationData.time < DateTime.now().millisecondsSinceEpoch - 300000 ) {
+      // only retrieve a new location if it hasn't been retrieved in the last 5 minutes, or if the user presses the refresh button.
+      Location location = new Location();
+      lastLocationData = await location.getLocation();
+    }
     
     // Fetch closest weather station from api
     try {
-      weatherStation = await apiConnection.fetchWeatherStation(locationData.latitude, locationData.longitude);
+      weatherStation = await apiConnection.fetchWeatherStation(lastLocationData.latitude, lastLocationData.longitude);
       if(!this.mounted)
         return;
 
