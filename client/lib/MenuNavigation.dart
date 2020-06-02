@@ -17,7 +17,7 @@ class _MenuNavigation extends State<MenuNavigation> {
   @override
   void initState() {
     super.initState();
-    getLoggedInUser().then((user){
+    getLoggedInUser(fromDevice: true).then((user){
       if (!this.mounted)
         return;
       setState(() {

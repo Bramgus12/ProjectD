@@ -3,9 +3,22 @@ import 'package:plantexpert/api/ApiConnectionException.dart';
 import 'package:plantexpert/api/User.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-Future<User> getLoggedInUser() async {
-  /// Returns the username logged in user, or null if the user is not logged in.
+Future<User> getLoggedInUser({fromDevice=false}) async {
+  /// Returns a user object if logged in, or null if the user is not logged in.
   User user;
+
+  if (fromDevice) {
+    // Retrieving the user object from shared preferences will only fill the username field.
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String username = sharedPreferences.getString("username");
+    if (username != null) {
+      user = User(
+        username: username,
+      );
+      return user;
+    }
+  }
+
   try {
     user = await ApiConnection().fetchUser();
   } on InvalidCredentialsException {
