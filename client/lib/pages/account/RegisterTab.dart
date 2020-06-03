@@ -169,12 +169,18 @@ class _RegisterTabState extends State<RegisterTab> {
       postalCode: zipController.text
     );
 
+    if (editingExistingUser)
+      user.authority = widget.loggedInUser.authority;
+
     try {
       SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
       if (editingExistingUser){
         if (user.password == null || user.password == "")
           user.password = sharedPreferences.getString("password");
-        await apiConnection.putUser(user);
+        if (user.authority == "ROLE_ADMIN")
+          await apiConnection.putAdminUser(user);
+        else
+          await apiConnection.putUser(user);
       }
       else
         await apiConnection.postUser(user);
