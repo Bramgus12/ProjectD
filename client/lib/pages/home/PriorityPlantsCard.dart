@@ -89,7 +89,12 @@ class _PriorityPlantsCardState extends State<PriorityPlantsCard> {
                             child: Text("Je bent niet ingelogd. Log in om planten toe te voegen."),
                           ),
                           RaisedButton(
-                            onPressed: () => Navigator.pushNamed(context, '/login'),
+                            onPressed: () async {
+                              await Navigator.pushNamed(context, '/account');
+                              // The current page needs to be refreshed after returning from the login page,
+                              // this will reload all widgets which require the user to be logged in.
+                              Navigator.pushReplacementNamed(context, ModalRoute.of(context).settings.name);
+                            },
                             child: Text("Inloggen"),
                           ),
                         ],
