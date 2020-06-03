@@ -7,7 +7,7 @@ import 'package:plantexpert/api/ApiConnectionException.dart';
 import 'package:plantexpert/api/Plant.dart';
 import 'package:plantexpert/api/UserPlant.dart';
 import 'package:plantexpert/Utility.dart';
-import 'package:plantexpert/widgets/AddPlantTextField.dart';
+import 'package:plantexpert/widgets/InputTextField.dart';
 
 import '../MenuNavigation.dart';
 
@@ -330,7 +330,7 @@ class _AddPlant extends State<AddPlant> {
                         ],
                       ),
                       SizedBox(height: 20),
-                      AddPlantTextField(
+                      InputTextField(
                         title: "Bijnaam",
                         label: 'Dit is de bijnaam die uw plant in de applicatie krijgt. ',
                         inputType: String,
@@ -354,7 +354,7 @@ class _AddPlant extends State<AddPlant> {
                         },
                         initialValue: newPlant.nickname ?? ''
                       ),
-                      AddPlantTextField(
+                      InputTextField(
                         title: "Inhoud plantenpot",
                         label: 'Dit is de inhoud van uw plantenpot in liters. ',
                         inputType: double,
@@ -487,7 +487,7 @@ class _AddPlant extends State<AddPlant> {
                         ],
                       ),
                       SizedBox(height: 25),
-                      AddPlantTextField(
+                      InputTextField(
                           title: "Minimale temperatuur",
                           label: 'Minimale temperatuur in de kamer in celsius.',
                           keyboardType: TextInputType.number,
@@ -518,7 +518,7 @@ class _AddPlant extends State<AddPlant> {
                           initialValue: newPlant.minTemp?.toString() ?? ''
                       ),
                       SizedBox(height: 20),
-                      AddPlantTextField(
+                      InputTextField(
                           title: "Maximale temperatuur",
                           label: 'Maximale temperatuur in de kamer, in celsius. ',
                           keyboardType: TextInputType.number,

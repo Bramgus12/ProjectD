@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class AddPlantTextField extends StatelessWidget {
+class InputTextField extends StatelessWidget {
   final String title;
   final String label;
   final String initialValue;
@@ -13,7 +13,7 @@ class AddPlantTextField extends StatelessWidget {
   final Function(String) onChanged;
   final Key key;
 
-  AddPlantTextField(
+  InputTextField(
       {this.key, this.title, this.label, this.initialValue = '', this.keyboardType, this.inputType, this.validator, this.onSaved, this.onChanged});
 
   @override
