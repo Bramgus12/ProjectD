@@ -37,7 +37,7 @@ class ApiConnection {
       headers['Authorization'] = "Basic " + base64.encode(utf8.encode("$username:$password")).replaceAll("=", "");
     }
     headers.putIfAbsent('Accept', () => accept);
-    if(type == "POST") headers['Content-Type'] = contentType;
+    if(type == "POST" || type == "PUT") headers['Content-Type'] = contentType;
     return headers;
   }
 
@@ -170,12 +170,20 @@ class ApiConnection {
   // User 
   Future<User> fetchUser() async {
     /// Fetches the user data of the logged in user.
-    Map<String, String> jsonUser = await _fetchJson("user/users/");
+    Map<String, dynamic> jsonUser = await _fetchJson("user/users/");
     return User.fromJson(jsonUser);
   }
 
   Future<http.Response> postUser(User user) async {
     return await _postJson("users/", user);
+  }
+
+  Future<http.Response> putUser(User user) async {
+    return await _putJson("user/users/${user.id}/", user);
+  }
+
+  Future<http.Response> putAdminUser(User user) async {
+    return await _putJson("admin/users/${user.id}/", user);
   }
   
   // Weather stations

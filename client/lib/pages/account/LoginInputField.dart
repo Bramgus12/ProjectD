@@ -59,8 +59,9 @@ class LoginDatePicker extends StatefulWidget {
   final void Function(DateTime) dateTimeCallback;
   final bool validationError;
   final String validationMessage;
+  final DateTime initialDate;
 
-  LoginDatePicker(this.dateTimeCallback, {this.label, this.validationError=false, this.validationMessage=""});
+  LoginDatePicker(this.dateTimeCallback, {this.label, this.validationError=false, this.validationMessage="", this.initialDate});
 
   @override
   _LoginDatePickerState createState() => _LoginDatePickerState();
@@ -68,6 +69,12 @@ class LoginDatePicker extends StatefulWidget {
 
 class _LoginDatePickerState extends State<LoginDatePicker> {
   DateTime pickedDate;
+
+  @override
+  void initState() {
+    super.initState();
+    pickedDate = widget.initialDate;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,7 +132,7 @@ class _LoginDatePickerState extends State<LoginDatePicker> {
       initialDatePickerMode: DatePickerMode.year,
       fieldLabelText: this.widget.label,
     );
-    if(date == null) return;
+    if(date == null || !this.mounted) return;
 
     setState(() {
       pickedDate = date;

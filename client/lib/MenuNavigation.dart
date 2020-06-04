@@ -1,8 +1,7 @@
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-
+import 'package:plantexpert/AccountFunctions.dart';
+import 'package:plantexpert/api/User.dart';
 
 class MenuNavigation extends StatefulWidget{
   MenuNavigation({Key key}) : super(key: key);
@@ -12,72 +11,112 @@ class MenuNavigation extends StatefulWidget{
 
 }
 
-
-
 class _MenuNavigation extends State<MenuNavigation> {
+  User loggedInUser;
+
+  @override
+  void initState() {
+    super.initState();
+    getLoggedInUser(fromDevice: true).then((user){
+      if (!this.mounted)
+        return;
+      setState(() {
+        loggedInUser = user;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          DrawerHeader(
-              child: GestureDetector(
-                child: ListTile(
-                  title: Text( 'Menu',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20
+    String currentRoute = ModalRoute.of(context).settings.name;
+    // theme.accentColor : Colors.black
+    return Theme(
+      data: Theme.of(context).copyWith(
+        primaryColor: theme.accentColor
+      ),
+      child: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                      child: ListTile(
+                        title: Text( 'Menu',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20
+                        ),
+                      ),
+                      onTap: () => {
+                        Navigator.pop(context)
+                      },
+                      leading: Icon(
+                        Icons.arrow_back,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
-                ),
-                onTap: () => {
-                  Navigator.pop(context)
-                },
-                leading: Icon(Icons.arrow_back),
+                  GestureDetector(
+                    onTap: loggedInUser == null ? null : openAccountPage,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text( 
+                        loggedInUser == null ? "" : "Ingelogd als ${loggedInUser.username}",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              decoration: BoxDecoration(
+                color: theme.accentColor
               ),
             ),
-
-            decoration: BoxDecoration(
-              color: Colors.white,
+            ListTile(
+              selected: currentRoute == '/',
+              title: Text('Home'),
+              onTap: (){
+                Navigator.pushReplacementNamed(context, '/');
+              },
+              leading: Icon(Icons.home),
             ),
-          ),
-          ListTile(
-            title: Text('Home'),
-            onTap: (){
-              Navigator.pushReplacementNamed(context, '/');
-            },
-            leading: Icon(Icons.home, color: ModalRoute.of(context).settings.name == '/' ? theme.accentColor : Colors.black,),
-          ),
-          ListTile(
-            title: Text('Camera'),
-            onTap: (){
-              Navigator.pushReplacementNamed(context, '/camera');
-            },
-            leading: Icon(Icons.camera_alt, color: ModalRoute.of(context).settings.name == '/camera' ? theme.accentColor : Colors.black,),
-          ),
-          ListTile(
-            title: Text('Mijn planten'),
-            onTap: (){
-              Navigator.pushReplacementNamed(context, '/my-plants');
-            },
-            leading: Icon(Icons.featured_play_list, color: ModalRoute.of(context).settings.name == '/my-plants' ? theme.accentColor : Colors.black,),
-
-          ),
-          ListTile(
-            title: Text('Login'),
-            onTap: (){
-              Navigator.pushNamed(context, '/login');
-            },
-            leading: Icon(Icons.account_box, color: ModalRoute.of(context).settings.name == '/login' ? theme.accentColor : Colors.black,),
-
-          )
-
-        ],
+            ListTile(
+              selected: currentRoute == '/camera',
+              title: Text('Camera'),
+              onTap: (){
+                Navigator.pushReplacementNamed(context, '/camera');
+              },
+              leading: Icon(Icons.camera_alt),
+            ),
+            ListTile(
+              selected: currentRoute == '/my-plants',
+              title: Text('Mijn planten'),
+              onTap: (){
+                Navigator.pushReplacementNamed(context, '/my-plants');
+              },
+              leading: Icon(Icons.featured_play_list),
+            ),
+            ListTile(
+              selected: currentRoute == '/account',
+              title: Text('Account'),
+              onTap: openAccountPage,
+              leading: Icon(Icons.account_box),
+            )
+          ],
+        ),
       ),
-
     );
+  }
+
+  void openAccountPage() async {
+    await Navigator.pushNamed(context, '/account');
+    // The current page needs to be refreshed after returning from the login page,
+    // this will reload all widgets which require the user to be logged in.
+    Navigator.pushReplacementNamed(context, ModalRoute.of(context).settings.name);
   }
 }
 
@@ -92,8 +131,6 @@ class BottomNavigation extends StatefulWidget{
 
 class _BottomNavigation extends State<BottomNavigation> {
   var indexes = ['/', '/camera', '/my-plants'];
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -116,8 +153,8 @@ class _BottomNavigation extends State<BottomNavigation> {
       selectedItemColor: Theme.of(context).accentColor,
       onTap: (int index) => {
         Navigator.pushReplacementNamed(
-            context,
-            indexes[index],
+          context,
+          indexes[index],
         )
       },
     );

@@ -12,6 +12,7 @@ class WeatherStation {
   double windSpeed;
   String windDirection;
   double temperature;
+  WeatherStationIcon icoonactueel;
 
   WeatherStation({
     this.code,
@@ -25,7 +26,8 @@ class WeatherStation {
     this.dateString,
     this.windSpeed,
     this.windDirection,
-    this.temperature
+    this.temperature,
+    this.icoonactueel
   });
 
   factory WeatherStation.fromJson(Map<String, dynamic> jsonWeatherStation) {
@@ -41,7 +43,13 @@ class WeatherStation {
       dateString: jsonWeatherStation['datum'],
       windSpeed: double.tryParse(jsonWeatherStation['windsnelheidMS']),
       windDirection: jsonWeatherStation['windrichting'],
-      temperature: double.tryParse(jsonWeatherStation['temperatuurGC'])
+      temperature: double.tryParse(jsonWeatherStation['temperatuurGC']),
+      icoonactueel: WeatherStationIcon(
+        value: jsonWeatherStation['icoonactueel']['value'],
+        id: jsonWeatherStation['icoonactueel']['id'],
+        zin: jsonWeatherStation['icoonactueel']['zin'],
+      ) ,
+
     );
   }
 
@@ -59,7 +67,23 @@ longitude:\t\t$longitude
 date:\t\t$dateString
 wind speed:\t\t$windSpeed
 wind direction:\t$windDirection
-temperature:\t\t$temperature''';
+temperature:\t\t$temperature
+icoonactueel:
+\tvalue:\t\t${icoonactueel.value}
+\tid:\t\t${icoonactueel.id}
+\tzin:\t\t${icoonactueel.zin}
+''';
   }
 
+}
+
+class WeatherStationIcon {
+  String value;
+  String id;
+  String zin;
+
+  WeatherStationIcon({
+    this.value, 
+    this.id, 
+    this.zin});
 }
