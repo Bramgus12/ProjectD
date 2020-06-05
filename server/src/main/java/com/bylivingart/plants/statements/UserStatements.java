@@ -14,6 +14,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class UserStatements {
@@ -48,25 +49,21 @@ public class UserStatements {
             }
         }
         if (!userExists) {
-            if (!user.getPassword().isEmpty() && user.getPassword().length() > 6) {
-                User newUser = SecurityConfig.HashUserPassword(user);
-                PreparedStatement ps = conn.prepareStatement("INSERT INTO users VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                fillPreparedStatement(ps, newUser).execute();
+            User newUser = SecurityConfig.HashUserPassword(user);
+            PreparedStatement ps = conn.prepareStatement("INSERT INTO users VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            fillPreparedStatement(ps, newUser).execute();
 
-                PreparedStatement ps2 = conn.prepareStatement(
-                        "SELECT * FROM users WHERE user_name=? AND password=? AND authority=? AND enabled=? AND name=? AND email=? " +
-                                "AND date_of_birth=? AND street_name=? AND house_number=? AND addition=? AND city=? AND postal_code=?;"
-                );
-                ResultSet rs = fillPreparedStatement(ps2, newUser).executeQuery();
-                if (!rs.next()) {
-                    throw new NotFoundException("User not found");
-                } else {
-                    User response = getResult(rs.getInt("id"), rs);
-                    response.setPassword(null);
-                    return response;
-                }
+            PreparedStatement ps2 = conn.prepareStatement(
+                    "SELECT * FROM users WHERE user_name=? AND password=? AND authority=? AND enabled=? AND name=? AND email=? " +
+                            "AND date_of_birth=? AND street_name=? AND house_number=? AND addition=? AND city=? AND postal_code=?;"
+            );
+            ResultSet rs = fillPreparedStatement(ps2, newUser).executeQuery();
+            if (!rs.next()) {
+                throw new NotFoundException("User not found");
             } else {
-                throw new BadRequestException("Password is not long enough. It has to be at least a length of 6.");
+                User response = getResult(rs.getInt("id"), rs);
+                response.setPassword(null);
+                return response;
             }
         } else {
             throw new BadRequestException("User already exists.");
@@ -158,7 +155,7 @@ public class UserStatements {
         ps.setBoolean(4, user.getEnabled());
         ps.setString(5, user.getName());
         ps.setString(6, user.getEmail());
-        ps.setDate(7, user.getDateOfBirth());
+        ps.setDate(7, Date.valueOf(user.getDateOfBirth()));
         ps.setString(8, user.getStreetName());
         ps.setInt(9, user.getHouseNumber());
         ps.setString(10, user.getAddition());
@@ -174,7 +171,7 @@ public class UserStatements {
         Boolean enabled = rs.getBoolean("enabled");
         String name = rs.getString("name");
         String email = rs.getString("email");
-        Date dateOfBirth = rs.getDate("date_of_birth");
+        LocalDate dateOfBirth = rs.getDate("date_of_birth").toLocalDate();
         String streetName = rs.getString("street_name");
         int houseNumber = rs.getInt("house_number");
         String addition = rs.getString("addition");

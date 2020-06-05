@@ -58,6 +58,20 @@ dependencies {
 
 	// https://mvnrepository.com/artifact/org.apache.tika/tika-core
 	compile group: 'org.apache.tika', name: 'tika-core', version: '1.24.1'
+
+	// https://mvnrepository.com/artifact/commons-validator/commons-validator
+	compile group: 'commons-validator', name: 'commons-validator', version: '1.6'
+
+
+	// https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core
+	compile group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.33'
+
+	// https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-el
+	compile group: 'org.apache.tomcat.embed', name: 'tomcat-embed-el', version: '9.0.35'
+
+
+	// https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-websocket
+	compile group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.35'
 }
 
 test {

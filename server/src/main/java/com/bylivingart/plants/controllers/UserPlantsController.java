@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -98,7 +99,7 @@ public class UserPlantsController {
     @PostMapping("/user/userplants/")
     @ResponseStatus(HttpStatus.CREATED)
     private ResponseEntity<UserPlants> createUserPlant(
-            @ApiParam(value = "The userPlant you want to create", required = true) @RequestBody UserPlants userPlants,
+            @Valid @ApiParam(value = "The userPlant you want to create", required = true) @RequestBody UserPlants userPlants,
             HttpServletRequest request
     ) throws Exception {
         Connection conn = new DatabaseConnection().getConnection();
@@ -116,7 +117,7 @@ public class UserPlantsController {
     })
     @ResponseStatus(HttpStatus.CREATED)
     @PutMapping("/user/userplants")
-    private ResponseEntity<Void> updateUserPlant(@RequestBody UserPlants userPlants, @RequestParam int id, HttpServletRequest request) throws Exception {
+    private ResponseEntity<Void> updateUserPlant(@Valid @RequestBody UserPlants userPlants, @RequestParam int id, HttpServletRequest request) throws Exception {
         if (userPlants.getId() != id) {
             throw new BadRequestException("Id can't be changed and the id's have to be the same");
         } else {
