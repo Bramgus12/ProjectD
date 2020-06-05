@@ -191,6 +191,9 @@ class _PriorityPlantsCardState extends State<PriorityPlantsCard> {
     if (response != null && response.statusCode < 300) {
       setState(() {
         userPlants = List.from(userPlants)..remove(userPlant);
+        if(userPlants.length == 0){
+          status = _Status.allPlantsFine;
+        }
       });
     }
   }
