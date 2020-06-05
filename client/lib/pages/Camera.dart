@@ -145,7 +145,7 @@ class _CameraState extends State<Camera>
 
       return
         GestureDetector(
-          onTap: () => {Navigator.pushNamed(context, '/plant-detail',
+          onTap: () => {Navigator.pushNamed(context, '/camera-plant-detail',
           arguments: new Plant(
               id: 0,
               name: plantName,

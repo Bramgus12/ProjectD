@@ -234,7 +234,6 @@ class _AddPlant extends State<AddPlant> {
     ThemeData theme = Theme.of(context);
 
     return Scaffold(
-      drawer: MenuNavigation(),
       // bottomNavigationBar: BottomNavigation(),
       appBar: AppBar(
         title: Text("Plant toevoegen",

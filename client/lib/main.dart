@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
+import 'package:plantexpert/pages/CameraPlantDetailScreen.dart';
 import 'package:plantexpert/pages/account/Account.dart';
 
 import 'pages/Camera.dart';
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/plant-detail': (context) => ModalRoute.of(context).settings.arguments,
+        '/camera-plant-detail': (context) => CameraPlantDetailScreen(plant: ModalRoute.of(context).settings.arguments),
         '/account' : (context) => Account(),
       },
       onGenerateRoute: (RouteSettings settings) {

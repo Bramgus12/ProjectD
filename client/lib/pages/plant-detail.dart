@@ -28,7 +28,6 @@ class PlantDetail extends StatelessWidget {
     print(userPlant);
     print(plant);
     return Scaffold(
-      drawer: MenuNavigation(),
       bottomNavigationBar: BottomNavigation(),
       appBar: AppBar(
         title: Text("Plant detail", style: TextStyle(fontFamily: 'Libre Baskerville')),
