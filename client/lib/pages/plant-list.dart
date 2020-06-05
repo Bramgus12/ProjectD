@@ -1,138 +1,169 @@
+import 'dart:async';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:plantexpert/api/ApiConnection.dart';
+import 'package:plantexpert/api/ApiConnectionException.dart';
 import 'package:plantexpert/api/Plant.dart';
-import 'package:plantexpert/api/User.dart';
+import 'package:plantexpert/api/UserPlant.dart';
+import 'package:plantexpert/Utility.dart';
+import 'package:plantexpert/widgets/PlantListItem.dart';
+import 'package:plantexpert/widgets/stateful-wrapper.dart';
 
 import '../MenuNavigation.dart';
 
-class PlantList extends StatelessWidget {
+ApiConnection apiConnection = new ApiConnection();
+
+
+Future<CachedNetworkImage> getUserPlantImage(UserPlant userPlant) async {
+  try {
+    CachedNetworkImage img = await apiConnection.fetchCachedPlantImage(userPlant);
+    return img;
+  }
+  on ApiConnectionException catch (e) {
+    print("API image fetch error: " + e.toString());
+  }
+  on InvalidCredentialsException catch (e) {
+    print('Not logged in.');
+  }
+  on NetworkImageLoadException catch (e) {
+    print('There was a problem loading `${userPlant.imageName}`.');
+  }
+  on Exception catch (e) {
+    print('There was a problem loading `${userPlant.imageName}`.');
+  }
+
+  return null;
+}
+
+class PlantList extends StatefulWidget {
+  PlantList({Key key}) : super(key: key);
+
+  @override
+  _PlantListState createState() => _PlantListState();
+
+}
+
+class _PlantListState extends State<PlantList> {
+  String failedFetchingPlants;
+  bool hideAddButton = true;
+  // save the fetched plants so they don't have to get fetched multiple times in a row 
+  List<PlantListItem> plantListItems;
+
+  void initState() {
+    super.initState();
+    _fetchUserPlants();
+  }
+
+  Future<void> _reloadUserPlants() async {
+    return _fetchUserPlants();
+  }
+
+  Future<List<Plant>> _fetchPlants() async {
+    return apiConnection.fetchPlants();
+  }
+
+  void _fetchUserPlants() async {
+    failedFetchingPlants = null;
+    hideAddButton = true;
+
+    print("fetching user plant list");
+
+    try {
+      List<UserPlant> pli = await apiConnection.fetchUserPlants();
+        _fetchPlants().then((listOfPlants) {
+          var tmpPlantListItems = pli
+          // FIXME: the database contains plants without a nickname
+              .where((p) => p.nickname != null)
+              .map((p) => PlantListItem(userPlant: p, plantImage: getUserPlantImage(p), plant: listOfPlants.elementAt(listOfPlants.indexWhere((element) => element.id == p.plantId)),))
+              .toList();
+          setState(() {
+            plantListItems = tmpPlantListItems;
+            hideAddButton = false;
+        });
+      });
+    }
+    on ApiConnectionException catch (e) {
+      setState(() {
+        failedFetchingPlants = "Het lijkt er op dat er momenteel geen verbinding met de server gemaakt kan worden, probeer het later nog een keer.";
+        hideAddButton = true;
+      });
+      return;
+    }
+    on InvalidCredentialsException catch (e) {
+      setState(() {
+        failedFetchingPlants = "Het lijkt er op dat u niet bent ingelogd, log in of maak een nieuw account aan.";
+        hideAddButton = true;
+      });
+      return;
+    }
+    on StatusCodeException catch(e) {
+      setState(() {
+        failedFetchingPlants = "U heeft nog geen planten toegevoegd, klik nu op het kruisje rechts onder, of maak een foto met de camera.";
+        hideAddButton = false;
+      });
+      return;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
+
     return Scaffold(
       drawer: MenuNavigation(),
       bottomNavigationBar: BottomNavigation(),
       appBar: AppBar(
-        title: Text("Plant list", style: TextStyle(fontFamily: 'Libre Baskerville')),
+        title: Text("Mijn Planten Lijst", style: TextStyle(fontFamily: 'Libre Baskerville')),
         centerTitle: true,
       ),
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        child: ListView.builder(
-          itemBuilder: (_, index) {
-            return PlantListItem(
-              plant: Plant(
-                id: 0,
-                name: "Test Plant",
-                waterScale: 2.0,
-                waterNumber: 2.0,
-                waterText: "Plant needs water.",
-                sunScale: 2.0,
-                sunNumber: 2.0,
-                sunText: "Plant needs sun.",
-                description: "This is a plant.",
-                optimalTemp: 2,
-                imageName: "assets/images/croton.jpg"
-              )
-            );
-          },
-          itemCount: 1,
-        )
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pushNamed(context, '/add-plant'),
-        backgroundColor: Colors.blue,
-        child: Icon(
-          Icons.control_point
-        ),
-    ),
-    );
-  }
-}
-
-class PlantListItem extends StatelessWidget {
-  final Plant plant;
-
-  final double _imageWidth = 150.0;
-  final double _imageHeight = 150.0;
-
-  PlantListItem({this.plant});
-
-  @override
-  Widget build(BuildContext context) {
-    return DefaultTextStyle(
-      child: GestureDetector(
-        onTap: () => Navigator.pushNamed(context, '/plant-detail', arguments: plant),
+      body: StatefulWrapper(
+        onInit: null,
         child: Container(
-          padding: EdgeInsets.all(10.0),
-          height: _imageHeight * 1.2,
-          decoration: BoxDecoration(
-              border: Border(
-                  bottom: BorderSide(
-                      width: 1.0,
-                      color: Colors.white
-                  )
-              ),
-              color: Colors.black
-          ),
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                flex: 4,
-                child: Image.asset(
-                  plant.imageName,
-                  width: _imageWidth,
-                  height: _imageHeight,
-                ),
-              ),
-              // space between image and text
-              Expanded(
-                flex: 1,
-                child: SizedBox(width: 1),
-              ),
-              Expanded(
-                flex: 5,
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        'Naam',
-                        style: TextStyle(color: Colors.grey)
-                      ),
-                      Text(plant.name),
-                      SizedBox(height: 10),
+          width: MediaQuery.of(context).size.width,
+          child: new RefreshIndicator(
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                  child:
+                  (){
+                    if(plantListItems != null){
+                      return ListView(
+                        children: plantListItems,
+                      );
+                    }
 
-                      Text(
-                          'Hoeveelheid zonlicht',
-                          style: TextStyle(color: Colors.grey)
-                      ),
-                      RatingRow(
-                        count: plant.sunScale.toInt(),
-                        // TODO: find better icons for sunlight
-                        filledIcon: Icons.star,
-                        unfilledIcon: Icons.star_border,
-                      ),
-                      SizedBox(height: 10),
+                    if(failedFetchingPlants != null){
+                      return Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Text(failedFetchingPlants),
+                        ),
+                      );
+                    }
 
-                      Text(
-                          'Hoeveelheid water',
-                          style: TextStyle(color: Colors.grey)
-                      ),
-                      RatingRow(
-                          count: plant.waterScale.toInt(),
-                          // TODO: find better icons for water
-                          filledIcon: Icons.star,
-                          unfilledIcon: Icons.star_border,
-                      )
-                    ],
-                  )
-                )
-              ],
-            ),
-        )
+                    return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            CircularProgressIndicator(),
+                            SizedBox(height: 10),
+                            Text('Even geduld terwijl wij opzoek zijn naar uw planten. ')
+                          ],
+                        )
+                    );
+                  }(),
+              ),
+              onRefresh: _reloadUserPlants)
+
+        ),
       ),
-      style: TextStyle(
-          fontFamily: 'Libre Baskerville',
-          color: Colors.white
-      ),
+      floatingActionButton: !hideAddButton ? FloatingActionButton(
+        onPressed: () => Navigator.pushNamed(context, '/add-plant').then((value) {  _fetchUserPlants(); }),
+        backgroundColor: theme.accentColor,
+        child: Icon(
+            Icons.control_point
+        ),
+      ) : null,
     );
   }
 }
@@ -150,7 +181,7 @@ class RatingRow extends StatelessWidget {
       children: List.generate(5, (index) =>
         Icon(
           index < count ? filledIcon : unfilledIcon,
-          color: Colors.white
+          color: Colors.black
         )
       )
     );

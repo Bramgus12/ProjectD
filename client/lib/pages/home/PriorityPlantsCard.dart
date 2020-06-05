@@ -108,7 +108,10 @@ class _PriorityPlantsCardState extends State<PriorityPlantsCard> {
                             child: Text("Je hebt nog geen planten."),
                           ),
                           RaisedButton(
-                            onPressed: null, // TODO: add route to add plant page
+                            onPressed: () async {
+                              await Navigator.pushNamed(context, '/add-plant');
+                              getUserPlants();
+                            },
                             child: Text("Voeg een plant toe"),
                           )
                         ],

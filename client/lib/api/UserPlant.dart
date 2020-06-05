@@ -92,4 +92,17 @@ plantId:\t\t$plantId
 ''';
   }
 
+  Plant toPlant() {
+    return new Plant(
+      id: id,
+      name: nickname,
+      imageName: imageName,
+      waterScale: 2,
+      sunScale: 2,
+      waterText: 'Plant needs water.',
+      sunText: 'Plant needs sun.',
+      description: 'This is a plant.'
+    );
+  }
+
 }
