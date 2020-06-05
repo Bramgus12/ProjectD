@@ -51,7 +51,7 @@ class _LoginTabState extends State<LoginTab> {
                 child: Text("Login", style: TextStyle(fontSize: 18)),
               ),
               LoginInputField(usernameController, hintText: "Gebruikersnaam", enabled: _status != Status.loading, validator: validateUsername),
-              LoginInputField(passwordController, hintText: "Wachtwoord", enabled: _status != Status.loading, obfuscated: true, validator: validatePassword),
+              LoginInputField(passwordController, hintText: "Wachtwoord", enabled: _status != Status.loading, obfuscated: true, validator: (value) => validatePassword(value, simple: true) ),
               StatusBox(status: _status, message: _statusMessage),
               RaisedButton(
                 color: theme.accentColor,
