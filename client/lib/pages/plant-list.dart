@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:plantexpert/api/ApiConnection.dart';
 import 'package:plantexpert/api/ApiConnectionException.dart';
 import 'package:plantexpert/api/Plant.dart';
 import 'package:plantexpert/api/UserPlant.dart';
@@ -11,9 +12,12 @@ import 'package:plantexpert/widgets/stateful-wrapper.dart';
 
 import '../MenuNavigation.dart';
 
+ApiConnection apiConnection = new ApiConnection();
+
+
 Future<CachedNetworkImage> getUserPlantImage(UserPlant userPlant) async {
   try {
-    CachedNetworkImage img = await PlantenApi.instance.connection.fetchCachedPlantImage(userPlant);
+    CachedNetworkImage img = await apiConnection.fetchCachedPlantImage(userPlant);
     return img;
   }
   on ApiConnectionException catch (e) {
@@ -23,6 +27,9 @@ Future<CachedNetworkImage> getUserPlantImage(UserPlant userPlant) async {
     print('Not logged in.');
   }
   on NetworkImageLoadException catch (e) {
+    print('There was a problem loading `${userPlant.imageName}`.');
+  }
+  on Exception catch (e) {
     print('There was a problem loading `${userPlant.imageName}`.');
   }
 
@@ -39,7 +46,7 @@ class PlantList extends StatefulWidget {
 
 class _PlantListState extends State<PlantList> {
   String failedFetchingPlants;
-
+  bool hideAddButton = true;
   // save the fetched plants so they don't have to get fetched multiple times in a row 
   List<PlantListItem> plantListItems;
 
@@ -53,42 +60,56 @@ class _PlantListState extends State<PlantList> {
   }
 
   Future<List<Plant>> _fetchPlants() async {
-    return PlantenApi.instance.connection.fetchPlants();
+    return apiConnection.fetchPlants();
   }
 
   void _fetchUserPlants() async {
     failedFetchingPlants = null;
+    hideAddButton = true;
+
+    print("fetching user plant list");
 
     try {
-      List<UserPlant> pli = await PlantenApi.instance.connection.fetchUserPlants();
+      List<UserPlant> pli = await apiConnection.fetchUserPlants();
         _fetchPlants().then((listOfPlants) {
-          setState(() {
-            plantListItems = pli
-                        // FIXME: the database contains plants without a nickname
+          var tmpPlantListItems = pli
+          // FIXME: the database contains plants without a nickname
               .where((p) => p.nickname != null)
               .map((p) => PlantListItem(userPlant: p, plantImage: getUserPlantImage(p), plant: listOfPlants.elementAt(listOfPlants.indexWhere((element) => element.id == p.plantId)),))
               .toList();
+          setState(() {
+            plantListItems = tmpPlantListItems;
+            hideAddButton = false;
         });
       });
     }
     on ApiConnectionException catch (e) {
       setState(() {
         failedFetchingPlants = "Het lijkt er op dat er momenteel geen verbinding met de server gemaakt kan worden, probeer het later nog een keer.";
+        hideAddButton = true;
       });
-      print(e);
+      return;
     }
     on InvalidCredentialsException catch (e) {
       setState(() {
         failedFetchingPlants = "Het lijkt er op dat u niet bent ingelogd, log in of maak een nieuw account aan.";
+        hideAddButton = true;
       });
-      print(e);
+      return;
     }
-
-    //return null;
+    on StatusCodeException catch(e) {
+      setState(() {
+        failedFetchingPlants = "U heeft nog geen planten toegevoegd, klik nu op het kruisje rechts onder, of maak een foto met de camera.";
+        hideAddButton = false;
+      });
+      return;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
+
     return Scaffold(
       drawer: MenuNavigation(),
       bottomNavigationBar: BottomNavigation(),
@@ -136,9 +157,9 @@ class _PlantListState extends State<PlantList> {
 
         ),
       ),
-      floatingActionButton: failedFetchingPlants == null ? FloatingActionButton(
-        onPressed: () => Navigator.pushNamed(context, '/add-plant').then((value) => _fetchUserPlants()),
-        backgroundColor: Colors.blue,
+      floatingActionButton: !hideAddButton ? FloatingActionButton(
+        onPressed: () => Navigator.pushNamed(context, '/add-plant').then((value) {  _fetchUserPlants(); }),
+        backgroundColor: theme.accentColor,
         child: Icon(
             Icons.control_point
         ),
