@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:plantexpert/AccountFunctions.dart';
 import 'package:plantexpert/api/ApiConnection.dart';
 import 'package:plantexpert/api/ApiConnectionException.dart';
 import 'package:plantexpert/pages/account/LoginInputField.dart';
 import 'package:plantexpert/widgets/StatusBox.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'AccountValidationFunctions.dart';
 
@@ -83,12 +83,12 @@ class _LoginTabState extends State<LoginTab> {
     // Server side validation
     try{
       bool validCredentials = await apiConnection.verifyCredentials(usernameController.text, passwordController.text);
+      if(!this.mounted)
+        return;
       if (validCredentials) {
         print("Credentials are valid.");
         // Save username and password to shared preferences.
-        SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-        sharedPreferences.setString("username", usernameController.text);
-        sharedPreferences.setString("password", passwordController.text);
+        userLogin(usernameController.text, passwordController.text);
         hideErrorMessage();
         Navigator.pop(context);
       }

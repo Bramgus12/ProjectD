@@ -59,8 +59,9 @@ class LoginDatePicker extends StatefulWidget {
   final void Function(DateTime) dateTimeCallback;
   final bool validationError;
   final String validationMessage;
+  final DateTime initialDate;
 
-  LoginDatePicker(this.dateTimeCallback, {this.label, this.validationError=false, this.validationMessage=""});
+  LoginDatePicker(this.dateTimeCallback, {this.label, this.validationError=false, this.validationMessage="", this.initialDate});
 
   @override
   _LoginDatePickerState createState() => _LoginDatePickerState();
@@ -68,6 +69,12 @@ class LoginDatePicker extends StatefulWidget {
 
 class _LoginDatePickerState extends State<LoginDatePicker> {
   DateTime pickedDate;
+
+  @override
+  void initState() {
+    super.initState();
+    pickedDate = widget.initialDate;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,10 +92,10 @@ class _LoginDatePickerState extends State<LoginDatePicker> {
                   child: Text(
                     pickedDate == null ? widget.label : DateFormat('dd-MM-yyyy').format(pickedDate),
                     style: TextStyle(
-                      color: theme.textTheme.headline1.color,
-                      fontWeight: theme.textTheme.bodyText2.fontWeight,
+                      color: theme.textTheme.headline.color,
+                      fontWeight: theme.textTheme.body2.fontWeight,
                       fontSize: 16.0,
-                      fontFamily: theme.textTheme.bodyText2.fontFamily
+                      fontFamily: theme.textTheme.body2.fontFamily
                     ),
                   ),
                 ),
@@ -123,9 +130,9 @@ class _LoginDatePickerState extends State<LoginDatePicker> {
       firstDate: DateTime(1900, 1, 1), 
       lastDate: DateTime.now(),
       initialDatePickerMode: DatePickerMode.year,
-      fieldLabelText: this.widget.label,
+      //fieldLabelText: this.widget.label,
     );
-    if(date == null) return;
+    if(date == null || !this.mounted) return;
 
     setState(() {
       pickedDate = date;

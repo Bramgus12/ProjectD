@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:global_configuration/global_configuration.dart';
@@ -37,7 +38,7 @@ class ApiConnection {
       headers['Authorization'] = "Basic " + base64.encode(utf8.encode("$username:$password")).replaceAll("=", "");
     }
     headers.putIfAbsent('Accept', () => accept);
-    if(type == "POST") headers['Content-Type'] = contentType;
+    if(type == "POST" || type == "PUT") headers['Content-Type'] = contentType;
     return headers;
   }
 
@@ -119,6 +120,27 @@ class ApiConnection {
     return Image.network(fullUrl, headers: headers);
   }
 
+  // ----------
+  // The following problem seems to be related to a "false positive" for the dart framework and could be fully ignored
+  // I/flutter (15227): CacheManager: Failed to download file from https://hrplanner.nl:443/user/userplants/9/2020-05-31-194029-t1glxowr.jpg/ with error:
+  // I/flutter (15227): HttpException: Invalid statusCode: 404, uri = https://hrplanner.nl/user/userplants/9/2020-05-31-194029-t1glxowr.jpg/
+  // https://github.com/Baseflow/flutter_cached_network_image/issues/144
+  // ----------
+  // Fetch image from api and return a (cached) resource.
+  Future<CachedNetworkImage> _fetchCachedImage(String url, { Map<String, String> headers }) async {
+    headers = await _createHeaders(headers: headers, accept: "image/jpeg", contentType: "image/jpeg");
+    String fullUrl = baseUrl + url;
+    return CachedNetworkImage(
+      imageUrl: fullUrl,
+      httpHeaders: headers,
+      height: 400,
+      placeholder: (BuildContext context, String url) =>
+          Image.asset("assets/images/image-placeholder.png"),
+      errorWidget: (context, url, error) =>
+          Image.asset("assets/images/image-placeholder.png"),
+    );
+  }
+
   // Convert http response body to json with error handling.
   dynamic _jsonFromResponse(http.Response response) {
     try {
@@ -170,12 +192,20 @@ class ApiConnection {
   // User 
   Future<User> fetchUser() async {
     /// Fetches the user data of the logged in user.
-    Map<String, String> jsonUser = await _fetchJson("user/users/");
+    Map<String, dynamic> jsonUser = await _fetchJson("user/users/");
     return User.fromJson(jsonUser);
   }
 
   Future<http.Response> postUser(User user) async {
     return await _postJson("users/", user);
+  }
+
+  Future<http.Response> putUser(User user) async {
+    return await _putJson("user/users/${user.id}/", user);
+  }
+
+  Future<http.Response> putAdminUser(User user) async {
+    return await _putJson("admin/users/${user.id}/", user);
   }
   
   // Weather stations
@@ -203,7 +233,8 @@ class ApiConnection {
   // User plants
   Future<List<UserPlant>> fetchUserPlants() async {
     Iterable jsonUserPlants = await _fetchJsonList('user/userplants/');
-    return jsonUserPlants.map<UserPlant>((jsonUserPlant) => UserPlant.fromJson(jsonUserPlant)).toList();
+    return jsonUserPlants.map<UserPlant>((jsonUserPlant) =>
+        UserPlant.fromJson(jsonUserPlant)).toList();
   }
 
 // Not yet implemented on server
@@ -243,6 +274,10 @@ class ApiConnection {
 
   Future<Image> fetchUserPlantImage(UserPlant userPlant) async {
     return await _fetchImage("user/userplants/${userPlant.id}/${userPlant.imageName}/");
+  }
+
+  Future<CachedNetworkImage> fetchCachedPlantImage(UserPlant userPlant) async {
+    return _fetchCachedImage("user/userplants/${userPlant.id}/${userPlant.imageName}/");
   }
 
   // Login
