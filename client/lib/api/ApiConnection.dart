@@ -120,6 +120,12 @@ class ApiConnection {
     return Image.network(fullUrl, headers: headers);
   }
 
+  // ----------
+  // The following problem seems to be related to a "false positive" for the dart framework and could be fully ignored
+  // I/flutter (15227): CacheManager: Failed to download file from https://hrplanner.nl:443/user/userplants/9/2020-05-31-194029-t1glxowr.jpg/ with error:
+  // I/flutter (15227): HttpException: Invalid statusCode: 404, uri = https://hrplanner.nl/user/userplants/9/2020-05-31-194029-t1glxowr.jpg/
+  // https://github.com/Baseflow/flutter_cached_network_image/issues/144
+  // ----------
   // Fetch image from api and return a (cached) resource.
   Future<CachedNetworkImage> _fetchCachedImage(String url, { Map<String, String> headers }) async {
     headers = await _createHeaders(headers: headers, accept: "image/jpeg", contentType: "image/jpeg");
@@ -219,7 +225,8 @@ class ApiConnection {
   // User plants
   Future<List<UserPlant>> fetchUserPlants() async {
     Iterable jsonUserPlants = await _fetchJsonList('user/userplants/');
-    return jsonUserPlants.map<UserPlant>((jsonUserPlant) => UserPlant.fromJson(jsonUserPlant)).toList();
+    return jsonUserPlants.map<UserPlant>((jsonUserPlant) =>
+        UserPlant.fromJson(jsonUserPlant)).toList();
   }
 
 // Not yet implemented on server
