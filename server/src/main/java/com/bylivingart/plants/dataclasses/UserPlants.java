@@ -26,6 +26,7 @@ public class UserPlants {
     private BigDecimal lon;
 
     @NotBlank
+    @Pattern(regexp = "[a-zA-Z0-9!-.]+((.jpe?g)|(.JPE?G))", message = "Must be a .jpeg or a .jpg")
     private String imageName;
 
     @PastOrPresent(message = "Must be a date in the past or the present.")

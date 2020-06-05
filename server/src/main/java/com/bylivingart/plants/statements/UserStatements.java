@@ -49,25 +49,21 @@ public class UserStatements {
             }
         }
         if (!userExists) {
-            if (!user.getPassword().isEmpty() && user.getPassword().length() > 6) {
-                User newUser = SecurityConfig.HashUserPassword(user);
-                PreparedStatement ps = conn.prepareStatement("INSERT INTO users VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                fillPreparedStatement(ps, newUser).execute();
+            User newUser = SecurityConfig.HashUserPassword(user);
+            PreparedStatement ps = conn.prepareStatement("INSERT INTO users VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            fillPreparedStatement(ps, newUser).execute();
 
-                PreparedStatement ps2 = conn.prepareStatement(
-                        "SELECT * FROM users WHERE user_name=? AND password=? AND authority=? AND enabled=? AND name=? AND email=? " +
-                                "AND date_of_birth=? AND street_name=? AND house_number=? AND addition=? AND city=? AND postal_code=?;"
-                );
-                ResultSet rs = fillPreparedStatement(ps2, newUser).executeQuery();
-                if (!rs.next()) {
-                    throw new NotFoundException("User not found");
-                } else {
-                    User response = getResult(rs.getInt("id"), rs);
-                    response.setPassword(null);
-                    return response;
-                }
+            PreparedStatement ps2 = conn.prepareStatement(
+                    "SELECT * FROM users WHERE user_name=? AND password=? AND authority=? AND enabled=? AND name=? AND email=? " +
+                            "AND date_of_birth=? AND street_name=? AND house_number=? AND addition=? AND city=? AND postal_code=?;"
+            );
+            ResultSet rs = fillPreparedStatement(ps2, newUser).executeQuery();
+            if (!rs.next()) {
+                throw new NotFoundException("User not found");
             } else {
-                throw new BadRequestException("Password is not long enough. It has to be at least a length of 6.");
+                User response = getResult(rs.getInt("id"), rs);
+                response.setPassword(null);
+                return response;
             }
         } else {
             throw new BadRequestException("User already exists.");

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -42,9 +43,10 @@ public class HandleException {
     }
 
     @ExceptionHandler(BadRequestException.class)
-    private void handleBadRequestException(BadRequestException e, HttpServletResponse response) throws IOException {
+    private ResponseEntity<NotValidError> handleBadRequestException(BadRequestException e, HttpServletRequest request) {
         PlantsApplication.printErrorInConsole(e.getLocalizedMessage());
-        response.sendError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        return new ResponseEntity<>(new NotValidError(400, "Bad request", e.getMessage(), new HashMap<>(), request.getServletPath()), HttpStatus.BAD_REQUEST);
+
     }
 
     @ExceptionHandler(InternalServerException.class)
@@ -54,9 +56,10 @@ public class HandleException {
     }
 
     @ExceptionHandler(SQLException.class)
-    private void handleSQLException(SQLException e, HttpServletResponse response) throws IOException {
+    private ResponseEntity<NotValidError> handleSQLException(SQLException e, HttpServletRequest request) {
         PlantsApplication.printErrorInConsole(e.getLocalizedMessage());
-        response.sendError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        return new ResponseEntity<>(new NotValidError(400, "Bad request", e.getMessage(), new HashMap<>(), request.getServletPath()), HttpStatus.BAD_REQUEST);
+
     }
 
     @ExceptionHandler(FileNotFoundException.class)
@@ -68,13 +71,13 @@ public class HandleException {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    private ResponseEntity<Error> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    private ResponseEntity<Error> handleMethodArgumentNotValidException(MethodArgumentNotValidException e, HttpServletRequest request) {
         HashMap<String, String> ValidationErrors = new HashMap<>();
         e.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
             ValidationErrors.put(fieldName, errorMessage);
         });
-        return new ResponseEntity<>(new NotValidError(400, "Bad request", ValidationErrors, ""), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new NotValidError(400, "Bad request","A field doesn't match the validation", ValidationErrors, request.getServletPath()), HttpStatus.BAD_REQUEST);
     }
 }

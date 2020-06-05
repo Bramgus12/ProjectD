@@ -4,6 +4,7 @@ import com.bylivingart.plants.Exceptions.NotFoundException;
 import com.bylivingart.plants.FileService;
 import com.bylivingart.plants.dataclasses.Plants;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -88,11 +89,11 @@ public class PlantsStatements {
 
     private static PreparedStatement fillPreparedStatement(PreparedStatement ps, Plants plant) throws Exception {
         ps.setString(1, plant.getName());
-        ps.setDouble(2, plant.getWaterScale());
-        ps.setDouble(3, plant.getWaterNumber());
+        ps.setBigDecimal(2, plant.getWaterScale());
+        ps.setBigDecimal(3, plant.getWaterNumber());
         ps.setString(4, plant.getWaterText());
-        ps.setDouble(5, plant.getSunScale());
-        ps.setDouble(6, plant.getSunNumber());
+        ps.setBigDecimal(5, plant.getSunScale());
+        ps.setBigDecimal(6, plant.getSunNumber());
         ps.setString(7, plant.getSunText());
         ps.setString(8, plant.getDescription());
         ps.setInt(9, plant.getOptimumTemp());
@@ -104,11 +105,11 @@ public class PlantsStatements {
     private static Plants createObjectFromResultSet(ResultSet rs) throws Exception {
         int id = rs.getInt(1);
         String name = rs.getString(2);
-        double waterScale = rs.getDouble(3);
-        double waterNumber = rs.getDouble(4);
+        BigDecimal waterScale = rs.getBigDecimal(3);
+        BigDecimal waterNumber = rs.getBigDecimal(4);
         String waterText = rs.getString(5);
-        double sunScale = rs.getDouble(6);
-        double sunNumber = rs.getDouble(7);
+        BigDecimal sunScale = rs.getBigDecimal(6);
+        BigDecimal sunNumber = rs.getBigDecimal(7);
         String sunText = rs.getString(8);
         String description = rs.getString(9);
         int optimumTemp = rs.getInt(10);
