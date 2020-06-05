@@ -1,5 +1,5 @@
 {
-    "ssl": false,
-    "server": "192.168.2.6",
-    "port": 8080
+    "ssl": true,
+    "server": "hrplanner.nl",
+    "port": 443
 }
