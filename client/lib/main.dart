@@ -38,6 +38,7 @@ class MyApp extends StatelessWidget {
         '/plant-detail': (context) => ModalRoute.of(context).settings.arguments,
         '/camera-plant-detail': (context) => CameraPlantDetailScreen(plant: ModalRoute.of(context).settings.arguments),
         '/account' : (context) => Account(),
+        '/add-plant' : (context) => AddPlant()
       },
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {
@@ -47,8 +48,6 @@ class MyApp extends StatelessWidget {
             return RouteWithoutTransition(widget: Camera(), settings:settings);
           case '/my-plants':
             return RouteWithoutTransition(widget: PlantList(), settings:settings);
-          case '/add-plant':
-            return RouteWithoutTransition(widget: AddPlant(), settings:settings);
           default:
             return null;
         }
