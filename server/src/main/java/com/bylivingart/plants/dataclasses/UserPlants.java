@@ -1,19 +1,46 @@
 package com.bylivingart.plants.dataclasses;
 
+import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 
 public class UserPlants {
     private int id;
+
+    @NotNull
     private int userId;
+
+    @NotBlank
     private String nickname;
+
+    @NotNull
     private double potVolume;
+
+    @NotNull
     private double lat;
+
+    @NotNull
     private double lon;
+
+    @NotBlank
+    @Pattern(regexp = "[a-zA-Z0-9!-.]+((.jpe?g)|(.JPE?G))", message = "Must be a .jpeg or a .jpg")
     private String imageName;
+    
+    @NotNull
     private LocalDateTime lastWaterDate;
+
+    @NotNull
     private double distanceToWindow;
+
+    @NotNull
+    @Max(value = 55, message = "Temperature has to be lower than 55")
+    @Min(value = -20, message = "Temperature has to be higher than -20")
     private int maxTemp;
+
+    @Max(value = 55, message = "Temperature has to be higher than -20")
+    @Min(value = -20, message = "Temperature has to be lower than 55")
     private int minTemp;
+
+    @NotNull(message = "Has to be a valid plantId")
     private int plantId;
 
     public UserPlants() {

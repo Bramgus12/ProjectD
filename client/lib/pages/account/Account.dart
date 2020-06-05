@@ -28,54 +28,66 @@ class _AccountState extends State<Account> {
       });
     });
   }
+  
+  void unFocusKeyboard() {
+    FocusScopeNode currentFocus = FocusScope.of(context);
+    if (!currentFocus.hasPrimaryFocus) {
+      currentFocus.unfocus();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Account', style: TextStyle(fontFamily: 'Libre Baskerville')),
-          centerTitle: true,
-          bottom: status != _Status.loading ? TabBar(tabs: [
-            Tab(
-              icon: Icon(Icons.account_box),
-              text: loggedInUser == null ? "Login" : "Uitloggen"
-            ),
-            Tab(
-              icon: Icon(loggedInUser == null ? Icons.add_box : Icons.edit),
-              text: loggedInUser == null ? "Registreer" : "Aanpassen"
-            )
-          ]) : null,
-        ),
-        body: Center(
-          child: (){ 
-            if (status == _Status.loading) {
-              return CircularProgressIndicator();
-            }
-            else
-              return TabBarView(
-                children: [
-                status == _Status.loggedout ? LoginTab() :
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text("Ingelogd als '${loggedInUser.username}'"),
-                    Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: RaisedButton(
-                        onPressed: logout,
-                        child: Text("Uitloggen"),
-                      ),
-                    )
-                  ],
-                ),
-                RegisterTab(loggedInUser: this.loggedInUser)
-                ]
-              );
-          }()
-        ) 
-      )
+    return GestureDetector(
+      onTap: unFocusKeyboard,
+      child: DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text('Account', style: TextStyle(fontFamily: 'Libre Baskerville')),
+            centerTitle: true,
+            bottom: status != _Status.loading ? TabBar(
+              onTap: (value){unFocusKeyboard();},
+              tabs: [
+              Tab(
+                icon: Icon(Icons.account_box),
+                text: loggedInUser == null ? "Login" : "Uitloggen"
+              ),
+              Tab(
+                icon: Icon(loggedInUser == null ? Icons.add_box : Icons.edit),
+                text: loggedInUser == null ? "Registreer" : "Aanpassen"
+              )
+            ]) : null,
+          ),
+          body: Center(
+            child: (){ 
+              if (status == _Status.loading) {
+                return CircularProgressIndicator();
+              }
+              else
+                return TabBarView(
+                  children: [
+                  status == _Status.loggedout ? LoginTab() :
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text("Ingelogd als '${loggedInUser.username}'"),
+                      Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: RaisedButton(
+                          onPressed: logout,
+                          child: Text("Uitloggen"),
+                        ),
+                      )
+                    ],
+                  ),
+                  RegisterTab(loggedInUser: this.loggedInUser)
+                  ]
+                );
+            }()
+          ) 
+        )
+      ),
     );
   }
 

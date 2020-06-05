@@ -91,7 +91,7 @@ class _RegisterTabState extends State<RegisterTab> {
                   ),
                   LoginInputField(emailController, hintText: "Email", keyboardType: TextInputType.emailAddress, validator: validateEmail, ),
                   LoginInputField(usernameController, hintText: "Gebruikersnaam", validator: validateUsername, ),
-                  LoginInputField(passwordController, hintText: "Wachtwoord", obfuscated: true, validator: editingExistingUser ? null : validatePassword, ),
+                  LoginInputField(passwordController, hintText: "Wachtwoord", obfuscated: true, validator: (value) => validatePassword(value, canBeEmpty: editingExistingUser), ),
                   LoginInputField(nameController, hintText: "Naam", validator: validateName, ),
                   LoginDatePicker((date) => setState((){ birthDay = date; }), label: "Geboortedatum", validationError: birthdayError, validationMessage: birthdayErrorMessage, initialDate: birthDay, ),
                   LoginInputField(streetController, hintText: "Straat", validator: validateStreet, ),

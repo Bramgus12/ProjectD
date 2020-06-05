@@ -130,7 +130,7 @@ class _LoginDatePickerState extends State<LoginDatePicker> {
       firstDate: DateTime(1900, 1, 1), 
       lastDate: DateTime.now(),
       initialDatePickerMode: DatePickerMode.year,
-      fieldLabelText: this.widget.label,
+      //fieldLabelText: this.widget.label,
     );
     if(date == null || !this.mounted) return;
 
