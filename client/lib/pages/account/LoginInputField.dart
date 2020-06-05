@@ -92,10 +92,10 @@ class _LoginDatePickerState extends State<LoginDatePicker> {
                   child: Text(
                     pickedDate == null ? widget.label : DateFormat('dd-MM-yyyy').format(pickedDate),
                     style: TextStyle(
-                      color: theme.textTheme.headline.color,
-                      fontWeight: theme.textTheme.body2.fontWeight,
+                      color: theme.textTheme.headline1.color,
+                      fontWeight: theme.textTheme.bodyText2.fontWeight,
                       fontSize: 16.0,
-                      fontFamily: theme.textTheme.body2.fontFamily
+                      fontFamily: theme.textTheme.bodyText2.fontFamily
                     ),
                   ),
                 ),
