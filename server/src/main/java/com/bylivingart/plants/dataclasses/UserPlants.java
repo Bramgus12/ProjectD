@@ -36,11 +36,11 @@ public class UserPlants {
     @Min(value = -20, message = "Temperature has to be higher than -20")
     private int maxTemp;
 
-    @Max(value = -20, message = "Temperature has to be higher than -20")
-    @Min(value = 55, message = "Temperature has to be lower than 55")
+    @Max(value = 55, message = "Temperature has to be higher than -20")
+    @Min(value = -20, message = "Temperature has to be lower than 55")
     private int minTemp;
 
-    @NotBlank(message = "Has to be a valid plantId")
+    @NotNull(message = "Has to be a valid plantId")
     private int plantId;
 
     public UserPlants() {

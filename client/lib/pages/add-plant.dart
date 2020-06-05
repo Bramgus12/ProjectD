@@ -395,12 +395,12 @@ class _AddPlant extends State<AddPlant> {
                     },
                     onSaved: (String value) {
                       setState(() {
-                        newPlant.potVolume = int.parse(value);
+                        newPlant.potVolume = double.parse(value);
                       });
                     },
                     onChanged: (String value) {
                       setState(() {
-                        newPlant.potVolume = int.parse(value);
+                        newPlant.potVolume = double.parse(value);
                       });
                     },
                     initialValue: newPlant.potVolume?.toString() ?? ''
