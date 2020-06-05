@@ -1,4 +1,5 @@
 {
-    "server": "projects.bramgussekloo.com",
-    "port": 8080
+    "ssl": true,
+    "server": "hrplanner.nl",
+    "port": 443
 }

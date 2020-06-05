@@ -1,36 +1,63 @@
 package com.bylivingart.plants.dataclasses;
 
+import com.bylivingart.plants.Exceptions.BadRequestException;
 import io.swagger.annotations.ApiModelProperty;
+import org.apache.commons.validator.routines.EmailValidator;
+import org.springframework.stereotype.Controller;
 
+import javax.validation.constraints.*;
 import java.sql.Date;
+import java.time.LocalDate;
 
-
+@Controller
 public class User {
-    @ApiModelProperty(notes = "Auto-assigned id of the user")
     private int id;
 
-    @ApiModelProperty(notes = "The name of the user", required = true)
+    @NotBlank
+    @Pattern(regexp = "[^:]+.{1,64}", message = "Username can't have a ':' in it")
     private String user_name;
 
-    @ApiModelProperty(notes = "The password. It will be encrypted after making it", required = true)
+    @Pattern(
+            regexp = "((?!.*:)(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%!;]).{8,64})",
+            message = "Password needs to have at least 1 uppercase character, 1 lowercase character, 1 number and 1 of the following symbols: @, #, $, %, ! and ;"
+    )
     private String password;
 
-    @ApiModelProperty(notes = "Authority should be either \"ROLE_USER\" or \"ROLE_ADMIN\", Admin can make users and normal users can't", required = true)
+    @NotBlank
+    @Pattern(regexp = "(ROLE_)((ADMIN)|(USER))", message = "String should be either 'ROLE_ADMIN' or 'ROLE_USER'")
     private String authority;
 
-    @ApiModelProperty(notes = "Should be set to true if the user wants to use the features in the api.", required = true)
+    @NotNull
     private Boolean enabled;
 
+    @NotBlank
     private String name;
+
+    @Email(message = "Has to be a valid email")
     private String email;
-    private Date dateOfBirth;
+
+    @PastOrPresent(message = "Date of birth needs to be in the past or present.")
+    private LocalDate dateOfBirth;
+
+    @NotBlank
     private String streetName;
+
+    @NotNull
     private int houseNumber;
+
+    @NotNull
     private String addition;
+
+    @NotBlank(message = "Cannot be blank or null")
     private String city;
+
+    @Pattern(
+            regexp = "\\A[1-9][0-9]{3}[ ]?([A-RT-Za-rt-z][A-Za-z]|[sS][BCbcE-Re-rT-Zt-z])\\z",
+            message = "Postal code must match 1234AB"
+    )
     private String postalCode;
 
-    public User(int id, String user_name, String password, String authority, Boolean enabled, String name, String email, Date dateOfBirth, String streetName, int houseNumber, String addition, String city, String postalCode) {
+    public User(int id, String user_name, String password, String authority, Boolean enabled, String name, String email, LocalDate dateOfBirth, String streetName, int houseNumber, String addition, String city, String postalCode) {
         this.id = id;
         this.user_name = user_name;
         this.password = password;
@@ -62,11 +89,11 @@ public class User {
         this.email = email;
     }
 
-    public Date getDateOfBirth() {
+    public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(Date dateOfBirth) {
+    public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 

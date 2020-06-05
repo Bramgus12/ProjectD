@@ -1,17 +1,42 @@
 package com.bylivingart.plants.dataclasses;
 
 
+import javax.validation.constraints.*;
+
 public class Plants {
     private int id;
+
+    @NotBlank
     private String name;
+
+    @NotNull
     private double waterScale;
+
+    @NotNull
     private double waterNumber;
+
+    @NotBlank
     private String waterText;
+
+    @NotNull
     private double sunScale;
+
+    @NotNull
     private double sunNumber;
+
+    @NotBlank
     private String sunText;
+
+    @NotBlank
     private String description;
+
+    @NotNull
+    @Min(-20)
+    @Max(55)
     private int optimumTemp;
+
+    @NotBlank
+    @Pattern(regexp = "[a-zA-Z0-9!-.]+((.jpe?g)|(.JPE?G))", message = "Must be a .jpg or .jpeg")
     private String imageName;
 
     public Plants() {
