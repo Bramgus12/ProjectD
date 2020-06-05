@@ -2,7 +2,6 @@ package com.bylivingart.plants.dataclasses;
 
 
 import javax.validation.constraints.*;
-import java.math.BigDecimal;
 
 public class Plants {
     private int id;
@@ -11,27 +10,19 @@ public class Plants {
     private String name;
 
     @NotNull
-    @Max(5)
-    @Min(0)
-    private BigDecimal waterScale;
+    private double waterScale;
 
     @NotNull
-    @Max(100000)
-    @Min(0)
-    private BigDecimal waterNumber;
+    private double waterNumber;
 
     @NotBlank
     private String waterText;
 
     @NotNull
-    @Max(5)
-    @Min(0)
-    private BigDecimal sunScale;
+    private double sunScale;
 
     @NotNull
-    @Max(1000)
-    @Min(0)
-    private BigDecimal sunNumber;
+    private double sunNumber;
 
     @NotBlank
     private String sunText;
@@ -51,7 +42,7 @@ public class Plants {
     public Plants() {
     }
 
-    public Plants(int id, String name, BigDecimal waterScale, BigDecimal waterNumber, String waterText, BigDecimal sunScale, BigDecimal sunNumber, String sunText, String description, int optimumTemp, String imageName) {
+    public Plants(int id, String name, double waterScale, double waterNumber, String waterText, double sunScale, double sunNumber, String sunText, String description, int optimumTemp, String imageName) {
         this.id = id;
         this.name = name;
         this.waterScale = waterScale;
@@ -124,28 +115,28 @@ public class Plants {
     /**
      * @return the sunNumber
      */
-    public BigDecimal getSunNumber() {
+    public double getSunNumber() {
         return sunNumber;
     }
 
     /**
      * @param sunNumber the sunNumber to set
      */
-    public void setSunNumber(BigDecimal sunNumber) {
+    public void setSunNumber(double sunNumber) {
         this.sunNumber = sunNumber;
     }
 
     /**
      * @return the sunScale
      */
-    public BigDecimal getSunScale() {
+    public double getSunScale() {
         return sunScale;
     }
 
     /**
      * @param sunScale the sunScale to set
      */
-    public void setSunScale(BigDecimal sunScale) {
+    public void setSunScale(double sunScale) {
         this.sunScale = sunScale;
     }
 
@@ -166,28 +157,28 @@ public class Plants {
     /**
      * @return the waterNumber
      */
-    public BigDecimal getWaterNumber() {
+    public double getWaterNumber() {
         return waterNumber;
     }
 
     /**
      * @param waterNumber the waterNumber to set
      */
-    public void setWaterNumber(BigDecimal waterNumber) {
+    public void setWaterNumber(double waterNumber) {
         this.waterNumber = waterNumber;
     }
 
     /**
      * @return the waterScale
      */
-    public BigDecimal getWaterScale() {
+    public double getWaterScale() {
         return waterScale;
     }
 
     /**
      * @param waterScale the waterScale to set
      */
-    public void setWaterScale(BigDecimal waterScale) {
+    public void setWaterScale(double waterScale) {
         this.waterScale = waterScale;
     }
 

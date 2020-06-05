@@ -8,7 +8,7 @@ class UserPlant implements JsonSerializeable {
   int id;
   int userId;
   String nickname;
-  double potVolume;
+  int potVolume;
   double latitude;
   double longitude;
   String imageName;
