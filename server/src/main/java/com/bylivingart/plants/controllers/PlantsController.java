@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -122,7 +123,7 @@ public class PlantsController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/admin/plants/")
     private ResponseEntity<Plants> createPlant(
-            @ApiParam(value = "The plant you want to create in the database", required = true) @RequestBody Plants plant
+            @Valid @ApiParam(value = "The plant you want to create in the database", required = true) @RequestBody Plants plant
     ) throws Exception {
             Connection conn = new DatabaseConnection().getConnection();
             Plants newPlant = PlantsStatements.createPlant(plant, conn);
@@ -160,7 +161,7 @@ public class PlantsController {
     @PutMapping("/admin/plants/{id}/")
     private ResponseEntity<Void> updatePlant(
             @ApiParam(value = "The id of the plant you want to update", required = true) @PathVariable int id,
-            @ApiParam(value = "The new values of the plant (You can't change the id and id has to be the same as in the path)", required = true) @RequestBody Plants plant
+            @Valid @ApiParam(value = "The new values of the plant (You can't change the id and id has to be the same as in the path)", required = true) @RequestBody Plants plant
     ) throws Exception {
         if (plant.getId() != id) {
             throw new BadRequestException("Id's can't be changed");

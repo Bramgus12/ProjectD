@@ -12,6 +12,16 @@ String validateEmail(String email) {
 String validateUsername(String username) {
   if(username.isEmpty)
     return "Geen gebruikersnaam ingevuld.";
+
+  String errorMessage = "";
+  if(username.length > 64)
+    errorMessage += "\n• maximaal 64 tekens.";
+  if(RegExp(r":").hasMatch(username))
+    errorMessage += "\n• mag geen : bevatten";
+
+  if(errorMessage.length > 0)
+    return "Gebruikersnaam voldoet niet aan alle eisen:" + errorMessage;
+  
   return null;
 }
 
@@ -21,9 +31,39 @@ String validateName(String username) {
   return null;
 }
 
-String validatePassword(String password) {
+String validatePassword(String password, {bool canBeEmpty=false, bool simple=false}) {
+  // Password can be empty if editing existing user
+  if(canBeEmpty && password.isEmpty)
+    return null;
+
   if(password.isEmpty)
     return "Geen wachtwoord ingevuld.";
+  else if(simple) {
+    if(RegExp(r":").hasMatch(password))
+      return "Wachtwoord mag geen : bevatten.";
+    return null;
+  }
+
+  // Check if password contains valid characters,
+  // only show requirements that haven't been met yet.
+  String errorMessage = "";
+  if(password.length < 8)
+    errorMessage += "\n• minimaal 8 tekens.";
+  if(password.length > 64)
+    errorMessage += "\n• maximaal 64 tekens.";
+  if(!RegExp(r"[a-z]").hasMatch(password))
+    errorMessage += "\n• minimaal 1 kleine letter";
+  if(!RegExp(r"[A-Z]").hasMatch(password))
+    errorMessage += "\n• minimaal 1 hoofdletter";
+  if(!RegExp(r"\d").hasMatch(password))
+    errorMessage += "\n• minimaal 1 getal";
+  if(!RegExp(r"[@#$%!;]").hasMatch(password))
+    errorMessage += "\n• minimaal 1 speciaal teken (@#\$%!;)";
+  if(RegExp(r":").hasMatch(password))
+    errorMessage += "\n• mag geen : bevatten";
+  
+  if(errorMessage.length > 0)
+    return "Wachtwoord voldoet niet aan alle eisen:" + errorMessage;
   return null;
 }
 

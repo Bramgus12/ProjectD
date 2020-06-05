@@ -1,18 +1,27 @@
 // File for utility functions that might be usefull anywhere in the code.abstract
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+
+import 'package:plantexpert/api/ApiConnection.dart';
+import 'package:plantexpert/api/ApiConnectionException.dart';
+import 'package:plantexpert/api/Plant.dart';
+import 'package:plantexpert/api/UserPlant.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-FlutterLocalNotificationsPlugin();
+    FlutterLocalNotificationsPlugin();
 
 // Streams are created so that app can respond to notification-related events since the plugin is initialised in the `main` function
 final BehaviorSubject<ReceivedNotification> didReceiveLocalNotificationSubject =
-BehaviorSubject<ReceivedNotification>();
+    BehaviorSubject<ReceivedNotification>();
 
 final BehaviorSubject<String> selectNotificationSubject =
-BehaviorSubject<String>();
+    BehaviorSubject<String>();
 
 class ReceivedNotification {
   final int id;
@@ -34,11 +43,11 @@ String randomString(int length) {
   Random random = Random(DateTime.now().millisecondsSinceEpoch);
   String generatedString = "";
   for (int i = 0; i < length; i++) {
-    generatedString += possibleCharacters[random.nextInt(possibleCharacters.length)];
+    generatedString +=
+        possibleCharacters[random.nextInt(possibleCharacters.length)];
   }
   return generatedString;
 }
-
 
 Future<void> initializeNotifications() async {
   var initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
@@ -55,18 +64,23 @@ Future<void> initializeNotifications() async {
       initializationSettingsAndroid, initializationSettingsIOS);
   await flutterLocalNotificationsPlugin.initialize(initializationSettings,
       onSelectNotification: (String payload) async {
-        if (payload != null) {
-          debugPrint('notification payload: ' + payload);
-        }
-        selectNotificationSubject.add(payload);
-      });
+    if (payload != null) {
+      debugPrint('notification payload: ' + payload);
+    }
+    selectNotificationSubject.add(payload);
+  });
 }
 
 /// Schedules a notification that specifies a different icon, sound and vibration pattern
-Future<void> scheduleNotification(int seconds, String title, String body,
-    String channelName, String channelDesc, ) async {
+Future<void> scheduleNotification(
+  int seconds,
+  String title,
+  String body,
+  String channelName,
+  String channelDesc,
+) async {
   var scheduledNotificationDateTime =
-  DateTime.now().add(Duration(seconds: seconds));
+      DateTime.now().add(Duration(seconds: seconds));
 //
   var androidPlatformChannelSpecifics = AndroidNotificationDetails(
       'nl.bylivingart.plantexpert', channelName, channelDesc,
@@ -75,10 +89,27 @@ Future<void> scheduleNotification(int seconds, String title, String body,
   var platformChannelSpecifics = NotificationDetails(
       androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
   await flutterLocalNotificationsPlugin.schedule(
-      DateTime.now().hour + DateTime.now().minute + DateTime.now().second
-          + DateTime.now().millisecond,
+      DateTime.now().hour +
+          DateTime.now().minute +
+          DateTime.now().second +
+          DateTime.now().millisecond,
       title,
       body,
       scheduledNotificationDateTime,
       platformChannelSpecifics);
+}
+
+// dd-MM-yyyy HH:mm
+String formatDate(DateTime date) {
+  if (date == null) {
+    throw new ArgumentError('date is null');
+  }
+
+  var year = date.year;
+  var month = date.month.toString().padLeft(2, '0');
+  var day = date.day.toString().padLeft(2, '0');
+  var hour = date.hour.toString().padLeft(2, '0');
+  var minute = date.minute.toString().padLeft(2, '0');
+
+  return '$day-$month-$year $hour:$minute';
 }
