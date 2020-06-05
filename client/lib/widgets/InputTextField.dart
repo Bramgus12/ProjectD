@@ -14,7 +14,15 @@ class InputTextField extends StatelessWidget {
   final Key key;
 
   InputTextField(
-      {this.key, this.title, this.label, this.initialValue = '', this.keyboardType, this.inputType, this.validator, this.onSaved, this.onChanged});
+      {this.key,
+      this.title,
+      this.label,
+      this.initialValue = '',
+      this.keyboardType,
+      this.inputType,
+      this.validator,
+      this.onSaved,
+      this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -37,23 +45,34 @@ class InputTextField extends StatelessWidget {
                 ),
                 enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: theme.accentColor)),
-                errorBorder:
-                OutlineInputBorder(borderSide: BorderSide(color: Colors.red)),
+                errorBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.red)),
+                focusedErrorBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.red)),
                 filled: true,
                 fillColor: Colors.white,
               ),
               keyboardType: this.keyboardType ?? TextInputType.text,
-              inputFormatters:
-                inputType == int ? <TextInputFormatter>[LengthLimitingTextInputFormatter(2), WhitelistingTextInputFormatter.digitsOnly]
-                    : inputType == String ?
-                <TextInputFormatter>[WhitelistingTextInputFormatter(RegExp('^[a-zA-Z0-9 -\'\"]+')) ]
-                  : inputType == double ? // a regex that will check if there is a double precent, max numers is 2(,|.)2 = 5 characters
-                <TextInputFormatter>[WhitelistingTextInputFormatter(RegExp(r'^([0-9]{1,2})(((,|\.))(([0-9]{0,2})?))?')) ]
-                    : null,
+              inputFormatters: inputType == int
+                  ? <TextInputFormatter>[
+                      LengthLimitingTextInputFormatter(2),
+                      WhitelistingTextInputFormatter.digitsOnly
+                    ]
+                  : inputType == String
+                      ? <TextInputFormatter>[
+                          WhitelistingTextInputFormatter(
+                              RegExp('^[a-zA-Z0-9 -\'\"]+'))
+                        ]
+                      : inputType == double
+                          ? // a regex that will check if there is a double precent, max numers is 2(,|.)2 = 5 characters
+                          <TextInputFormatter>[
+                              WhitelistingTextInputFormatter(RegExp(
+                                  r'^([0-9]{1,2})(((,|\.))(([0-9]{0,2})?))?'))
+                            ]
+                          : null,
               validator: this.validator,
               onSaved: this.onSaved,
-              onChanged: this.onChanged
-          ),
+              onChanged: this.onChanged),
           SizedBox(
             height: 20,
           )
