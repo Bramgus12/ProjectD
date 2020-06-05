@@ -10,18 +10,6 @@ import 'package:plantexpert/api/ApiConnectionException.dart';
 import 'package:plantexpert/api/Plant.dart';
 import 'package:plantexpert/api/UserPlant.dart';
 
-class PlantenApi {
-  final ApiConnection connection = new ApiConnection();
-
-  PlantenApi._privateContrsuctor();
-
-  static final PlantenApi instance = PlantenApi._privateContrsuctor();
-
-  factory PlantenApi() {
-    return instance;
-  }
-}
-
 // Generate a random string of a given length
 String randomString(int length) {
   const possibleCharacters = "abcdefghijklmnopqrstuvwxyz0123456789";
