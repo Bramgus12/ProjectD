@@ -12,6 +12,8 @@ String validateEmail(String email) {
 String validateUsername(String username) {
   if(username.isEmpty)
     return "Geen gebruikersnaam ingevuld.";
+  if(RegExp(r":").hasMatch(username))
+    return "Gebruikersnaam mag geen : bevatten";
   return null;
 }
 
@@ -29,6 +31,8 @@ String validatePassword(String password, {bool canBeEmpty=false, bool simple=fal
   if(password.isEmpty)
     return "Geen wachtwoord ingevuld.";
   else if(simple) {
+    if(RegExp(r":").hasMatch(password))
+      return "Wachtwoord mag geen : bevatten.";
     return null;
   }
 
