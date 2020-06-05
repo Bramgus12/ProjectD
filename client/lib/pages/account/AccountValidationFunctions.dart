@@ -12,8 +12,16 @@ String validateEmail(String email) {
 String validateUsername(String username) {
   if(username.isEmpty)
     return "Geen gebruikersnaam ingevuld.";
+
+  String errorMessage = "";
+  if(username.length > 64)
+    errorMessage += "\n• maximaal 64 tekens.";
   if(RegExp(r":").hasMatch(username))
-    return "Gebruikersnaam mag geen : bevatten";
+    errorMessage += "\n• mag geen : bevatten";
+
+  if(errorMessage.length > 0)
+    return "Gebruikersnaam voldoet niet aan alle eisen:" + errorMessage;
+  
   return null;
 }
 
