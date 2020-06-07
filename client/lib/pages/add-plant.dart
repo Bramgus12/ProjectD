@@ -9,6 +9,7 @@ import 'package:plantexpert/api/ApiConnectionException.dart';
 import 'package:plantexpert/api/Plant.dart';
 import 'package:plantexpert/api/UserPlant.dart';
 import 'package:plantexpert/Utility.dart';
+import 'package:plantexpert/pages/LocationSelectionMap.dart';
 import 'package:plantexpert/widgets/InputTextField.dart';
 
 import '../MenuNavigation.dart';
@@ -600,6 +601,15 @@ class _AddPlant extends State<AddPlant> {
 
                     return SizedBox();
                   }(),
+
+                  Text("Locatie van de plant", style: TextStyle(color: theme.accentColor, fontSize: 18)),
+                  Text("Waar staat de plant ongeveer."),
+                  SizedBox(height: 10),
+                  LocationSelectionMap(initialLatitude: newPlant.latitude, initialLongitude: newPlant.longitude, buttonOnly: true, onLocationChanged: (double longitude, double latitude) {
+                    newPlant.latitude = latitude;
+                    newPlant.longitude = longitude;
+                  }, title: "Plant Locatie",),
+
                   SizedBox(height: 20),
 
                   // TODO: allow submission if all required fields are filled
