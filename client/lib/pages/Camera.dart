@@ -557,7 +557,7 @@ class _CameraState extends State<Camera>
         ),
         Padding(
           padding: const EdgeInsets.only(left: 8.0),
-          child: Text("Confidence : "+_recognitions.map((res){ return res["confidence"];}).toList()[0].toString()),
+          child: Text("Confidence : "+_recognitions.map((res){ return res["confidence"];}).toList()[0].toStringAsFixed(2).toString()),
         ),
 
         Padding(
