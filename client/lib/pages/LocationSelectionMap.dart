@@ -36,7 +36,7 @@ enum _MyLocationStatus {
   ready
 }
 
-class _LocationSelectionMapState extends State<LocationSelectionMap> {
+class _LocationSelectionMapState extends State<LocationSelectionMap> with AutomaticKeepAliveClientMixin {
   static final CameraPosition _defaultCameraPosition = CameraPosition(
     target: LatLng(52.100833, 5.646111),
     zoom: 7,
@@ -82,6 +82,12 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> {
         }
       });
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    print("disposed location selection widget");
   }
 
   Marker setSelectionMarker(LatLng location, {bool moveCamera=false, bool animateCamera=true}) {
@@ -140,12 +146,20 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> {
     // However after waiting a couple milliseconds it works again.
     // It's not pretty but it works.
     bool addressFound = false;
+    int maxTries = 200;
+    int tryCount = 0;
     while(!addressFound){
       try {
+        if (tryCount > maxTries){
+          setState(() {
+            address = "Kon locatie naam niet achterhalen.";
+          });
+          return;
+        }
+        tryCount++;
         addresses = await Geocoder.local.findAddressesFromCoordinates(coordinates);
         addressFound = true;
       } catch(e) {
-        print(e);
         if(!mounted)
           return;
         sleep(Duration(milliseconds: 20));
@@ -153,8 +167,10 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> {
     }
     if(addresses.length == 0 || !mounted)
       return;
+    if(addresses.first.subAdminArea == null)
+      print(location);
     setState(() {
-      address = addresses.first.locality;
+      address = addresses.first.subAdminArea;
     });
   }
 
@@ -202,6 +218,7 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> {
       ),
       onPressed: openFullMapPage,
       child: Text(address),
+      // child: Text("Text"),
     )
     : Stack(children: [
       GoogleMap(
@@ -327,6 +344,9 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> {
       setSelectionMarker(newLocation, moveCamera: true, animateCamera: false);
     }
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 class LocationSelectionMapPage extends StatelessWidget {
