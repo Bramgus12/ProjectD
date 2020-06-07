@@ -84,12 +84,6 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> with Automa
     }
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    print("disposed location selection widget");
-  }
-
   Marker setSelectionMarker(LatLng location, {bool moveCamera=false, bool animateCamera=true}) {
     final MarkerId markerId = MarkerId((_nextMarkerId++).toString());
 
@@ -167,8 +161,6 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> with Automa
     }
     if(addresses.length == 0 || !mounted)
       return;
-    if(addresses.first.subAdminArea == null)
-      print(location);
     setState(() {
       address = addresses.first.subAdminArea;
     });
