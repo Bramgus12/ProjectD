@@ -219,6 +219,7 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> {
           southwest: LatLng(50.803721015, 3.31497114423),
           northeast: LatLng(53.5104033474, 7.09205325687))),
         zoomControlsEnabled: false,
+        minMaxZoomPreference: MinMaxZoomPreference(7, 50),
       ),
       Align(
         alignment: Alignment.bottomRight,
