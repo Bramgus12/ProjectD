@@ -140,25 +140,21 @@ class _PlantListState extends State<PlantList> {
                                 title: 'Zoek op naam',
                                 label: '',
                                 onChanged: (String filter) {
-                                  filter = filter.trimRight();
+                                  filter = filter.trimRight().toLowerCase();
                                   bool isEmpty = filter.length == 0 || filter.replaceAll(' ', '').length == 0;
 
-                                  print('`$filter`');
-
                                   if (isEmpty) {
+                                    print('empty');
                                     filteredPlantListItems = null;
                                     setState(() {});
                                     return;
                                   }
 
-                                  filteredPlantListItems = <PlantListItem>[];
-
-                                  plantListItems.forEach((item) => {
-                                    if (item.userPlant.nickname.contains(filter))
-                                      filteredPlantListItems.add(item)
-                                  });
-
-                                  print('filtered ${filteredPlantListItems.length} plants');
+                                  filteredPlantListItems = plantListItems
+                                      .where((item) => item.userPlant.nickname
+                                      .toLowerCase()
+                                      .contains(filter))
+                                      .toList();
                                   setState(() {});
                                 },
                               ),
@@ -166,9 +162,17 @@ class _PlantListState extends State<PlantList> {
                           ),
                           Expanded(
                             flex: 7,
-                            child: ListView(
-                              children: filteredPlantListItems ?? plantListItems,
-                            ),
+                            child: () {
+                              if (filteredPlantListItems != null && filteredPlantListItems.length == 0) {
+                                return Center(
+                                  child: Text('Geen planten gevonden.')
+                                );
+                              }
+
+                              return ListView(
+                                children: filteredPlantListItems ?? plantListItems,
+                              );
+                            }()
                           ),
                         ],
                       );
