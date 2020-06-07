@@ -167,7 +167,7 @@ class _CameraState extends State<Camera>
     try {
       String res;
       res = await Tflite.loadModel(
-          model: "assets/m6.100.85.tflite", labels: "assets/label.txt");
+          model: "assets/m6.100.90.tflite", labels: "assets/label.txt");
       print(res);
     } on PlatformException {
       print('Failed to load model.');
@@ -180,8 +180,8 @@ class _CameraState extends State<Camera>
       path: image.path,
       numResults: 6,
       threshold: 0.05,
-      imageMean: 0.4526901778594428,
-      imageStd: 0.3290300460265408,
+      imageMean: 0.5862695229738148,
+      imageStd: 0.35730469350527,
     );
     print("----------------------------------------------------");
     print(recognitions);
