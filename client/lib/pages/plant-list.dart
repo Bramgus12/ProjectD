@@ -52,6 +52,8 @@ class _PlantListState extends State<PlantList> {
   List<PlantListItem> plantListItems;
   List<PlantListItem> filteredPlantListItems;
 
+  final TextEditingController _filterInputController = new TextEditingController();
+
   void initState() {
     super.initState();
     _fetchUserPlants();
@@ -133,12 +135,29 @@ class _PlantListState extends State<PlantList> {
                       return Column(
                         children: <Widget>[
                           Expanded(
-                            flex: MediaQuery.of(context).orientation == Orientation.portrait ? 1 : 6,
+                            flex: MediaQuery.of(context).orientation == Orientation.portrait ? 1 : 1,
                             child: Padding(
                               padding: EdgeInsets.all(16),
-                              child: InputTextField(
-                                title: 'Zoek op naam',
-                                label: '',
+                              child: TextField(
+                                controller: _filterInputController,
+                                decoration: InputDecoration(
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: theme.accentColor),
+                                  ),
+                                  enabledBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(color: theme.accentColor)
+                                  ),
+                                  hintText: 'Zoek op naam',
+                                  suffixIcon: IconButton(
+                                    icon: Icon(Icons.clear),
+                                    onPressed: () {
+                                      _filterInputController.clear();
+                                      filteredPlantListItems = null;
+                                      setState(() {});
+                                    },
+                                    color: Colors.black,
+                                  )
+                                ),
                                 onChanged: (String filter) {
                                   filter = filter.trimRight().toLowerCase();
                                   bool isEmpty = filter.length == 0 || filter.replaceAll(' ', '').length == 0;
@@ -161,7 +180,7 @@ class _PlantListState extends State<PlantList> {
                             ),
                           ),
                           Expanded(
-                            flex: MediaQuery.of(context).orientation == Orientation.portrait ? 3 : 4,
+                            flex: MediaQuery.of(context).orientation == Orientation.portrait ? 6 : 2,
                             child: () {
                               if (filteredPlantListItems != null && filteredPlantListItems.length == 0) {
                                 return Center(
