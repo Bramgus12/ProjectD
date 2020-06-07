@@ -192,14 +192,18 @@ class _CameraState extends State<Camera>
       });
     }else {
       try{
-        predictedPlant = await con.fetchPlant(
-            int.parse(recognitions.map((res) {
-              return res["label"];
-            }).toList()[0]));
-        setState((){
-          _predictedPlant = predictedPlant;
-          _recognitions = recognitions;
-        });
+        var predictedLabel = int.parse(recognitions.map((res) {return res["label"];}).toList()[0]);
+        if (predictedLabel == -1){
+          setState((){
+            predictionCardMessage = "\n\nNo plants detected";
+          });
+        }else{
+          predictedPlant = await con.fetchPlant(predictedLabel);
+          setState((){
+            _predictedPlant = predictedPlant;
+            _recognitions = recognitions;
+          });
+        }
       } on Exception catch(e){
         setState((){
           predictionCardMessage = "\n\nUnable to connect to server";
