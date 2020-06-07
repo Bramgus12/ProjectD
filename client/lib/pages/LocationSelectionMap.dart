@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:permission_handler/permission_handler.dart' as permission_handler;
 
 class LocationSelectionMap extends StatefulWidget {
   static LocationData lastLocationData;
@@ -42,7 +43,6 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> {
   );
 
   final Location location = Location();
-  String errorMessage;
   _LocationStatus _locationStatus = _LocationStatus.unknown;
   _MyLocationStatus _myLocationStatus = _MyLocationStatus.ready;
   String address = "Nog geen locatie geselecteerd.";
@@ -64,7 +64,7 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> {
       setSelectionMarker(LatLng(LocationSelectionMap.lastLocationData.latitude, LocationSelectionMap.lastLocationData.longitude), moveCamera: true, animateCamera: false);
     }
     else {
-      enableLocation(true).then((_LocationStatus newLocationStatus) async {
+      enableLocation(false).then((_LocationStatus newLocationStatus) async {
         if (newLocationStatus == _LocationStatus.working) {
           if (!this.mounted)
             return;
@@ -267,10 +267,10 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> {
     if (!locationServiceEnabled) {
       if (promptUser) locationServiceEnabled = await location.requestService();
       if (!locationServiceEnabled) {
+        if(promptUser)
+          Scaffold.of(context).showSnackBar( SnackBar(content: Text("Locatie service is uitgeschakeld.\nDe huidige locatie kan niet worden achterhaald.\n\nZet locatie toestemming aan in het instellingen scherm.")));
         setState(() {
           _locationStatus = _LocationStatus.disabled;
-          errorMessage =
-              "Locatie service is uitgeschakeld.\nDe huidige locatie kan niet worden achterhaald.";
         });
         return _locationStatus;
       }
@@ -279,11 +279,12 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> {
     // Check if location permission is granted
     PermissionStatus locationPermission = await location.hasPermission();
     if (locationPermission != PermissionStatus.granted) {
-      if (promptUser) locationPermission = await location.requestPermission();
+      locationPermission = await location.requestPermission();
       if (locationPermission != PermissionStatus.granted) {
+        if (promptUser)
+          showSnackbarForLocationPermission("De app heeft geen toestemming om de locatie service te gebruiken.\nDe huidige locatie kan niet worden achterhaald.\n\nZet locatie toestemming aan in het instellingen scherm.");
         setState(() {
           _locationStatus = _LocationStatus.denied;
-          errorMessage = "De app heeft geen toestemming om de locatie service te gebruiken.\nDe huidige locatie kan niet worden achterhaald.";
         });
         return _locationStatus;
       }
@@ -294,6 +295,26 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> {
       _locationStatus = _LocationStatus.working;
     });
     return _locationStatus;
+  }
+
+  void showSnackbarForLocationPermission(String message) {
+    Scaffold.of(context).showSnackBar( SnackBar(
+      content: Row(
+        children: <Widget>[
+          Expanded(
+            flex: 2,
+            child: Text(message)
+          ),
+          Expanded(
+            flex: 1,
+            child: RaisedButton(
+              onPressed: permission_handler.openAppSettings,
+              child: Text("Instellingen"),
+            ),
+          )
+        ],
+      ))
+    );
   }
 
   void openFullMapPage() async {
