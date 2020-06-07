@@ -133,7 +133,7 @@ class _PlantListState extends State<PlantList> {
                       return Column(
                         children: <Widget>[
                           Expanded(
-                            flex: 1,
+                            flex: MediaQuery.of(context).orientation == Orientation.portrait ? 1 : 6,
                             child: Padding(
                               padding: EdgeInsets.all(16),
                               child: InputTextField(
@@ -161,7 +161,7 @@ class _PlantListState extends State<PlantList> {
                             ),
                           ),
                           Expanded(
-                            flex: 3,
+                            flex: MediaQuery.of(context).orientation == Orientation.portrait ? 3 : 4,
                             child: () {
                               if (filteredPlantListItems != null && filteredPlantListItems.length == 0) {
                                 return Center(
