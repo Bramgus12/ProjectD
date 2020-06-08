@@ -62,39 +62,41 @@ class PlantDetail extends StatelessWidget {
               SizedBox(height: 20),
 
               Row(
-
-                mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  Expanded(
-                    flex: 0,
-                    child: Column(
-                      children: <Widget>[
-                        Text('Bijnaam', style: TextStyle(color: theme.accentColor, fontSize: 18),),
-                        Text(userPlant.nickname),
-                        SizedBox(height: 20),
-                      ],
+                    Expanded(
+                      flex: 1,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: <Widget>[
+                            Text('Bijnaam', style: TextStyle(color: theme.accentColor, fontSize: 18), textAlign: TextAlign.start,),
+                            Text(userPlant.nickname, textAlign: TextAlign.start,),
+                            SizedBox(height: 20),
+
+                          ],
+
+                        )
                     ),
-                  ),
 
 
-                  Expanded(
-                    flex: 3,
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: RawMaterialButton(
-                        onPressed: () { },
-                        elevation: 2.0,
-                        fillColor: theme.accentColor,
-                        child: Icon(
-                          Icons.edit,
-                          size: 20,
-                          color: Colors.white,
+                    Expanded(
+                      flex: 1,
+                      child: Align(
+                        alignment: Alignment.topRight,
+                        child: RawMaterialButton(
+                          onPressed: () { },
+                          elevation: 2.0,
+                          fillColor: theme.accentColor,
+                          child: Icon(
+                            Icons.edit,
+                            size: 20,
+                            color: Colors.white,
+                          ),
+                          padding: EdgeInsets.all(15.0),
+                          shape: CircleBorder(),
                         ),
-                        padding: EdgeInsets.all(15.0),
-                        shape: CircleBorder(),
                       ),
                     )
-                  )
                 ],
               ),
 
