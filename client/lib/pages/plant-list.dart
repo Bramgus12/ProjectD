@@ -141,16 +141,6 @@ class _PlantListState extends State<PlantList> {
                               child: InputTextField(
                                   label: '',
                                   title: 'Zoek op naam',
-                                //   suffixIcon: IconButton(
-                                //     icon: Icon(Icons.clear),
-                                //     onPressed: () {
-                                //       _filterInputController.clear();
-                                //       filteredPlantListItems = null;
-                                //       setState(() {});
-                                //     },
-                                //     color: Colors.black,
-                                //   )
-                                // ),
                                 onChanged: (String filter) {
                                   filter = filter.trimLeft().toLowerCase();
                                   bool isEmpty = filter.length == 0 || filter.replaceAll(' ', '').length == 0;

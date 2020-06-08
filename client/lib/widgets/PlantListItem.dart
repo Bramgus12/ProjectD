@@ -21,7 +21,14 @@ class PlantListItem extends StatelessWidget {
 
     return DefaultTextStyle(
       child: GestureDetector(
-          onTap: () => Navigator.pushNamed(context, '/plant-detail', arguments: PlantDetail(userPlant, plant, getUserPlantImage) ),
+          onTap: () {
+            FocusScopeNode focusNode = FocusScope.of(context);
+
+            if (!focusNode.hasPrimaryFocus)
+              focusNode.unfocus();
+
+            Navigator.pushNamed(context, '/plant-detail', arguments: PlantDetail(userPlant, plant, getUserPlantImage) );
+          },
           child: Container(
             padding: EdgeInsets.all(10.0),
             height: 250,
