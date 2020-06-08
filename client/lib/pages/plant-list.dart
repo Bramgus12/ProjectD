@@ -51,8 +51,7 @@ class _PlantListState extends State<PlantList> {
   // save the fetched plants so they don't have to get fetched multiple times in a row 
   List<PlantListItem> plantListItems;
   List<PlantListItem> filteredPlantListItems;
-
-  final TextEditingController _filterInputController = new TextEditingController();
+  bool _inputHasFocus = false;
 
   void initState() {
     super.initState();
@@ -135,32 +134,32 @@ class _PlantListState extends State<PlantList> {
                       return Column(
                         children: <Widget>[
                           Expanded(
-                            flex: MediaQuery.of(context).orientation == Orientation.portrait ? 1 : 4,
+                            flex: MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 4,
                             child: Padding(
                               padding: EdgeInsets.all(16),
                               child: InputTextField(
                                   label: '',
                                   title: '',
-                                  labelText:  FocusScope.of(context).hasFocus ? '' : 'Zoek op naam',
+                                  labelText: 'Zoek op naam',
                                   showSpacing: false,
-                                onChanged: (String filter) {
-                                  filter = filter.trimLeft().toLowerCase();
-                                  bool isEmpty = filter.length == 0 || filter.replaceAll(' ', '').length == 0;
+                                  onChanged: (String filter) {
+                                    filter = filter.trim();
+                                    bool isEmpty = filter.length == 0 || filter.replaceAll(' ', '').length == 0;
 
-                                  if (isEmpty) {
-                                    filteredPlantListItems = null;
+                                    if (isEmpty) {
+                                      filteredPlantListItems = null;
+                                      setState(() {});
+                                      return;
+                                    }
+
+                                    filteredPlantListItems = plantListItems
+                                        .where((item) => item.userPlant.nickname
+                                        .toLowerCase()
+                                        .contains(filter))
+                                        .toList();
                                     setState(() {});
-                                    return;
-                                  }
-
-                                  filteredPlantListItems = plantListItems
-                                      .where((item) => item.userPlant.nickname
-                                      .toLowerCase()
-                                      .contains(filter))
-                                      .toList();
-                                  setState(() {});
-                                },
-                              ),
+                                  },
+                                ),
                             ),
                           ),
                           Expanded(

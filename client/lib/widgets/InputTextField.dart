@@ -70,7 +70,8 @@ class InputTextField extends StatelessWidget {
                     borderSide: BorderSide(color: Colors.red)),
                 filled: true,
                 fillColor: Colors.white,
-                labelText: this.labelText
+                labelText: this.labelText,
+                floatingLabelBehavior: FloatingLabelBehavior.never
               ),
               keyboardType: this.keyboardType ?? TextInputType.text,
               inputFormatters: inputType == int
