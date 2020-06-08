@@ -65,6 +65,10 @@ target 'Runner' do
   pod 'Flutter', :path => 'Flutter'
 
   # Plugin Pods
+  
+  source 'https://github.com/CocoaPods/Specs.git'
+  platform :ios, '9.1'
+  pod 'GoogleMaps'
 
   # Prepare symlinks folder. We use symlinks to avoid having Podfile.lock
   # referring to absolute paths on developers' machines.

@@ -233,6 +233,7 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> with Automa
         onTap: setSelectionMarker,
         markers: Set<Marker>.of(markers.values),
         compassEnabled: true,
+        myLocationButtonEnabled: false,
         indoorViewEnabled: true,
         buildingsEnabled: true,
         cameraTargetBounds: CameraTargetBounds(LatLngBounds(

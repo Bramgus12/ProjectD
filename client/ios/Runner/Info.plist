@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>PicturesToDataset</string>
+	<string></string>
 	<key>NSCameraUsageDescription</key>
-	<string>PicturesToDataset</string>
+	<string></string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>PicturesToDataset</string>
+	<string></string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
@@ -46,6 +46,12 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string></string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string></string>
+	<key>io.flutter.embedded_views_preview</key>
+	<string>YES</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 </dict>
