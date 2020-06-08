@@ -9,6 +9,7 @@ import 'package:plantexpert/api/ApiConnectionException.dart';
 import 'package:plantexpert/api/Plant.dart';
 import 'package:plantexpert/api/UserPlant.dart';
 import 'package:plantexpert/Utility.dart';
+import 'package:plantexpert/pages/LocationSelectionMap.dart';
 import 'package:plantexpert/widgets/InputTextField.dart';
 
 import '../MenuNavigation.dart';
@@ -199,6 +200,7 @@ class _AddPlant extends State<AddPlant> {
           && newPlant.nickname != null
           && newPlant.potVolume != null
           && (newPlant.minTemp != null && newPlant.maxTemp != null)
+          && newPlant.latitude != null && newPlant.longitude != null
         );
 
           print('_checkAllowedToSubmit() $allowed');
@@ -580,6 +582,17 @@ class _AddPlant extends State<AddPlant> {
                       return Text("Let Op: De gemiddelde temperatuur voor de plant is rond de $optimalPlantTemperature℃.");
                     return SizedBox();
                   }(),
+
+                  Text("Locatie van de plant", style: TextStyle(color: theme.accentColor, fontSize: 18)),
+                  Text("Waar staat de plant ongeveer."),
+                  SizedBox(height: 10),
+                  LocationSelectionMap(initialLatitude: newPlant.latitude, initialLongitude: newPlant.longitude, buttonOnly: true, onLocationChanged: (double longitude, double latitude) {
+                    newPlant.latitude = latitude;
+                    newPlant.longitude = longitude;
+                  }, title: "Plant Locatie",),
+
+                  SizedBox(height: 20),
+
                   () {
                     if(_serverErrorMessage != null)
                       return Container(
@@ -600,8 +613,6 @@ class _AddPlant extends State<AddPlant> {
 
                     return SizedBox();
                   }(),
-                  SizedBox(height: 20),
-
                   // TODO: allow submission if all required fields are filled
                   FlatButton(
                     child: Text('Aanmaken',

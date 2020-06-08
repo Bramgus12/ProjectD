@@ -254,7 +254,7 @@ class ApiConnection {
     UserPlant responseUserPlant = UserPlant.fromJson(jsonUserPlant);
     // Copy the user plant id created by the server to the local user plant object
     userPlant.id = responseUserPlant.id;
-    uploadUserPlantImage(userPlant, imageFile);
+    await uploadUserPlantImage(userPlant, imageFile);
     return userPlant;
   }
 
