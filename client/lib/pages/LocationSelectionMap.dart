@@ -45,7 +45,7 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> with Automa
   final Location location = Location();
   _LocationStatus _locationStatus = _LocationStatus.unknown;
   _MyLocationStatus _myLocationStatus = _MyLocationStatus.ready;
-  String address = "Nog geen locatie geselecteerd.";
+  String addressMessage = "Nog geen locatie geselecteerd.";
   
   Completer<GoogleMapController> _controller = Completer();
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
@@ -84,9 +84,20 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> with Automa
     }
   }
 
-  Marker setSelectionMarker(LatLng location, {bool moveCamera=false, bool animateCamera=true}) {
-    final MarkerId markerId = MarkerId((_nextMarkerId++).toString());
+  Future<Marker> setSelectionMarker(LatLng location, {bool moveCamera=false, bool animateCamera=true}) async {
+    Address addressObj = await setAddressFromLocation(location);
 
+    if (addressObj == null)
+      return null;
+    
+    if (addressObj.countryCode != "NL") {
+      setState(() {
+        addressMessage = "Kies een locatie binnen Nederland.";
+      });
+      return null;
+    }
+
+    final MarkerId markerId = MarkerId((_nextMarkerId++).toString());
     final Marker marker = Marker(
       markerId: markerId,
       position: location,
@@ -99,8 +110,6 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> with Automa
       selectionMarker = marker;
       markers[markerId] = selectionMarker;
     });
-
-    setAddressFromLocation(location);
 
     if (widget.onLocationChanged != null)
       widget.onLocationChanged(location.latitude, location.longitude);
@@ -131,8 +140,8 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> with Automa
     return marker;
   }
 
-  void setAddressFromLocation(LatLng location) async {
-    address = "Locatie naam wordt achterhaald...";
+  Future<Address> setAddressFromLocation(LatLng location) async {
+    addressMessage = "Locatie naam wordt achterhaald...";
     final Coordinates coordinates = new Coordinates(location.latitude, location.longitude);
     List<Address> addresses;
     // https://github.com/aloisdeniel/flutter_geocoder/issues/29
@@ -146,24 +155,25 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> with Automa
       try {
         if (tryCount > maxTries){
           setState(() {
-            address = "Kon locatie naam niet achterhalen.";
+            addressMessage = "Kon locatie naam niet achterhalen.";
           });
-          return;
+          return null;
         }
         tryCount++;
         addresses = await Geocoder.local.findAddressesFromCoordinates(coordinates);
-        addressFound = true;
+        addressFound = addresses.length > 0 && addresses.first.subAdminArea != null;
       } catch(e) {
         if(!mounted)
-          return;
+          return null;
         sleep(Duration(milliseconds: 20));
       }
     }
     if(addresses.length == 0 || !mounted)
-      return;
+      return null;
     setState(() {
-      address = addresses.first.subAdminArea;
+      addressMessage = addresses.first.subAdminArea;
     });
+    return addresses.first;
   }
 
   void onMyLocationButton() async {
@@ -201,6 +211,7 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> with Automa
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     ThemeData theme = Theme.of(context);
     return widget.buttonOnly ? 
     OutlineButton(
@@ -209,7 +220,7 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> with Automa
         color: theme.accentColor
       ),
       onPressed: openFullMapPage,
-      child: Text(address),
+      child: Text(addressMessage),
       // child: Text("Text"),
     )
     : Stack(children: [
@@ -262,12 +273,15 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> with Automa
       ),
       Align(
         alignment: Alignment.topCenter,
-          child: Padding(
-          padding: const EdgeInsets.all(15),
-          child: Text(address),
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(15),
+              child: Text(addressMessage),
+            ),
+          ),
         ),
-      ),
-    ]);
+      ]
+    );
   }
 
   Future<_LocationStatus> enableLocation(bool promptUser) async {
