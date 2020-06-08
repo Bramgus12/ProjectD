@@ -36,9 +36,18 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/plant-detail': (context) => ModalRoute.of(context).settings.arguments,
-        '/camera-plant-detail': (context) => CameraPlantDetailScreen(plant: ModalRoute.of(context).settings.arguments),
+        '/camera-plant-detail': (context) => CameraPlantDetailScreen(
+          plant: (ModalRoute.of(context).settings.arguments as Map<String, Object>)['plant'],
+          plantImage: (ModalRoute.of(context).settings.arguments as Map<String, Object>)['plantImage'],
+
+        ),
         '/account' : (context) => Account(),
-        '/add-plant' : (context) => AddPlant()
+        '/add-plant' : (context) => (ModalRoute.of(context).settings.arguments as Map<String, Object>) != null &&
+              (ModalRoute.of(context).settings.arguments as Map<String, Object>).length > 1 ?
+                AddPlant(
+                  plant: (ModalRoute.of(context).settings.arguments as Map<String, Object>)['plant'],
+                  file: (ModalRoute.of(context).settings.arguments as Map<String, Object>)['plantImage'],
+        ) : AddPlant(),
       },
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {

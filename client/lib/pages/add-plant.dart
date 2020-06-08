@@ -14,6 +14,12 @@ import 'package:plantexpert/widgets/InputTextField.dart';
 import '../MenuNavigation.dart';
 
 class AddPlant extends StatefulWidget {
+
+  final UserPlant plant;
+  final File file;
+
+  AddPlant({this.plant, this.file});
+
   @override
   _AddPlant createState() => _AddPlant();
 }
@@ -23,7 +29,8 @@ class _AddPlant extends State<AddPlant> {
 
   ApiConnection apiConnection = new ApiConnection();
 
-  final UserPlant newPlant = new UserPlant();
+  UserPlant newPlant;
+
   final _distanceToWindowText = <String>[
     '2 meter of meer',
     'Tussen 1,50 meter en 2 meter',
@@ -53,8 +60,20 @@ class _AddPlant extends State<AddPlant> {
 
   List<Plant> listOfPlants;
   String _serverErrorMessage;
+  String _plantFetchErrorMessage;
 
   File pickedImage;
+
+  @override
+  void initState() {
+    super.initState();
+    // prevent fetching plants twice
+    _fetchedPlants = _fetchPlants();
+    pickedImage = widget.file;
+    newPlant = widget.plant == null ? new UserPlant() : widget.plant;
+    newPlant.distanceToWindow = 3;
+    print(newPlant);
+   }
 
   void selectImageFromSource(BuildContext context, ImageSource source) async {
     File image = await ImagePicker.pickImage(source: source);
@@ -207,26 +226,32 @@ class _AddPlant extends State<AddPlant> {
 
   Future<List<Plant>> _fetchPlants() async {
     var plants;
+    setState(() {
+      failedFetchPlants = false;
+      _plantFetchErrorMessage = null;
+    });
 
     try {
       plants = await apiConnection.fetchPlants();
+
+      setState(() {
+        listOfPlants = plants;
+      });
     } on ApiConnectionException catch (e) {
       print(e);
-      failedFetchPlants = true;
+      setState(() {
+        failedFetchPlants = true;
+        _plantFetchErrorMessage = "Planten konden niet worden opgehaald";
+      });
     } on TimeoutException catch (e) {
       print(e);
-      failedFetchPlants = true;
+      setState(() {
+        failedFetchPlants = true;
+        _plantFetchErrorMessage = "Planten konden niet worden opgehaald";
+      });
     }
 
     return plants;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    // prevent fetching plants twice
-    _fetchedPlants = _fetchPlants();
-    newPlant.distanceToWindow = 3;
   }
 
   @override
@@ -253,50 +278,27 @@ class _AddPlant extends State<AddPlant> {
 
                   Text('Plantsoort', style: TextStyle(color: theme.accentColor, fontSize: 18),),
                   SizedBox(height: 10),
-                  FutureBuilder(
-                    future: _fetchedPlants,
-                    builder: (BuildContext context,
-                        AsyncSnapshot<List<Plant>> snapshot) {
-                      var items = <DropdownMenuItem>[
-                        DropdownMenuItem(
-                          child: Text('Planten worden opgehaald...'),
-                          value: null,
-                        )
-                      ];
+                  (){
 
-                      if (snapshot.hasData) {
-                        listOfPlants = snapshot.data;
-                        items = snapshot.data
-                            .map((p) => DropdownMenuItem(
-                                child: Text(p.name), value: p.id))
-                            .toList();
-                      }
-                      // hasError doesn't work on caught exceptions
-                      else if (snapshot.hasError || failedFetchPlants) {
-                        items[0] = DropdownMenuItem(
-                          child:
-                              Text('Planten konden niet worden opgehaald'),
-                          value: null,
+                    String plantHint = plantTypeName ?? 'Kies de plantensoort.';
+                    return DropdownButtonFormField(
+                          items: listOfPlants != null ? listOfPlants.map((e) => DropdownMenuItem(
+                                child: Text(e.name), value: e.id)
+                                ).toList() : [],
+                          hint: Text(_plantFetchErrorMessage ?? plantHint),
+                          onChanged: (value) {
+                            var plant =  listOfPlants.firstWhere((item) => item.id == value);
+                            print('selected $value ${plant.name}');
+                            if(value != null)
+                              setState(() {
+                                optimalPlantTemperature = plant.optimalTemp;
+                                newPlant.plantId = value;
+                              });
+                          },
+                          value: newPlant.plantId,
                         );
-                      }
+                  }(),
 
-                      return DropdownButtonFormField(
-                        items: items,
-                        hint: Text(plantTypeName ?? 'Kies de plantensoort.'),
-                        onChanged: (value) {
-                          Text t = items.where((item) => item.value == value).elementAt(0).child;
-                          plantTypeName = t.data;
-                          print('selected $value $plantTypeName');
-                          if(value != null)
-                            setState(() {
-                              optimalPlantTemperature = listOfPlants.firstWhere((plant) => plant.id == value).optimalTemp;
-                              newPlant.plantId = value;
-                            });
-                        },
-                        value: null,
-                      );
-                    },
-                  ),
                   SizedBox(height: 20),
 
                   Text('Afbeelding', style: TextStyle(color: theme.accentColor, fontSize: 18)),

@@ -145,16 +145,25 @@ class _CameraState extends State<Camera>
 
       return
         GestureDetector(
-          onTap: () => {Navigator.pushNamed(context, '/camera-plant-detail',
-          arguments: new Plant(
-              id: 0,
-              name: plantName,
-              imageName: 'assets/images/'+plantId.toString()+'.jpg',
-              description: _predictedPlant.description,
-              waterText: _predictedPlant.waterText,
-              sunText: _predictedPlant.sunText,
-              waterScale: waterAmount,
-              sunScale: sunAmount))},
+          onTap: () => {
+            Navigator.pushNamed(context, '/camera-plant-detail',
+              arguments:
+                {
+                  "plant": new Plant(
+                      id: plantId,
+                      name: plantName,
+                      imageName: 'assets/images/'+plantId.toString()+'.jpg',
+                      description: _predictedPlant.description,
+                      waterText: _predictedPlant.waterText,
+                      sunText: _predictedPlant.sunText,
+                      waterScale: waterAmount,
+                      sunScale: sunAmount
+                  ),
+                  "plantImage": imageFile,
+                }
+
+            )
+          },
           child: Container(
             child: predictionCard( plantName,waterAmount.toInt(),sunAmount.toInt(),plantId))
           );
