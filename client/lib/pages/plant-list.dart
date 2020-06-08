@@ -136,11 +136,7 @@ class _PlantListState extends State<PlantList> {
                           Flexible(
                             child: Padding(
                               padding: EdgeInsets.all(16),
-                              child: InputTextField(
-                                  label: '',
-                                  title: '',
-                                  labelText: 'Zoek op naam',
-                                  showSpacing: false,
+                              child: SearchField(
                                   onChanged: (String filter) {
                                     filter = filter.trim();
                                     bool isEmpty = filter.length == 0 || filter.replaceAll(' ', '').length == 0;
@@ -162,7 +158,9 @@ class _PlantListState extends State<PlantList> {
                             ),
                           ),
                           Expanded(
-                            flex: MediaQuery.of(context).size.height <= 1920 ? 6 : 5,
+                            flex: MediaQuery.of(context).orientation == Orientation.portrait
+                                ? MediaQuery.of(context).size.height <= 1920 ? 6 : 5
+                                : MediaQuery.of(context).size.height <= 1920 ? 2 : 1,
                             child: () {
                               if (filteredPlantListItems != null && filteredPlantListItems.length == 0) {
                                 return Center(
@@ -212,6 +210,23 @@ class _PlantListState extends State<PlantList> {
             Icons.control_point
         ),
       ) : null,
+    );
+  }
+}
+
+class SearchField extends StatelessWidget {
+  final Function(String) onChanged;
+  
+  SearchField({this.onChanged});
+  
+  @override
+  Widget build(BuildContext context) {
+    return InputTextField(
+      label: '',
+      title: '',
+      labelText: 'Zoek op naam',
+      showSpacing: false,
+      onChanged: this.onChanged
     );
   }
 }
