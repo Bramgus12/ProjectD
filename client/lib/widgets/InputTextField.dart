@@ -12,6 +12,8 @@ class InputTextField extends StatelessWidget {
   final Function(String) onSaved;
   final Function(String) onChanged;
   final Key key;
+  final bool showSpacing;
+  final String labelText;
 
   InputTextField(
       {this.key,
@@ -22,7 +24,9 @@ class InputTextField extends StatelessWidget {
       this.inputType,
       this.validator,
       this.onSaved,
-      this.onChanged});
+      this.onChanged,
+      this.showSpacing = true,
+      this.labelText = ''});
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +37,24 @@ class InputTextField extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(title, style: TextStyle(color: theme.accentColor, fontSize: 18)),
-          Text(label),
-          SizedBox(height: 10),
+          () {
+            if (title.length > 0)
+              return Text(title, style: TextStyle(color: theme.accentColor, fontSize: 18));
+
+            return SizedBox.shrink();
+          }(),
+          () {
+            if (label.length > 0)
+              return Text(label);
+
+            return SizedBox.shrink();
+          }(),
+          () {
+            if (showSpacing) {
+             return SizedBox(height: 10);
+            }
+            return SizedBox.shrink();
+          }(),
           TextFormField(
               key: key,
               initialValue: this.initialValue,
@@ -51,6 +70,7 @@ class InputTextField extends StatelessWidget {
                     borderSide: BorderSide(color: Colors.red)),
                 filled: true,
                 fillColor: Colors.white,
+                labelText: this.labelText
               ),
               keyboardType: this.keyboardType ?? TextInputType.text,
               inputFormatters: inputType == int
@@ -73,9 +93,14 @@ class InputTextField extends StatelessWidget {
               validator: this.validator,
               onSaved: this.onSaved,
               onChanged: this.onChanged),
-          SizedBox(
-            height: 20,
-          )
+            () {
+              if (showSpacing) {
+                return SizedBox(
+                  height: 20,
+                );
+              }
+              return SizedBox.shrink();
+            }()
         ],
       ),
     );

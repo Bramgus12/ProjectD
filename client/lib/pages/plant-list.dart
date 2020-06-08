@@ -135,12 +135,14 @@ class _PlantListState extends State<PlantList> {
                       return Column(
                         children: <Widget>[
                           Expanded(
-                            flex: MediaQuery.of(context).orientation == Orientation.portrait ? 3 : 4,
+                            flex: MediaQuery.of(context).orientation == Orientation.portrait ? 1 : 4,
                             child: Padding(
                               padding: EdgeInsets.all(16),
                               child: InputTextField(
                                   label: '',
-                                  title: 'Zoek op naam',
+                                  title: '',
+                                  labelText:  FocusScope.of(context).hasFocus ? '' : 'Zoek op naam',
+                                  showSpacing: false,
                                 onChanged: (String filter) {
                                   filter = filter.trimLeft().toLowerCase();
                                   bool isEmpty = filter.length == 0 || filter.replaceAll(' ', '').length == 0;
@@ -162,7 +164,7 @@ class _PlantListState extends State<PlantList> {
                             ),
                           ),
                           Expanded(
-                            flex: MediaQuery.of(context).orientation == Orientation.portrait ? 7 : 2,
+                            flex: MediaQuery.of(context).orientation == Orientation.portrait ? 6 : 2,
                             child: () {
                               if (filteredPlantListItems != null && filteredPlantListItems.length == 0) {
                                 return Center(
