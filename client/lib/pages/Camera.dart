@@ -167,7 +167,7 @@ class _CameraState extends State<Camera>
     try {
       String res;
       res = await Tflite.loadModel(
-          model: "assets/m0_0.81.tflite", labels: "assets/label.txt");
+          model: "assets/m6.100.90.tflite", labels: "assets/label.txt");
       print(res);
     } on PlatformException {
       print('Failed to load model.');
@@ -180,8 +180,8 @@ class _CameraState extends State<Camera>
       path: image.path,
       numResults: 6,
       threshold: 0.05,
-      imageMean: 0.4526901778594428,
-      imageStd: 0.3290300460265408,
+      imageMean: 0.5862695229738148,
+      imageStd: 0.35730469350527,
     );
     print("----------------------------------------------------");
     print(recognitions);
@@ -192,14 +192,18 @@ class _CameraState extends State<Camera>
       });
     }else {
       try{
-        predictedPlant = await con.fetchPlant(
-            int.parse(recognitions.map((res) {
-              return res["label"];
-            }).toList()[0]));
-        setState((){
-          _predictedPlant = predictedPlant;
-          _recognitions = recognitions;
-        });
+        var predictedLabel = int.parse(recognitions.map((res) {return res["label"];}).toList()[0]);
+        if (predictedLabel == -1){
+          setState((){
+            predictionCardMessage = "\n\nNo plants detected";
+          });
+        }else{
+          predictedPlant = await con.fetchPlant(predictedLabel);
+          setState((){
+            _predictedPlant = predictedPlant;
+            _recognitions = recognitions;
+          });
+        }
       } on Exception catch(e){
         setState((){
           predictionCardMessage = "\n\nUnable to connect to server";
@@ -553,7 +557,7 @@ class _CameraState extends State<Camera>
         ),
         Padding(
           padding: const EdgeInsets.only(left: 8.0),
-          child: Text("Confidence : "+_recognitions.map((res){ return res["confidence"];}).toList()[0].toString()),
+          child: Text("Confidence : "+_recognitions.map((res){ return res["confidence"];}).toList()[0].toStringAsFixed(2).toString()),
         ),
 
         Padding(
