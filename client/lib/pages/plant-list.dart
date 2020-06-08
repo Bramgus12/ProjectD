@@ -135,35 +135,27 @@ class _PlantListState extends State<PlantList> {
                       return Column(
                         children: <Widget>[
                           Expanded(
-                            flex: MediaQuery.of(context).orientation == Orientation.portrait ? 1 : 1,
+                            flex: MediaQuery.of(context).orientation == Orientation.portrait ? 3 : 4,
                             child: Padding(
                               padding: EdgeInsets.all(16),
-                              child: TextField(
-                                controller: _filterInputController,
-                                decoration: InputDecoration(
-                                  focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(color: theme.accentColor),
-                                  ),
-                                  enabledBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(color: theme.accentColor)
-                                  ),
-                                  hintText: 'Zoek op naam',
-                                  suffixIcon: IconButton(
-                                    icon: Icon(Icons.clear),
-                                    onPressed: () {
-                                      _filterInputController.clear();
-                                      filteredPlantListItems = null;
-                                      setState(() {});
-                                    },
-                                    color: Colors.black,
-                                  )
-                                ),
+                              child: InputTextField(
+                                  label: '',
+                                  title: 'Zoek op naam',
+                                //   suffixIcon: IconButton(
+                                //     icon: Icon(Icons.clear),
+                                //     onPressed: () {
+                                //       _filterInputController.clear();
+                                //       filteredPlantListItems = null;
+                                //       setState(() {});
+                                //     },
+                                //     color: Colors.black,
+                                //   )
+                                // ),
                                 onChanged: (String filter) {
-                                  filter = filter.trimRight().toLowerCase();
+                                  filter = filter.trimLeft().toLowerCase();
                                   bool isEmpty = filter.length == 0 || filter.replaceAll(' ', '').length == 0;
 
                                   if (isEmpty) {
-                                    print('empty');
                                     filteredPlantListItems = null;
                                     setState(() {});
                                     return;
@@ -180,7 +172,7 @@ class _PlantListState extends State<PlantList> {
                             ),
                           ),
                           Expanded(
-                            flex: MediaQuery.of(context).orientation == Orientation.portrait ? 6 : 2,
+                            flex: MediaQuery.of(context).orientation == Orientation.portrait ? 7 : 2,
                             child: () {
                               if (filteredPlantListItems != null && filteredPlantListItems.length == 0) {
                                 return Center(
