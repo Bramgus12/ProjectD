@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:plantexpert/api/ApiConnection.dart';
@@ -12,9 +12,16 @@ import 'package:plantexpert/Utility.dart';
 import 'package:plantexpert/pages/LocationSelectionMap.dart';
 import 'package:plantexpert/widgets/InputTextField.dart';
 
-import '../MenuNavigation.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 class AddPlant extends StatefulWidget {
+
+  final UserPlant plant;
+  final File file;
+  final CachedNetworkImage userPlantImage;
+
+  AddPlant({this.plant, this.file, this.userPlantImage});
+
   @override
   _AddPlant createState() => _AddPlant();
 }
@@ -24,7 +31,8 @@ class _AddPlant extends State<AddPlant> {
 
   ApiConnection apiConnection = new ApiConnection();
 
-  final UserPlant newPlant = new UserPlant();
+  UserPlant newPlant;
+
   final _distanceToWindowText = <String>[
     '2 meter of meer',
     'Tussen 1,50 meter en 2 meter',
@@ -54,8 +62,32 @@ class _AddPlant extends State<AddPlant> {
 
   List<Plant> listOfPlants;
   String _serverErrorMessage;
+  String _plantFetchErrorMessage;
 
   File pickedImage;
+
+  @override
+  void initState() {
+    super.initState();
+    // prevent fetching plants twice
+    _fetchedPlants = _fetchPlants();
+    if(widget.userPlantImage != null)
+      _findPath(widget.userPlantImage.imageUrl).then((file) => pickedImage = file);
+    pickedImage = widget.file;
+    newPlant = widget.plant == null ? new UserPlant() : widget.plant;
+      newPlant.distanceToWindow = 3;
+    DateTime lastWaterDate = newPlant.lastWaterDate;
+    if(lastWaterDate != null){
+      selectedDate = new DateTime(lastWaterDate.year, lastWaterDate.month, lastWaterDate.day);
+      selectedTime = new TimeOfDay(hour: lastWaterDate.hour, minute: lastWaterDate.minute);
+    }
+
+    _fetchedPlants.then((plants) =>
+      plantTypeName = plants.firstWhere((element) => element.id == newPlant.plantId, orElse: () => null)?.name
+    );
+
+    print(newPlant);
+   }
 
   void selectImageFromSource(BuildContext context, ImageSource source) async {
     File image = await ImagePicker.pickImage(source: source);
@@ -69,6 +101,11 @@ class _AddPlant extends State<AddPlant> {
       newPlant.imageName = image.path;
       pickedImage = image;
     });
+  }
+
+  Future<File> _findPath(String imageUrl) async {
+    final file = await new DefaultCacheManager().getFileFromCache(imageUrl);
+    return file?.file;
   }
 
   void submit() async {
@@ -90,30 +127,38 @@ class _AddPlant extends State<AddPlant> {
                       .size
                       .height / 4,
                   child: Center(
-                    child: CircularProgressIndicator(backgroundColor: Colors.white),
+                    child: CircularProgressIndicator(
+                        backgroundColor: Colors.white),
                   )
               ),
             );
           }
       );
 
-      try {
-        result = await apiConnection.postUserPlant(newPlant, pickedImage);
-      } on ApiConnectionException catch (e) {
-        setState(() {
-          _serverErrorMessage = 'Er is wat fout gegaan bij het aanmaken van uw plant, controleer uw internet en probeer het later nog een keer.';
-          result = null;
-        });
-        print(e);
+        try {
+          if(newPlant.id != null) {
+            result =
+            await apiConnection.putUserPlantWithImage(newPlant, pickedImage);
+          } else {
+            result = await apiConnection.postUserPlant(newPlant, pickedImage);
+          }
+        } on ApiConnectionException catch (e) {
+          setState(() {
+            _serverErrorMessage =
+            'Er is wat fout gegaan bij het aanmaken van uw plant, controleer uw internet en probeer het later nog een keer.';
+            result = null;
+          });
+          print(e);
+        }
+        on InvalidCredentialsException catch (e) {
+          setState(() {
+            _serverErrorMessage =
+            'U moet ingelogd zijn voordat u planten toe kunt voegen.';
+            result = null;
+          });
+          print(e);
+        }
 
-      }
-      on InvalidCredentialsException catch (e) {
-        setState(() {
-          _serverErrorMessage = 'U moet ingelogd zijn voordat u planten toe kunt voegen.';
-          result = null;
-        });
-        print(e);
-      }
 
       Navigator.pop(context);
 
@@ -130,7 +175,42 @@ class _AddPlant extends State<AddPlant> {
     }
   }
 
-  void pickDate(BuildContext context) async {
+  void delete() async {
+    var result;
+    try {
+      result = await apiConnection.deleteUserPlant(newPlant);
+      print(result);
+    } on ApiConnectionException catch (e) {
+      setState(() {
+        _serverErrorMessage =
+        'Er is wat fout gegaan bij het verwijderen van uw plant, controleer uw internet en probeer het later nog een keer.';
+        result = null;
+      });
+      print(e);
+    }
+    on InvalidCredentialsException catch (e) {
+      setState(() {
+        _serverErrorMessage =
+        'U moet ingelogd zijn voordat u uw plant kunt verwijderen.';
+        result = null;
+      });
+      print(e);
+    } on StatusCodeException catch (e) {
+      setState(() {
+        _serverErrorMessage =
+        'Oeps, dat is gênant, de plant of de afbeelding konden niet gevonden worden op de server.';
+        result = null;
+      });
+      print(e);
+    }
+
+    // Navigator.pop(context);
+
+    if (result != null)
+      Navigator.pop(context, "addedPlant");
+    }
+
+    void pickDate(BuildContext context) async {
     DateTime picked = await showDatePicker(
         context: context,
         initialDate: selectedDate ?? DateTime.now(),
@@ -209,26 +289,32 @@ class _AddPlant extends State<AddPlant> {
 
   Future<List<Plant>> _fetchPlants() async {
     var plants;
+    setState(() {
+      failedFetchPlants = false;
+      _plantFetchErrorMessage = null;
+    });
 
     try {
       plants = await apiConnection.fetchPlants();
+
+      setState(() {
+        listOfPlants = plants;
+      });
     } on ApiConnectionException catch (e) {
       print(e);
-      failedFetchPlants = true;
+      setState(() {
+        failedFetchPlants = true;
+        _plantFetchErrorMessage = "Planten konden niet worden opgehaald";
+      });
     } on TimeoutException catch (e) {
       print(e);
-      failedFetchPlants = true;
+      setState(() {
+        failedFetchPlants = true;
+        _plantFetchErrorMessage = "Planten konden niet worden opgehaald";
+      });
     }
 
     return plants;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    // prevent fetching plants twice
-    _fetchedPlants = _fetchPlants();
-    newPlant.distanceToWindow = 3;
   }
 
   @override
@@ -255,50 +341,27 @@ class _AddPlant extends State<AddPlant> {
 
                   Text('Plantsoort', style: TextStyle(color: theme.accentColor, fontSize: 18),),
                   SizedBox(height: 10),
-                  FutureBuilder(
-                    future: _fetchedPlants,
-                    builder: (BuildContext context,
-                        AsyncSnapshot<List<Plant>> snapshot) {
-                      var items = <DropdownMenuItem>[
-                        DropdownMenuItem(
-                          child: Text('Planten worden opgehaald...'),
-                          value: null,
-                        )
-                      ];
+                  (){
 
-                      if (snapshot.hasData) {
-                        listOfPlants = snapshot.data;
-                        items = snapshot.data
-                            .map((p) => DropdownMenuItem(
-                                child: Text(p.name), value: p.id))
-                            .toList();
-                      }
-                      // hasError doesn't work on caught exceptions
-                      else if (snapshot.hasError || failedFetchPlants) {
-                        items[0] = DropdownMenuItem(
-                          child:
-                              Text('Planten konden niet worden opgehaald'),
-                          value: null,
-                        );
-                      }
+                    String plantHint = plantTypeName ??  'Kies de plantensoort.';
+                    return DropdownButtonFormField(
+                      items: listOfPlants != null ? listOfPlants.map((e) => DropdownMenuItem(
+                            child: Text(e.name), value: e.id)
+                            ).toList() : [],
+                      hint: Text(_plantFetchErrorMessage ?? plantHint),
+                      onChanged: newPlant.id != null ? null : (value) {
+                        var plant =  listOfPlants.firstWhere((item) => item.id == value);
+                        print('selected $value ${plant.name}');
+                        if(value != null)
+                          setState(() {
+                            optimalPlantTemperature = plant.optimalTemp;
+                            newPlant.plantId = value;
+                          });
+                      },
+                      value: newPlant.plantId,
+                    );
+                  }(),
 
-                      return DropdownButtonFormField(
-                        items: items,
-                        hint: Text(plantTypeName ?? 'Kies de plantensoort.'),
-                        onChanged: (value) {
-                          Text t = items.where((item) => item.value == value).elementAt(0).child;
-                          plantTypeName = t.data;
-                          print('selected $value $plantTypeName');
-                          if(value != null)
-                            setState(() {
-                              optimalPlantTemperature = listOfPlants.firstWhere((plant) => plant.id == value).optimalTemp;
-                              newPlant.plantId = value;
-                            });
-                        },
-                        value: null,
-                      );
-                    },
-                  ),
                   SizedBox(height: 20),
 
                   Text('Afbeelding', style: TextStyle(color: theme.accentColor, fontSize: 18)),
@@ -307,11 +370,16 @@ class _AddPlant extends State<AddPlant> {
                     children: <Widget>[
                       Expanded(
                         flex: 4,
-                        child: pickedImage != null ? Image.file(
-                                pickedImage,
-                                width: 150,
-                                height: 150,
-                              )
+                        child: pickedImage != null ?
+                        Image.file(
+                          pickedImage,
+                          width: 150,
+                          height: 150,
+                        ) : widget.userPlantImage != null ?
+                        SizedBox(
+                          height: 150.0,
+                          child: widget.userPlantImage,
+                        )
                             : Image.asset("assets/images/image-placeholder.png")
                       ),
                       Expanded(
@@ -410,30 +478,33 @@ class _AddPlant extends State<AddPlant> {
                   Text(
                       'Wanneer heeft de plant voor het laatst water gekregen?',
                       style: TextStyle(color: theme.accentColor, fontSize: 18)),
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        flex: 5,
-                        child: Row(
-                          children: <Widget>[
-                            Text('Niet van toepassing'),
-                            Checkbox(
-                              value: hideDatePicker,
-                              onChanged: (bool value) {
-                                setState(() {
-                                  hideDatePicker = value;
-                                  if(value)
-                                    newPlant.lastWaterDate = DateTime.fromMillisecondsSinceEpoch(0);
-                                  else
-                                    _combinePickedDateAndTime();
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
+                  (){
+                    return newPlant.id != null ? SizedBox() : Row(
+                      children: <Widget>[
+                        Expanded(
+                          flex: 5,
+                          child: Row(
+                            children: <Widget>[
+                              Text('Niet van toepassing'),
+                              Checkbox(
+                                value: hideDatePicker,
+                                onChanged: (bool value) {
+                                  setState(() {
+                                    hideDatePicker = value;
+                                    if(value)
+                                      newPlant.lastWaterDate = DateTime.fromMillisecondsSinceEpoch(0);
+                                    else
+                                      _combinePickedDateAndTime();
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    );
+                  }(),
+
 
                   SizedBox(height: 20),
                   // TODO: make layout more 'user-friendly'
@@ -448,18 +519,20 @@ class _AddPlant extends State<AddPlant> {
                                 crossAxisAlignment:
                                     CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  RawMaterialButton(
-                                    onPressed: () { pickDate(context); },
-                                    elevation: 2.0,
-                                    fillColor: theme.accentColor,
-                                    child: Icon(
-                                      Icons.date_range,
-                                      size: 20,
-                                      color: Colors.white,
-                                    ),
-                                    padding: EdgeInsets.all(15.0),
-                                    shape: CircleBorder(),
-                                  ),
+                                  (){
+                                    return newPlant.id != null ? SizedBox() :  RawMaterialButton(
+                                      onPressed: () { pickDate(context); },
+                                      elevation: 2.0,
+                                      fillColor: theme.accentColor,
+                                      child: Icon(
+                                        Icons.date_range,
+                                        size: 20,
+                                        color: Colors.white,
+                                      ),
+                                      padding: EdgeInsets.all(15.0),
+                                      shape: CircleBorder(),
+                                    );
+                                  }(),
                                   SizedBox(height: 10),
                                   Text(selectedDate != null
                                       ? 'Datum: ${selectedDate.day.toString().padLeft(2, '0')}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.year}'
@@ -586,10 +659,14 @@ class _AddPlant extends State<AddPlant> {
                   Text("Locatie van de plant", style: TextStyle(color: theme.accentColor, fontSize: 18)),
                   Text("Waar staat de plant ongeveer."),
                   SizedBox(height: 10),
-                  LocationSelectionMap(initialLatitude: newPlant.latitude, initialLongitude: newPlant.longitude, buttonOnly: true, onLocationChanged: (double longitude, double latitude) {
-                    newPlant.latitude = latitude;
-                    newPlant.longitude = longitude;
-                  }, title: "Plant Locatie",),
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: 200,
+                    child: LocationSelectionMap(initialLatitude: newPlant.latitude, initialLongitude: newPlant.longitude, previewOnly: true, onLocationChanged: (double latitude, double longitude) {
+                      newPlant.latitude = latitude;
+                      newPlant.longitude = longitude;
+                    }, title: "Plant Locatie",),
+                  ),
 
                   SizedBox(height: 20),
 
@@ -613,14 +690,27 @@ class _AddPlant extends State<AddPlant> {
 
                     return SizedBox();
                   }(),
-                  // TODO: allow submission if all required fields are filled
+                  SizedBox(height: 20),
                   FlatButton(
-                    child: Text('Aanmaken',
+                    child: Text( newPlant.id  != null ? 'Bijwerken' : 'Aanmaken',
                       style: theme.accentTextTheme.button),
                     onPressed: submit,
                     color: theme.accentColor,
                     disabledColor: theme.disabledColor,
-                  )
+                  ),
+                  (){
+                    if(newPlant.id != null)
+                      return FlatButton(
+                        child: Text('Verwijderen',
+                            style: theme.accentTextTheme.button),
+                        onPressed: delete,
+                        color: Colors.redAccent,
+                        disabledColor: theme.disabledColor,
+                      );
+                    return null;
+                  }(),
+
+
                 ],
             ))),
       ),

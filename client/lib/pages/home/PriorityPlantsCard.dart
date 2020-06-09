@@ -71,7 +71,31 @@ class _PriorityPlantsCardState extends State<PriorityPlantsCard> {
                     ),
                     title: Text(userPlants[index].nickname),
                     subtitle: Text("${sinceLastWaterTime.inDays} dagen geleden."),
-                    trailing: OutlineButton(onPressed: () => updateLastWaterDate(userPlants[index], context), child: Text("Update")),
+                    trailing: OutlineButton(
+                      onPressed: () => updateLastWaterDate(userPlants[index], context), 
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Text(
+                            "Geef\nWater",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.normal,
+                              
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Image.asset(
+                              "assets/images/watering-can.png",
+                              // Icon credit: https://www.flaticon.com/free-icon/watering-can_3043714?term=garden%20watering%20can&page=1&position=2
+                              width: 30,
+                            ),
+                          ),
+                        ],
+                      )
+                    ),
                   );
                 },
               );

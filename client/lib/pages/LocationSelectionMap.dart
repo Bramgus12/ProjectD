@@ -1,10 +1,5 @@
 import 'dart:async';
-import 'dart:io';
-
-import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:geocoder/geocoder.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:permission_handler/permission_handler.dart' as permission_handler;
@@ -13,12 +8,12 @@ class LocationSelectionMap extends StatefulWidget {
   static LocationData lastLocationData;
   final double initialLatitude;
   final double initialLongitude;
-  final bool buttonOnly;
+  final bool previewOnly;
   final Function(LatLng) onConfirm;
   final Function(double latitude, double longitude) onLocationChanged;
   final String title;
 
-  LocationSelectionMap({this.initialLatitude, this.initialLongitude, this.buttonOnly=false, this.onConfirm, this.onLocationChanged, this.title="Kaart"});
+  LocationSelectionMap({this.initialLatitude, this.initialLongitude, this.previewOnly=false, this.onConfirm, this.onLocationChanged, this.title="Kaart"});
 
   @override
   _LocationSelectionMapState createState() => _LocationSelectionMapState();
@@ -45,7 +40,6 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> with Automa
   final Location location = Location();
   _LocationStatus _locationStatus = _LocationStatus.unknown;
   _MyLocationStatus _myLocationStatus = _MyLocationStatus.ready;
-  String addressMessage = "Nog geen locatie geselecteerd.";
   
   Completer<GoogleMapController> _controller = Completer();
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
@@ -84,18 +78,20 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> with Automa
     }
   }
 
-  Future<Marker> setSelectionMarker(LatLng location, {bool moveCamera=false, bool animateCamera=true}) async {
-    Address addressObj = await setAddressFromLocation(location);
+  Marker setSelectionMarker(LatLng location, {bool moveCamera=false, bool animateCamera=true}) {
 
-    if (addressObj == null)
+    // Check if location is within bounds of The Netherlands
+    LatLng soutWestLimit = LatLng(50.841774, 2.649452);
+    LatLng northEastLimit = LatLng(53.670272, 7.232709);
+    if (!(
+      location.latitude >= soutWestLimit.latitude &&
+      location.latitude <= northEastLimit.latitude &&
+      location.longitude >= soutWestLimit.longitude &&
+      location.longitude <= northEastLimit.longitude
+    )) {
+      Scaffold.of(context).showSnackBar( SnackBar(content: Text("Kies alstublieft een locatie binnen Nederland.")) );
       return null;
-    
-    if (addressObj.countryCode != "NL") {
-      setState(() {
-        addressMessage = "Kies een locatie binnen Nederland.";
-      });
-      return null;
-    }
+    };
 
     final MarkerId markerId = MarkerId((_nextMarkerId++).toString());
     final Marker marker = Marker(
@@ -114,7 +110,7 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> with Automa
     if (widget.onLocationChanged != null)
       widget.onLocationChanged(location.latitude, location.longitude);
 
-    if (!moveCamera || widget.buttonOnly)
+    if (!moveCamera)
       return marker;
     
     _controller.future.then((GoogleMapController mapController){
@@ -138,42 +134,6 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> with Automa
       return mapController;
     });
     return marker;
-  }
-
-  Future<Address> setAddressFromLocation(LatLng location) async {
-    addressMessage = "Locatie naam wordt achterhaald...";
-    final Coordinates coordinates = new Coordinates(location.latitude, location.longitude);
-    List<Address> addresses;
-    // https://github.com/aloisdeniel/flutter_geocoder/issues/29
-    // A while loop is used here because sometimes Geocode throws a platform exception.
-    // However after waiting a couple milliseconds it works again.
-    // It's not pretty but it works.
-    bool addressFound = false;
-    int maxTries = 200;
-    int tryCount = 0;
-    while(!addressFound){
-      try {
-        if (tryCount > maxTries){
-          setState(() {
-            addressMessage = "Kon locatie naam niet achterhalen.";
-          });
-          return null;
-        }
-        tryCount++;
-        addresses = await Geocoder.local.findAddressesFromCoordinates(coordinates);
-        addressFound = addresses.length > 0 && addresses.first.subAdminArea != null;
-      } catch(e) {
-        if(!mounted)
-          return null;
-        sleep(Duration(milliseconds: 20));
-      }
-    }
-    if(addresses.length == 0 || !mounted)
-      return null;
-    setState(() {
-      addressMessage = addresses.first.subAdminArea;
-    });
-    return addresses.first;
   }
 
   void onMyLocationButton() async {
@@ -213,74 +173,64 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> with Automa
   Widget build(BuildContext context) {
     super.build(context);
     ThemeData theme = Theme.of(context);
-    return widget.buttonOnly ? 
-    OutlineButton(
-      padding: EdgeInsets.symmetric(vertical: 20),
-      borderSide: BorderSide(
-        color: theme.accentColor
-      ),
-      onPressed: openFullMapPage,
-      child: Text(addressMessage),
-      // child: Text("Text"),
-    )
-    : Stack(children: [
-      GoogleMap(
-        mapType: MapType.normal,
-        initialCameraPosition: _defaultCameraPosition,
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-        },
-        onTap: setSelectionMarker,
-        markers: Set<Marker>.of(markers.values),
-        compassEnabled: true,
-        myLocationButtonEnabled: false,
-        indoorViewEnabled: true,
-        buildingsEnabled: true,
-        cameraTargetBounds: CameraTargetBounds(LatLngBounds(
-          southwest: LatLng(50.803721015, 3.31497114423),
-          northeast: LatLng(53.5104033474, 7.09205325687))),
-        zoomControlsEnabled: false,
-        minMaxZoomPreference: MinMaxZoomPreference(7, 50),
+    return Stack(children: [
+      GestureDetector(
+        onTap: widget.previewOnly ? openFullMapPage : null,
+        child: AbsorbPointer(
+          absorbing: widget.previewOnly,
+          child: GoogleMap(
+            mapType: MapType.normal,
+            initialCameraPosition: _defaultCameraPosition,
+            onMapCreated: (GoogleMapController controller) {
+              _controller.complete(controller);
+            },
+            onTap: setSelectionMarker,
+            markers: Set<Marker>.of(markers.values),
+            compassEnabled: true,
+            indoorViewEnabled: true,
+            buildingsEnabled: false,
+            myLocationButtonEnabled: false,
+            cameraTargetBounds: CameraTargetBounds(LatLngBounds(
+              southwest: LatLng(50.803721015, 3.31497114423),
+              northeast: LatLng(53.5104033474, 7.09205325687))),
+            zoomControlsEnabled: false,
+            minMaxZoomPreference: MinMaxZoomPreference(7, 50),
+          ),
+        ),
       ),
       Align(
         alignment: Alignment.bottomRight,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: FloatingActionButton(
-                child: _myLocationStatus == _MyLocationStatus.loading ? CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                ) : Icon(
-                  Icons.my_location
+        child: Visibility(
+          visible: !widget.previewOnly,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: FloatingActionButton(
+                  child: _myLocationStatus == _MyLocationStatus.loading ? CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ) : Icon(
+                    Icons.my_location
+                  ),
+                  onPressed: onMyLocationButton,
+                  heroTag: "myLocationButton",
                 ),
-                onPressed: onMyLocationButton,
-                heroTag: "myLocationButton",
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: FloatingActionButton.extended(
-                onPressed: confirmSelection,
-                backgroundColor: selectionMarker == null ? theme.disabledColor : null,
-                label: Text("Selecteer"),
-                icon: Icon(Icons.check),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: FloatingActionButton.extended(
+                  onPressed: confirmSelection,
+                  backgroundColor: selectionMarker == null ? theme.disabledColor : null,
+                  label: Text("Selecteer"),
+                  icon: Icon(Icons.check),
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
-      Align(
-        alignment: Alignment.topCenter,
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(15),
-              child: Text(addressMessage),
-            ),
+            ],
           ),
         ),
+      ),
       ]
     );
   }
@@ -343,8 +293,8 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> with Automa
 
   void openFullMapPage() async {
     LatLng newLocation = await Navigator.push(context, MaterialPageRoute(builder: (context) => LocationSelectionMapPage(
-      initialLatitude: selectionMarker == null ? null : selectionMarker.position.latitude, 
-      initialLongitude: selectionMarker == null ? null : selectionMarker.position.longitude,
+      initialLatitude: selectionMarker == null ? widget.initialLatitude : selectionMarker.position.latitude, 
+      initialLongitude: selectionMarker == null ? widget.initialLongitude : selectionMarker.position.longitude,
       title: widget.title,
     )));
     if (newLocation != null) {
