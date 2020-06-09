@@ -81,8 +81,9 @@ class _AddPlant extends State<AddPlant> {
       selectedDate = new DateTime(lastWaterDate.year, lastWaterDate.month, lastWaterDate.day);
       selectedTime = new TimeOfDay(hour: lastWaterDate.hour, minute: lastWaterDate.minute);
     }
+
     _fetchedPlants.then((plants) =>
-        plantTypeName = plants.firstWhere((element) => element.id == newPlant.plantId)?.name
+      plantTypeName = plants.firstWhere((element) => element.id == newPlant.plantId, orElse: () => null)?.name
     );
 
     print(newPlant);

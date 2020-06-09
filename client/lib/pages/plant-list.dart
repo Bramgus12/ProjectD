@@ -92,6 +92,7 @@ class _PlantListState extends State<PlantList> {
     }
     on ApiConnectionException catch (e) {
       setState(() {
+        plantListItems = null;
         failedFetchingPlants = "Het lijkt er op dat er momenteel geen verbinding met de server gemaakt kan worden, probeer het later nog een keer.";
         hideAddButton = true;
       });
@@ -99,6 +100,7 @@ class _PlantListState extends State<PlantList> {
     }
     on InvalidCredentialsException catch (e) {
       setState(() {
+        plantListItems = null;
         failedFetchingPlants = "Het lijkt er op dat u niet bent ingelogd, log in of maak een nieuw account aan.";
         hideAddButton = true;
       });
@@ -106,6 +108,7 @@ class _PlantListState extends State<PlantList> {
     }
     on StatusCodeException catch(e) {
       setState(() {
+        plantListItems = null;
         failedFetchingPlants = "U heeft nog geen planten toegevoegd, klik nu op het kruisje rechts onder, of maak een foto met de camera.";
         hideAddButton = false;
       });
@@ -179,7 +182,6 @@ class _PlantListState extends State<PlantList> {
                           ),
                         ],
                       );
-
                     }
 
                     if(failedFetchingPlants != null){
