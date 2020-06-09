@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:plantexpert/api/Plant.dart';
 import 'package:plantexpert/api/UserPlant.dart';
 import 'package:plantexpert/Utility.dart';
+import 'package:plantexpert/widgets/stateful-wrapper.dart';
 
 import '../MenuNavigation.dart';
 import '../pages/plant-list.dart';
@@ -22,6 +23,8 @@ class PlantDetail extends StatelessWidget {
         assert(plant != null),
         assert(getUserPlantImage != null);
 
+  CachedNetworkImage userPlantImage;
+
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
@@ -33,38 +36,40 @@ class PlantDetail extends StatelessWidget {
         title: Text("Plant detail", style: TextStyle(fontFamily: 'Libre Baskerville')),
         centerTitle: true,
       ),
-      body: DefaultTextStyle(
-        style: TextStyle(
-          fontFamily: 'Libre Baskerville',
-          color: Colors.black
-        ),
-        child: Container(
-          padding: EdgeInsets.all(10.0),
-          width: MediaQuery.of(context).size.width,
-          child: ListView(
-            children: <Widget>[
-              FutureBuilder(
-                future: getUserPlantImage(userPlant),
-                builder: (builder, snapshot) {
-                  if (snapshot.hasData) {
-                    CachedNetworkImage img = snapshot.data;
-                    return Container(
-                      height: img.height != null && MediaQuery.of(context).size.height * 0.4 > img.height ? img.height : MediaQuery.of(context).size.height * 0.4,
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        child: snapshot.data,
-                      ),
-                    );
-                  }
-                  return SizedBox.shrink();
-                },
-              ),
-              SizedBox(height: 20),
+      body: StatefulWrapper(
+        onInit: () { (getUserPlantImage(userPlant) as Future<CachedNetworkImage>).then((image) => userPlantImage = image); },
+        child: DefaultTextStyle(
+          style: TextStyle(
+              fontFamily: 'Libre Baskerville',
+              color: Colors.black
+          ),
+          child: Container(
+            padding: EdgeInsets.all(10.0),
+            width: MediaQuery.of(context).size.width,
+            child: ListView(
+              children: <Widget>[
+                FutureBuilder(
+                  future: getUserPlantImage(userPlant),
+                  builder: (builder, snapshot) {
+                    if (snapshot.hasData) {
+                      CachedNetworkImage img = snapshot.data;
+                      return Container(
+                        height: img.height != null && MediaQuery.of(context).size.height * 0.4 > img.height ? img.height : MediaQuery.of(context).size.height * 0.4,
+                        child: Align(
+                          alignment: Alignment.topCenter,
+                          child: snapshot.data,
+                        ),
+                      );
+                    }
+                    return SizedBox.shrink();
+                  },
+                ),
+                SizedBox(height: 20),
 
-              Row(
-                children: <Widget>[
+                Row(
+                  children: <Widget>[
                     Expanded(
-                      flex: 1,
+                        flex: 1,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -84,7 +89,9 @@ class PlantDetail extends StatelessWidget {
                       child: Align(
                         alignment: Alignment.topRight,
                         child: RawMaterialButton(
-                          onPressed: () { },
+                          onPressed: () {
+                            Navigator.pushReplacementNamed(context, '/add-plant', arguments: { 'plant': userPlant, 'userPlantImage': userPlantImage});
+                          },
                           elevation: 2.0,
                           fillColor: theme.accentColor,
                           child: Icon(
@@ -97,31 +104,32 @@ class PlantDetail extends StatelessWidget {
                         ),
                       ),
                     )
-                ],
-              ),
+                  ],
+                ),
 
-              Text('Water gegeven op', style: TextStyle(color: theme.accentColor, fontSize: 18)),
-              Text(
-                  userPlant.lastWaterDate != null
-                      ? formatDate(userPlant.lastWaterDate)
-                      : 'Niet van toepassing',
-                  style: TextStyle(color: Colors.black)),
-              SizedBox(height: 20),
-              Text('Plantsoort', style: TextStyle(color: theme.accentColor, fontSize: 18)),
-              Text(plant.name),
-              SizedBox(height: 20),
-              Text('Temperatuur', style: TextStyle(color: theme.accentColor, fontSize: 18)),
-              Text("De temperatuur van de ruimte waar de plant zich bevind liggen tussen de ${userPlant.minTemp}℃ en de ${userPlant.maxTemp}℃."),
-              Text("De aangeraden temperatuur van de ruimte waar de plant zich bevind ligt rond de ${plant.optimalTemp}℃. "),
-              SizedBox(height: 20),
-              Text('Plant pot', style: TextStyle(color: theme.accentColor, fontSize: 18)),
-              Text("De inhoud van de pot waar de plant in zit is ${userPlant.potVolume} liter."),
-              SizedBox(height: 20),
+                Text('Water gegeven op', style: TextStyle(color: theme.accentColor, fontSize: 18)),
+                Text(
+                    userPlant.lastWaterDate != null
+                        ? formatDate(userPlant.lastWaterDate)
+                        : 'Niet van toepassing',
+                    style: TextStyle(color: Colors.black)),
+                SizedBox(height: 20),
+                Text('Plantsoort', style: TextStyle(color: theme.accentColor, fontSize: 18)),
+                Text(plant.name),
+                SizedBox(height: 20),
+                Text('Temperatuur', style: TextStyle(color: theme.accentColor, fontSize: 18)),
+                Text("De temperatuur van de ruimte waar de plant zich bevind liggen tussen de ${userPlant.minTemp}℃ en de ${userPlant.maxTemp}℃."),
+                Text("De aangeraden temperatuur van de ruimte waar de plant zich bevind ligt rond de ${plant.optimalTemp}℃. "),
+                SizedBox(height: 20),
+                Text('Plant pot', style: TextStyle(color: theme.accentColor, fontSize: 18)),
+                Text("De inhoud van de pot waar de plant in zit is ${userPlant.potVolume} liter."),
+                SizedBox(height: 20),
 
-            ],
+              ],
+            ),
           ),
         ),
-      ),
+      )
     );
   }
 }

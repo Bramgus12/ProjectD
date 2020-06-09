@@ -75,7 +75,11 @@ class _PlantListState extends State<PlantList> {
           var tmpPlantListItems = pli
           // FIXME: the database contains plants without a nickname
               .where((p) => p.nickname != null)
-              .map((p) => PlantListItem(userPlant: p, plantImage: getUserPlantImage(p), plant: listOfPlants.elementAt(listOfPlants.indexWhere((element) => element.id == p.plantId)),))
+              .map((p) => PlantListItem(
+                userPlant: p,
+                plantImage: getUserPlantImage(p),
+                plant: listOfPlants.elementAt(listOfPlants.indexWhere((element) => element.id == p.plantId)),
+                refreshView: _reloadUserPlants,))
               .toList();
           setState(() {
             plantListItems = tmpPlantListItems;
