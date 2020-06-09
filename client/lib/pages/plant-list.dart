@@ -9,6 +9,7 @@ import 'package:plantexpert/api/UserPlant.dart';
 import 'package:plantexpert/Utility.dart';
 import 'package:plantexpert/widgets/PlantListItem.dart';
 import 'package:plantexpert/widgets/stateful-wrapper.dart';
+import 'package:plantexpert/widgets/InputTextField.dart';
 
 import '../MenuNavigation.dart';
 
@@ -49,6 +50,8 @@ class _PlantListState extends State<PlantList> {
   bool hideAddButton = true;
   // save the fetched plants so they don't have to get fetched multiple times in a row 
   List<PlantListItem> plantListItems;
+  List<PlantListItem> filteredPlantListItems;
+  bool _inputHasFocus = false;
 
   void initState() {
     super.initState();
@@ -115,6 +118,7 @@ class _PlantListState extends State<PlantList> {
     ThemeData theme = Theme.of(context);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       drawer: MenuNavigation(),
       bottomNavigationBar: BottomNavigation(),
       appBar: AppBar(
@@ -131,9 +135,51 @@ class _PlantListState extends State<PlantList> {
                   child:
                   (){
                     if(plantListItems != null){
-                      return ListView(
-                        children: plantListItems,
+                      return Column(
+                        children: <Widget>[
+                          Flexible(
+                            child: Padding(
+                              padding: EdgeInsets.all(16),
+                              child: SearchField(
+                                  onChanged: (String filter) {
+                                    filter = filter.trim();
+                                    bool isEmpty = filter.length == 0 || filter.replaceAll(' ', '').length == 0;
+
+                                    if (isEmpty) {
+                                      filteredPlantListItems = null;
+                                      setState(() {});
+                                      return;
+                                    }
+
+                                    filteredPlantListItems = plantListItems
+                                        .where((item) => item.userPlant.nickname
+                                        .toLowerCase()
+                                        .contains(filter))
+                                        .toList();
+                                    setState(() {});
+                                  },
+                                ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: MediaQuery.of(context).orientation == Orientation.portrait
+                                ? MediaQuery.of(context).size.height <= 1920 ? 6 : 5
+                                : MediaQuery.of(context).size.height <= 1920 ? 2 : 1,
+                            child: () {
+                              if (filteredPlantListItems != null && filteredPlantListItems.length == 0) {
+                                return Center(
+                                  child: Text('Geen planten gevonden.')
+                                );
+                              }
+
+                              return ListView(
+                                children: filteredPlantListItems ?? plantListItems,
+                              );
+                            }()
+                          ),
+                        ],
                       );
+
                     }
 
                     if(failedFetchingPlants != null){
@@ -168,6 +214,23 @@ class _PlantListState extends State<PlantList> {
             Icons.control_point
         ),
       ) : null,
+    );
+  }
+}
+
+class SearchField extends StatelessWidget {
+  final Function(String) onChanged;
+  
+  SearchField({this.onChanged});
+  
+  @override
+  Widget build(BuildContext context) {
+    return InputTextField(
+      label: '',
+      title: '',
+      labelText: 'Zoek op naam',
+      showSpacing: false,
+      onChanged: this.onChanged
     );
   }
 }
