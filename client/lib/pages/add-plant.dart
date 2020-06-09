@@ -658,10 +658,14 @@ class _AddPlant extends State<AddPlant> {
                   Text("Locatie van de plant", style: TextStyle(color: theme.accentColor, fontSize: 18)),
                   Text("Waar staat de plant ongeveer."),
                   SizedBox(height: 10),
-                  LocationSelectionMap(initialLatitude: newPlant.latitude, initialLongitude: newPlant.longitude, buttonOnly: true, onLocationChanged: (double longitude, double latitude) {
-                    newPlant.latitude = latitude;
-                    newPlant.longitude = longitude;
-                  }, title: "Plant Locatie",),
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: 200,
+                    child: LocationSelectionMap(initialLatitude: newPlant.latitude, initialLongitude: newPlant.longitude, previewOnly: true, onLocationChanged: (double latitude, double longitude) {
+                      newPlant.latitude = latitude;
+                      newPlant.longitude = longitude;
+                    }, title: "Plant Locatie",),
+                  ),
 
                   SizedBox(height: 20),
 
