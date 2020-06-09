@@ -88,7 +88,10 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> with Automa
       location.latitude <= northEastLimit.latitude &&
       location.longitude >= soutWestLimit.longitude &&
       location.longitude <= northEastLimit.longitude
-    )) return null;
+    )) {
+      Scaffold.of(context).showSnackBar( SnackBar(content: Text("Kies alstublieft een locatie binnen Nederland.")) );
+      return null;
+    };
 
     final MarkerId markerId = MarkerId((_nextMarkerId++).toString());
     final Marker marker = Marker(
