@@ -127,13 +127,15 @@ class ApiConnection {
   // https://github.com/Baseflow/flutter_cached_network_image/issues/144
   // ----------
   // Fetch image from api and return a (cached) resource.
-  Future<CachedNetworkImage> _fetchCachedImage(String url, { Map<String, String> headers }) async {
+  Future<CachedNetworkImage> _fetchCachedImage(String url, { Map<String, String> headers, double height = 400, double width }) async {
     headers = await _createHeaders(headers: headers, accept: "image/jpeg", contentType: "image/jpeg");
     String fullUrl = baseUrl + url;
     return CachedNetworkImage(
       imageUrl: fullUrl,
       httpHeaders: headers,
-      height: 400,
+      height: height,
+      width: width,
+      alignment: Alignment.centerLeft,
       placeholder: (BuildContext context, String url) =>
           Image.asset("assets/images/image-placeholder.png"),
       errorWidget: (context, url, error) =>
@@ -254,12 +256,20 @@ class ApiConnection {
     UserPlant responseUserPlant = UserPlant.fromJson(jsonUserPlant);
     // Copy the user plant id created by the server to the local user plant object
     userPlant.id = responseUserPlant.id;
-    uploadUserPlantImage(userPlant, imageFile);
+    await uploadUserPlantImage(userPlant, imageFile);
     return userPlant;
   }
 
   Future<http.Response> putUserPlant(UserPlant userPlant) async {
     return await _putJson("user/userplants?id=${userPlant.id}", userPlant);
+  }
+
+  Future<List<dynamic>> putUserPlantWithImage(UserPlant userPlant, File imageFile) async {
+    userPlant.imageName = _generateImageFileName();
+    http.Response plantResponse = await putUserPlant(userPlant);
+    // Copy the user plant id created by the server to the local user plant object
+    http.Response imageResponse = await uploadUserPlantImage(userPlant, imageFile);
+    return [plantResponse, imageResponse];
   }
 
   Future<http.Response> deleteUserPlant(UserPlant userPlant) async {
@@ -276,8 +286,8 @@ class ApiConnection {
     return await _fetchImage("user/userplants/${userPlant.id}/${userPlant.imageName}/");
   }
 
-  Future<CachedNetworkImage> fetchCachedPlantImage(UserPlant userPlant) async {
-    return _fetchCachedImage("user/userplants/${userPlant.id}/${userPlant.imageName}/");
+  Future<CachedNetworkImage> fetchCachedPlantImage(UserPlant userPlant,  { double height = 400, double width }) async {
+    return _fetchCachedImage("user/userplants/${userPlant.id}/${userPlant.imageName}/", width: width, height: height);
   }
 
   // Login

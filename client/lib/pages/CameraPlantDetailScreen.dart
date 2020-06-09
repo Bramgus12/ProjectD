@@ -11,10 +11,13 @@ import '../pages/plant-list.dart';
 
 class CameraPlantDetailScreen extends StatelessWidget {
   final Plant plant;
+  final File plantImage;
 
   CameraPlantDetailScreen({
     this.plant,
-  }) : assert(plant != null);
+    this.plantImage
+  }) : assert(plant != null),
+  assert(plantImage != null);
 
   Widget getIcon( String title, int numberOfStars, String icon) {
     var res = <Widget>[Container(child: Text(title))];
@@ -71,7 +74,17 @@ class CameraPlantDetailScreen extends StatelessWidget {
                       child: Align(
                         alignment: Alignment.centerRight,
                         child: RawMaterialButton(
-                          onPressed: () { },
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/add-plant',
+                              arguments: {
+                                "plant": new UserPlant(plantId: plant.id, imageName: plant.imageName),
+                                "plantImage": plantImage,
+                              }
+                            ).then((value) {
+                              if(value == "addedPlant")
+                                Navigator.pushReplacementNamed(context, "/my-plants");
+                            });
+                          },
                           elevation: 2.0,
                           fillColor: theme.accentColor,
                           child: Icon(

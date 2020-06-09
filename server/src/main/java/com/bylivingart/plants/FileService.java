@@ -70,11 +70,11 @@ public class FileService {
         }
     }
 
-    public static boolean deleteImage(String folderName, String fileName, boolean forUsers) throws Exception {
-        return deleteImage(folderName, fileName, null, forUsers);
+    public static void deleteImage(String folderName, String fileName, boolean forUsers) throws Exception {
+        deleteImage(folderName, fileName, null, forUsers);
     }
 
-    public static boolean deleteImage(String folderName, String fileName, String userPlantId, boolean forUsers) throws Exception {
+    public static void deleteImage(String folderName, String fileName, String userPlantId, boolean forUsers) throws Exception {
         File f;
         if (userPlantId != null) {
             f = GetPropertyValues.getResourcePath(folderName, fileName, userPlantId, forUsers);
@@ -83,9 +83,14 @@ public class FileService {
         }
 
         if (f.exists()) {
-            return f.delete();
+            if (f.delete()){
+                System.out.println("Image deletion successful");
+            } else {
+                throw new InternalServerException("Couldn't delete file");
+            }
+
         } else {
-            throw new NotFoundException("File not found");
+            System.out.println("Image to be deleted was not found.");
         }
     }
 }
