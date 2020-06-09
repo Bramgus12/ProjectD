@@ -189,7 +189,7 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> with Automa
             compassEnabled: true,
             indoorViewEnabled: true,
             buildingsEnabled: false,
-            myLocationButtonEnabled: false
+            myLocationButtonEnabled: false,
             cameraTargetBounds: CameraTargetBounds(LatLngBounds(
               southwest: LatLng(50.803721015, 3.31497114423),
               northeast: LatLng(53.5104033474, 7.09205325687))),
