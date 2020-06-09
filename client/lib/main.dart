@@ -36,18 +36,31 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/plant-detail': (context) => ModalRoute.of(context).settings.arguments,
-        '/camera-plant-detail': (context) => CameraPlantDetailScreen(
-          plant: (ModalRoute.of(context).settings.arguments as Map<String, Object>)['plant'],
-          plantImage: (ModalRoute.of(context).settings.arguments as Map<String, Object>)['plantImage'],
+        '/camera-plant-detail': (context) {
+          Map<String, Object> args = (ModalRoute.of(context).settings.arguments as Map<String, Object>);
 
-        ),
+          if(args == null)
+            return CameraPlantDetailScreen();
+
+          return CameraPlantDetailScreen(
+            plant: args.containsKey("plant") ? args['plant'] : null,
+            plantImage: args.containsKey("plantImage") ? args['plantImage'] : null,
+          );
+        },
         '/account' : (context) => Account(),
-        '/add-plant' : (context) => (ModalRoute.of(context).settings.arguments as Map<String, Object>) != null &&
-              (ModalRoute.of(context).settings.arguments as Map<String, Object>).length > 1 ?
-                AddPlant(
-                  plant: (ModalRoute.of(context).settings.arguments as Map<String, Object>)['plant'],
-                  file: (ModalRoute.of(context).settings.arguments as Map<String, Object>)['plantImage'],
-        ) : AddPlant(),
+        '/add-plant' : (context) {
+          Map<String, Object> args = (ModalRoute.of(context).settings.arguments as Map<String, Object>);
+
+          if(args == null)
+            return AddPlant();
+
+          return AddPlant(
+            plant: args.containsKey("plant") ? args['plant'] : null,
+            file: args.containsKey("plantImage") ? args['plantImage'] : null,
+            userPlantImage: args.containsKey("userPlantImage") ? args['userPlantImage'] : null
+          );
+        }
+
       },
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {
