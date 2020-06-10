@@ -11,6 +11,8 @@ import 'package:plantexpert/api/UserPlant.dart';
 import 'package:plantexpert/Utility.dart';
 import 'package:plantexpert/pages/LocationSelectionMap.dart';
 import 'package:plantexpert/widgets/InputTextField.dart';
+import 'package:plantexpert/widgets/NotificationManager.dart';
+import 'dart:convert';
 
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
@@ -158,11 +160,56 @@ class _AddPlant extends State<AddPlant> {
           });
           print(e);
         }
+        on StatusCodeException catch (e) {
+          String errorMessage = "Onverwachte fout bij het opslaan van gegevens.";
+          if (e.reponse.statusCode == 400) {
+            try {
+              Map<String, dynamic> validationErrors = json.decode(utf8.decode(e.reponse.bodyBytes))["validationErrors"];
+              errorMessage = "Fouten bij opslaan van plant:";
+              validationErrors.forEach((key, value) {
+                errorMessage += "\n• " + value;
+              });
+            } catch(e) {
+              print(e);
+            }
+          }
+          setState(() {
+            _serverErrorMessage = errorMessage;
+            result = null;
+          });
+          print(e);
+        }
 
 
       Navigator.pop(context);
 
       if (result != null) {
+        var tempPlant = listOfPlants.firstWhere((plant) => plant.id == newPlant.plantId);
+
+        if (!hideDatePicker) {
+          calculateNextWateringDate(
+              tempPlant.waterNumber.toInt(),
+              newPlant.potVolume,
+              newPlant.distanceToWindow.toInt(),
+              tempPlant.waterScale.toInt()
+          ).then((value) => scheduleNotification(
+              (value.millisecondsSinceEpoch ~/ 1000) - (DateTime.now().millisecondsSinceEpoch ~/ 1000) <= 0 ?
+              5 :
+              (value.millisecondsSinceEpoch ~/ 1000) - (DateTime.now().millisecondsSinceEpoch ~/ 1000) ,
+              '\'${newPlant.nickname}\' Heeft water nodig!',
+              'Het is al weer een paar dagen geleden sinds \'${newPlant.nickname}\' water heeft gehad, vergeet hem geen water te geven.',
+              'Water geven',
+              'Notificaties voor het water geven van de plant'));
+        } else {
+          scheduleNotification(
+              ((DateTime.now().add(Duration(seconds: 5)).millisecondsSinceEpoch ~/ 1000) - (DateTime.now().millisecondsSinceEpoch ~/ 1000)) ,
+              'Geef \'${newPlant.nickname}\' voor het eerst water!',
+              '\'${newPlant.nickname}\' heeft nog geen water gehad, geef hem voor het eerst een klein beetje water, zodat de bodem vochtig is.',
+              'Water geven',
+              'Notificaties voor het water geven van de plant');
+        }
+
+
         // SocketException occurs before the loading dialog is shown,
         // use try catch to prevent `The getter 'focusScopeNode' was called on null`
         Navigator.pop(context, "addedPlant");

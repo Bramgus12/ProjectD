@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:plantexpert/Utility.dart';
 import 'package:plantexpert/api/ApiConnection.dart';
 import 'package:plantexpert/api/ApiConnectionException.dart';
+import 'package:plantexpert/api/Plant.dart';
 import 'package:plantexpert/api/UserPlant.dart';
 import 'package:http/http.dart' as http;
 
@@ -70,7 +72,7 @@ class _PriorityPlantsCardState extends State<PriorityPlantsCard> {
                       ),
                     ),
                     title: Text(userPlants[index].nickname),
-                    subtitle: Text("${sinceLastWaterTime.inDays} dagen geleden."),
+                    subtitle: Text(userPlants[index].lastWaterDate.millisecondsSinceEpoch == 0 ? 'Deze plant heeft nog geen water gehad.' : "${sinceLastWaterTime.inDays} dagen geleden."),
                     trailing: OutlineButton(
                       onPressed: () => updateLastWaterDate(userPlants[index], context), 
                       child: Row(
@@ -231,8 +233,10 @@ class _PriorityPlantsCardState extends State<PriorityPlantsCard> {
         status = _Status.loading;
     });
     List<UserPlant> allUserPlants;
+    List<Plant> allPlants;
     try {
       allUserPlants = await ApiConnection().fetchUserPlants();
+      allPlants = await ApiConnection().fetchPlants();
     } on InvalidCredentialsException catch(e) {
       if(!this.mounted)
         return;
@@ -269,10 +273,15 @@ class _PriorityPlantsCardState extends State<PriorityPlantsCard> {
     if(!this.mounted)
       return;
 
-    // Filter list, keep only user plants that haven't received water in the last 24 hours.
-    // TODO: Change this to be calculated per plant type with a formula.
-    DateTime tooLongWithoutWater = DateTime.now().subtract(Duration(days: 1));
-    List<UserPlant> urgentUserPlants = allUserPlants.where((userPlant) => userPlant.lastWaterDate.millisecondsSinceEpoch < tooLongWithoutWater.millisecondsSinceEpoch ).toList();
+    List<UserPlant> urgentUserPlants = List<UserPlant>();
+      for(var userPlant in allUserPlants) {
+        Plant plant = allPlants.firstWhere((plant) => plant.id == userPlant.plantId);
+        if(plant != null){
+          var nextWaterDate =  await calculateNextWateringDate(plant.waterNumber.toInt(), userPlant.potVolume, userPlant.distanceToWindow.toInt(), plant.waterScale.toInt(), date: userPlant.lastWaterDate);
+          if(DateTime.now().difference(nextWaterDate).inDays >= 0)
+            urgentUserPlants.add(userPlant);
+        }
+      }
 
     if(urgentUserPlants.length == 0) {
       setState(() {
@@ -283,6 +292,8 @@ class _PriorityPlantsCardState extends State<PriorityPlantsCard> {
     }
     urgentUserPlants.sort((userPlant1, userPlant2) => userPlant1.lastWaterDate.millisecondsSinceEpoch > userPlant2.lastWaterDate.millisecondsSinceEpoch ? 1 : 0 );
 
+    if(!this.mounted)
+      return;
     setState(() {
       userPlants = urgentUserPlants;
       status = _Status.done;
