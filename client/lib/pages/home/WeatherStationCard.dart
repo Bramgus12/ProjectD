@@ -5,6 +5,7 @@ import 'package:plantexpert/api/ApiConnection.dart';
 import 'package:plantexpert/api/ApiConnectionException.dart';
 import 'package:plantexpert/api/WeatherStation.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:permission_handler/permission_handler.dart' as permission_handler;
 
 class WeatherStationCard extends StatefulWidget {
   @override
@@ -148,6 +149,8 @@ class _WeatherStationCardState extends State<WeatherStationCard> {
           locationStatus = _LocationStatus.denied;
           errorMessage = "De app heeft geen toestemming om de locatie service te gebruiken.\n\nInformatie over het weer voor de huidige locatie kan niet worden opgehaald.";
           status = _Status.error;
+          if(promptUser)
+            showSnackbarForLocationPermission(errorMessage);
         });
         return locationStatus;
       }
@@ -158,6 +161,26 @@ class _WeatherStationCardState extends State<WeatherStationCard> {
       locationStatus = _LocationStatus.working;
     });
     return locationStatus;
+  }
+
+  void showSnackbarForLocationPermission(String message) {
+    Scaffold.of(context).showSnackBar( SnackBar(
+      content: Row(
+        children: <Widget>[
+          Expanded(
+            flex: 2,
+            child: Text(message)
+          ),
+          Expanded(
+            flex: 1,
+            child: RaisedButton(
+              onPressed: permission_handler.openAppSettings,
+              child: Text("Instellingen"),
+            ),
+          )
+        ],
+      ))
+    );
   }
 
   void getWeatherStation({bool promptUser=false, bool userRefresh=false}) async {
