@@ -9,6 +9,7 @@ import 'package:plantexpert/Utility.dart';
 import 'package:plantexpert/api/JsonSerializeable.dart';
 import 'package:plantexpert/api/Plant.dart';
 import 'package:plantexpert/api/User.dart';
+import 'package:plantexpert/api/Forecast.dart';
 import 'package:plantexpert/api/UserPlant.dart';
 import 'package:plantexpert/api/WeatherStation.dart';
 import 'package:http_parser/http_parser.dart';
@@ -207,7 +208,19 @@ class ApiConnection {
   Future<http.Response> putAdminUser(User user) async {
     return await _putJson("admin/users/${user.id}/", user);
   }
-  
+
+  // Weather forecast
+  Future<List<Forecast>> fetchWeatherForecast() async {
+    Map<String, dynamic> jsonWeatherStations = await _fetchJsonObject('weather/forecast/');
+    List<Forecast> forecasts = List<Forecast>();
+    jsonWeatherStations.forEach((key, value) {
+      if(key.toLowerCase().contains('dagplus')){
+        forecasts.add(Forecast.fromJson( value ));
+      }
+    });
+    return forecasts;
+  }
+
   // Weather stations
   Future<List<WeatherStation>> fetchWeatherStations(String region) async {
     Iterable jsonWeatherStations = await _fetchJsonList('weather/$region/');
