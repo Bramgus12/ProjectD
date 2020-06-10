@@ -72,7 +72,7 @@ class _PriorityPlantsCardState extends State<PriorityPlantsCard> {
                       ),
                     ),
                     title: Text(userPlants[index].nickname),
-                    subtitle: Text("${sinceLastWaterTime.inDays} dagen geleden."),
+                    subtitle: Text(userPlants[index].lastWaterDate.millisecondsSinceEpoch == 0 ? 'Deze plant heeft nog geen water gehad.' : "${sinceLastWaterTime.inDays} dagen geleden."),
                     trailing: OutlineButton(
                       onPressed: () => updateLastWaterDate(userPlants[index], context), 
                       child: Row(
