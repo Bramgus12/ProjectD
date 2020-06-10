@@ -273,13 +273,6 @@ class _PriorityPlantsCardState extends State<PriorityPlantsCard> {
     if(!this.mounted)
       return;
 
-    // Filter list, keep only user plants that haven't received water in the last 24 hours.
-    // TODO: Change this to be calculated per plant type with a formula.
-    DateTime tooLongWithoutWater = DateTime.now().subtract(Duration(days: 1));
-
-
-//    List<UserPlant> urgentUserPlants = allUserPlants.where((userPlant) => userPlant.lastWaterDate.millisecondsSinceEpoch < tooLongWithoutWater.millisecondsSinceEpoch ).toList();
-    // TODO: Make this generation faster, this will take very long with a large allUserPlants
     List<UserPlant> urgentUserPlants = List<UserPlant>();
       for(var userPlant in allUserPlants) {
         Plant plant = allPlants.firstWhere((plant) => plant.id == userPlant.plantId);
@@ -299,6 +292,8 @@ class _PriorityPlantsCardState extends State<PriorityPlantsCard> {
     }
     urgentUserPlants.sort((userPlant1, userPlant2) => userPlant1.lastWaterDate.millisecondsSinceEpoch > userPlant2.lastWaterDate.millisecondsSinceEpoch ? 1 : 0 );
 
+    if(!this.mounted)
+      return;
     setState(() {
       userPlants = urgentUserPlants;
       status = _Status.done;
