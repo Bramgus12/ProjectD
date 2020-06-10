@@ -6,37 +6,37 @@ import javax.validation.constraints.*;
 public class Plants {
     private int id;
 
-    @NotBlank
+    @NotBlank(message = "Mag niet leeg zijn")
     private String name;
 
-    @NotNull
+    @NotNull(message = "Mag niet leeg zijn")
     private double waterScale;
 
-    @NotNull
+    @NotNull(message = "Mag niet leeg zijn")
     private double waterNumber;
 
-    @NotBlank
+    @NotBlank(message = "Mag niet leeg zijn")
     private String waterText;
 
-    @NotNull
+    @NotNull(message = "Mag niet leeg zijn")
     private double sunScale;
 
-    @NotNull
+    @NotNull(message = "Mag niet leeg zijn")
     private double sunNumber;
 
-    @NotBlank
+    @NotBlank(message = "Mag niet leeg zijn")
     private String sunText;
 
-    @NotBlank
+    @NotBlank(message = "Mag niet leeg zijn")
     private String description;
 
-    @NotNull
-    @Min(-20)
-    @Max(55)
+    @NotNull(message = "Mag niet leeg zijn")
+    @Min(value = 0, message = "Temperatuur mag niet lager zijn dan 0")
+    @Max(value = 55, message = "Temperatuur mag niet hoger zijn dan 55")
     private int optimumTemp;
 
     @NotBlank
-    @Pattern(regexp = "[a-zA-Z0-9!-.]+((.jpe?g)|(.JPE?G))", message = "Must be a .jpg or .jpeg")
+    @Pattern(regexp = "[a-zA-Z0-9!-.]+((.jpe?g)|(.JPE?G))", message = "Moet een .jpeg of .jpg zijn")
     private String imageName;
 
     public Plants() {

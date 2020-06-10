@@ -6,41 +6,41 @@ import java.time.LocalDateTime;
 public class UserPlants {
     private int id;
 
-    @NotNull
+    @NotNull(message = "Mag niet leeg zijn")
     private int userId;
 
-    @NotBlank
+    @NotBlank(message = "Mag niet leeg zijn")
     private String nickname;
 
-    @NotNull
+    @NotNull(message = "Mag niet leeg zijn")
     private double potVolume;
 
-    @NotNull
+    @NotNull(message = "Mag niet leeg zijn")
     private double lat;
 
-    @NotNull
+    @NotNull(message = "Mag niet leeg zijn")
     private double lon;
 
-    @NotBlank
-    @Pattern(regexp = "[a-zA-Z0-9!-.]+((.jpe?g)|(.JPE?G))", message = "Must be a .jpeg or a .jpg")
+    @NotBlank(message = "Mag niet leeg zijn")
+    @Pattern(regexp = "[a-zA-Z0-9!-.]+((.jpe?g)|(.JPE?G))", message = "Moet een .jpeg of .jpg zijn")
     private String imageName;
     
-    @NotNull
+    @NotNull(message = "Mag niet leeg zijn")
     private LocalDateTime lastWaterDate;
 
-    @NotNull
+    @NotNull(message = "Mag niet leeg zijn")
     private double distanceToWindow;
 
-    @NotNull
-    @Max(value = 55, message = "Temperature has to be lower than 55")
-    @Min(value = -20, message = "Temperature has to be higher than -20")
+    @NotNull(message = "Mag niet leeg zijn")
+    @Max(value = 55, message = "Temperatuur moet lager zijn dan 55")
+    @Min(value = 0, message = "Temperatuur moet hoger zijn dan 0")
     private int maxTemp;
 
-    @Max(value = 55, message = "Temperature has to be higher than -20")
-    @Min(value = -20, message = "Temperature has to be lower than 55")
+    @Max(value = 55, message = "Temperatuur moet lager zijn dan 55")
+    @Min(value = 0, message = "Temperatuur moet hoger zijn dan 0")
     private int minTemp;
 
-    @NotNull(message = "Has to be a valid plantId")
+    @NotNull(message = "Moet een geldige plantId bevatten")
     private int plantId;
 
     public UserPlants() {

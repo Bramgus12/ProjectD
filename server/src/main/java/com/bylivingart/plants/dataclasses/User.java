@@ -27,10 +27,10 @@ public class User {
     @Pattern(regexp = "(ROLE_)((ADMIN)|(USER))", message = "String should be either 'ROLE_ADMIN' or 'ROLE_USER'")
     private String authority;
 
-    @NotNull
+    @NotNull(message = "Mag niet leeg zijn")
     private Boolean enabled;
 
-    @NotBlank
+    @NotBlank(message = "Mag niet leeg zijn")
     private String name;
 
     @Email(message = "Has to be a valid email")
@@ -39,21 +39,21 @@ public class User {
     @PastOrPresent(message = "Date of birth needs to be in the past or present.")
     private LocalDate dateOfBirth;
 
-    @NotBlank
+    @NotBlank(message = "Mag niet leeg zijn")
     private String streetName;
 
-    @NotNull
+    @NotNull(message = "Mag niet leeg zijn")
     private int houseNumber;
 
-    @NotNull
+    @NotNull(message = "Mag niet leeg zijn")
     private String addition;
 
-    @NotBlank(message = "Cannot be blank or null")
+    @NotBlank(message = "Mag niet leeg zijn")
     private String city;
 
     @Pattern(
             regexp = "\\A[1-9][0-9]{3}[ ]?([A-RT-Za-rt-z][A-Za-z]|[sS][BCbcE-Re-rT-Zt-z])\\z",
-            message = "Postal code must match 1234AB"
+            message = "Postcode moet op 1234AB lijken"
     )
     private String postalCode;
 
