@@ -10,6 +10,7 @@ import 'package:plantexpert/api/Plant.dart';
 import 'package:plantexpert/api/UserPlant.dart';
 import 'package:plantexpert/Utility.dart';
 import 'package:plantexpert/widgets/InputTextField.dart';
+import 'package:plantexpert/widgets/NotificationManager.dart';
 
 import '../MenuNavigation.dart';
 
@@ -117,6 +118,33 @@ class _AddPlant extends State<AddPlant> {
       Navigator.pop(context);
 
       if (result != null) {
+        var tempPlant = listOfPlants.firstWhere((plant) => plant.id == newPlant.plantId);
+
+        if (!hideDatePicker) {
+          calculateNextWateringDate(
+              tempPlant.waterNumber.toInt(),
+              newPlant.potVolume,
+              tempPlant.waterScale.toInt(),
+              newPlant.distanceToWindow.toInt(),
+              tempPlant.waterScale.toInt()
+          ).then((value) => scheduleNotification(
+              (value.millisecondsSinceEpoch ~/ 1000) - (DateTime.now().millisecondsSinceEpoch ~/ 1000) <= 0 ?
+              5 :
+              (value.millisecondsSinceEpoch ~/ 1000) - (DateTime.now().millisecondsSinceEpoch ~/ 1000) ,
+              '\'${newPlant.nickname}\' Heeft water nodig!',
+              'Het is al weer een paar dagen geleden sinds \'${newPlant.nickname}\' water heeft gehad, vergeet hem geen water te geven.',
+              'Water geven',
+              'Notificaties voor het water geven van de plant'));
+        } else {
+          scheduleNotification(
+              ((DateTime.now().add(Duration(seconds: 5)).millisecondsSinceEpoch ~/ 1000) - (DateTime.now().millisecondsSinceEpoch ~/ 1000)) ,
+              'Geef \'${newPlant.nickname}\' voor het eerst water!',
+              '\'${newPlant.nickname}\' heeft nog geen water gehad, geef hem voor het eerst een klein beetje water, zodat de bodem vochtig is.',
+              'Water geven',
+              'Notificaties voor het water geven van de plant');
+        }
+
+
         // SocketException occurs before the loading dialog is shown,
         // use try catch to prevent `The getter 'focusScopeNode' was called on null`
         Navigator.pop(context, "addedPlant");

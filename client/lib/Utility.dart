@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/cupertino.dart';
+import 'package:plantexpert/api/Forecast.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'dart:io';
@@ -12,30 +13,6 @@ import 'package:plantexpert/api/ApiConnection.dart';
 import 'package:plantexpert/api/ApiConnectionException.dart';
 import 'package:plantexpert/api/Plant.dart';
 import 'package:plantexpert/api/UserPlant.dart';
-
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
-
-// Streams are created so that app can respond to notification-related events since the plugin is initialised in the `main` function
-final BehaviorSubject<ReceivedNotification> didReceiveLocalNotificationSubject =
-    BehaviorSubject<ReceivedNotification>();
-
-final BehaviorSubject<String> selectNotificationSubject =
-    BehaviorSubject<String>();
-
-class ReceivedNotification {
-  final int id;
-  final String title;
-  final String body;
-  final String payload;
-
-  ReceivedNotification({
-    @required this.id,
-    @required this.title,
-    @required this.body,
-    @required this.payload,
-  });
-}
 
 // Generate a random string of a given length
 String randomString(int length) {
@@ -49,62 +26,11 @@ String randomString(int length) {
   return generatedString;
 }
 
-Future<void> initializeNotifications() async {
-  var initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
-  var initializationSettingsIOS = IOSInitializationSettings(
-      requestAlertPermission: false,
-      requestBadgePermission: false,
-      requestSoundPermission: false,
-      onDidReceiveLocalNotification:
-          (int id, String title, String body, String payload) async {
-        didReceiveLocalNotificationSubject.add(ReceivedNotification(
-            id: id, title: title, body: body, payload: payload));
-      });
-  var initializationSettings = InitializationSettings(
-      initializationSettingsAndroid, initializationSettingsIOS);
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-      onSelectNotification: (String payload) async {
-    if (payload != null) {
-      debugPrint('notification payload: ' + payload);
-    }
-    selectNotificationSubject.add(payload);
-  });
-}
-
-/// Schedules a notification that specifies a different icon, sound and vibration pattern
-Future<void> scheduleNotification(
-  int seconds,
-  String title,
-  String body,
-  String channelName,
-  String channelDesc,
-) async {
-  var scheduledNotificationDateTime =
-      DateTime.now().add(Duration(seconds: seconds));
-//
-  var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-      'nl.bylivingart.plantexpert', channelName, channelDesc,
-      importance: Importance.Max, priority: Priority.High, ticker: 'ticker');
-  var iOSPlatformChannelSpecifics = IOSNotificationDetails();
-  var platformChannelSpecifics = NotificationDetails(
-      androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-  await flutterLocalNotificationsPlugin.schedule(
-      DateTime.now().hour +
-          DateTime.now().minute +
-          DateTime.now().second +
-          DateTime.now().millisecond,
-      title,
-      body,
-      scheduledNotificationDateTime,
-      platformChannelSpecifics);
-}
-
 // dd-MM-yyyy HH:mm
 String formatDate(DateTime date) {
   if (date == null) {
     throw new ArgumentError('date is null');
   }
-
   var year = date.year;
   var month = date.month.toString().padLeft(2, '0');
   var day = date.day.toString().padLeft(2, '0');
@@ -112,4 +38,28 @@ String formatDate(DateTime date) {
   var minute = date.minute.toString().padLeft(2, '0');
 
   return '$day-$month-$year $hour:$minute';
+}
+
+// Verbruik water = (((waterhoeveelheid per dag van de plant * inhoud plant pot modifier) * dag) * (raam afstand modifier * zonkans))
+/// Calculate the next date the plant will need water
+/// [waterAmountPerDay] is in ml/day the plant needs
+/// [potVolume] is the volume in liters
+/// [waterInerval] is the frequency a plant needs water, e.g. a plant needs every 4 days water
+/// [windowDistance] is the distance of the plant from the window, on a scale of 1 to 5, where 5 is close to the window and 5 is far from the window
+Future<DateTime> calculateNextWateringDate(int waterAmountPerDay, double potVolume, int waterInterval, int windowDistance, int waterScale) async {
+  var api = new ApiConnection();
+  List<Forecast> forecasts = (await api.fetchWeatherForecast());
+  double volumePlantPotModifier = 0;
+  [{10: 2.6}, {8: 2.2}, {5: 1.8}, {3: 1.4}, {1: 1.0}].forEach((element) { element.forEach((key, value) { if(key <= potVolume.ceil()) { volumePlantPotModifier = value; } }); });
+  double windowRangeModifier = 0;
+  [{1: 0.8}, {2: 0.85}, {3: 0.9}, {4: 0.95}, {5: 1}].forEach((element) { if(element.containsKey(windowDistance)) windowRangeModifier = element[windowDistance]; });
+  double sunChance = 0;
+  double totalWaterNeeded = waterScale * 35.0; //35-175ml
+  forecasts.forEach((element) { sunChance += element.sunChanse; });
+  sunChance /= forecasts.length;
+  int waterPerDay = ( ( (waterAmountPerDay * volumePlantPotModifier) * (windowRangeModifier + (sunChance ~/ 100) ) ) ).ceil();
+
+  int daysToNextWatering =  totalWaterNeeded ~/ waterPerDay;
+
+  return DateTime.now().add(Duration(days: daysToNextWatering));
 }

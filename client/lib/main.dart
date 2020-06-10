@@ -3,12 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:plantexpert/pages/CameraPlantDetailScreen.dart';
 import 'package:plantexpert/pages/account/Account.dart';
+import 'package:plantexpert/widgets/NotificationManager.dart';
 
-import 'Utility.dart';
 import 'pages/Camera.dart';
 import 'pages/home/Home.dart';
 import 'pages/plant-list.dart';
-import 'pages/plant-detail.dart';
 import 'pages/add-plant.dart';
 
 Future<void> main() async {
@@ -29,6 +28,7 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       title: 'Plant Expert',
       theme: ThemeData(
