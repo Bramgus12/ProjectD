@@ -51,11 +51,11 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> with Automa
     super.initState();
 
     if (widget.initialLatitude != null && widget.initialLongitude != null) {
-      setSelectionMarker(LatLng(widget.initialLatitude, widget.initialLongitude), moveCamera: true, animateCamera: false);
+      setSelectionMarker(LatLng(widget.initialLatitude, widget.initialLongitude), moveCamera: true, animateCamera: false, fromInit: true);
     }
     else if (LocationSelectionMap.lastLocationData != null &&
         LocationSelectionMap.lastLocationData.time > DateTime.now().millisecondsSinceEpoch - Duration(minutes: 5).inMilliseconds ) {
-      setSelectionMarker(LatLng(LocationSelectionMap.lastLocationData.latitude, LocationSelectionMap.lastLocationData.longitude), moveCamera: true, animateCamera: false);
+      setSelectionMarker(LatLng(LocationSelectionMap.lastLocationData.latitude, LocationSelectionMap.lastLocationData.longitude), moveCamera: true, animateCamera: false, fromInit: true);
     }
     else {
       enableLocation(false).then((_LocationStatus newLocationStatus) async {
@@ -67,7 +67,7 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> with Automa
           });
           LocationData locationData = await location.getLocation();
           LocationSelectionMap.lastLocationData = locationData;
-          setSelectionMarker(LatLng(locationData.latitude, locationData.longitude), moveCamera: true, animateCamera: false);        
+          setSelectionMarker(LatLng(locationData.latitude, locationData.longitude), moveCamera: true, animateCamera: false, fromInit: true);        
           if (!this.mounted)
             return;
           setState(() {
@@ -78,7 +78,7 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> with Automa
     }
   }
 
-  Marker setSelectionMarker(LatLng location, {bool moveCamera=false, bool animateCamera=true}) {
+  Marker setSelectionMarker(LatLng location, {bool moveCamera=false, bool animateCamera=true, bool fromInit=false}) {
 
     // Check if location is within bounds of The Netherlands
     LatLng soutWestLimit = LatLng(50.841774, 2.649452);
@@ -89,7 +89,8 @@ class _LocationSelectionMapState extends State<LocationSelectionMap> with Automa
       location.longitude >= soutWestLimit.longitude &&
       location.longitude <= northEastLimit.longitude
     )) {
-      Scaffold.of(context).showSnackBar( SnackBar(content: Text("Kies alstublieft een locatie binnen Nederland.")) );
+      if(!fromInit)
+        Scaffold.of(context).showSnackBar( SnackBar(content: Text("Kies alstublieft een locatie binnen Nederland.")) );
       return null;
     };
 
