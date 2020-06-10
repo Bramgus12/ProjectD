@@ -12,6 +12,7 @@ import 'package:plantexpert/Utility.dart';
 import 'package:plantexpert/pages/LocationSelectionMap.dart';
 import 'package:plantexpert/widgets/InputTextField.dart';
 import 'package:plantexpert/widgets/NotificationManager.dart';
+import 'dart:convert';
 
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
@@ -155,6 +156,25 @@ class _AddPlant extends State<AddPlant> {
           setState(() {
             _serverErrorMessage =
             'U moet ingelogd zijn voordat u planten toe kunt voegen.';
+            result = null;
+          });
+          print(e);
+        }
+        on StatusCodeException catch (e) {
+          String errorMessage = "Onverwachte fout bij het opslaan van gegevens.";
+          if (e.reponse.statusCode == 400) {
+            try {
+              Map<String, dynamic> validationErrors = json.decode(utf8.decode(e.reponse.bodyBytes))["validationErrors"];
+              errorMessage = "Fouten bij opslaan van plant:";
+              validationErrors.forEach((key, value) {
+                errorMessage += "\n• " + value;
+              });
+            } catch(e) {
+              print(e);
+            }
+          }
+          setState(() {
+            _serverErrorMessage = errorMessage;
             result = null;
           });
           print(e);
