@@ -170,7 +170,6 @@ class _AddPlant extends State<AddPlant> {
           calculateNextWateringDate(
               tempPlant.waterNumber.toInt(),
               newPlant.potVolume,
-              tempPlant.waterScale.toInt(),
               newPlant.distanceToWindow.toInt(),
               tempPlant.waterScale.toInt()
           ).then((value) => scheduleNotification(
