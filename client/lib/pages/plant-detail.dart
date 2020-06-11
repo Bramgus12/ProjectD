@@ -23,7 +23,7 @@ class PlantDetail extends StatelessWidget {
         assert(plant != null),
         assert(getUserPlantImage != null);
 
-  CachedNetworkImage userPlantImage;
+  Future<CachedNetworkImage> userPlantImage;
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +90,7 @@ class PlantDetail extends StatelessWidget {
                         alignment: Alignment.topRight,
                         child: RawMaterialButton(
                           onPressed: () async {
-                            Navigator.pushReplacementNamed(context, '/add-plant', arguments: { 'plant': userPlant, 'userPlantImage': userPlantImage});
+                            Navigator.pushReplacementNamed(context, '/add-plant', arguments: { 'plant': userPlant, 'userPlantImage': await userPlantImage});
                           },
                           elevation: 2.0,
                           fillColor: theme.accentColor,

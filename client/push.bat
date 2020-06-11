@@ -1,0 +1,2 @@
+C:\\Users\\pedro\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe install D:\\Files\\Dev\\GitHub\\ProjectD\\client\\build\\app\\outputs\\apk\\release\\app-release.apk
+C:\\Users\\pedro\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe shell am start -n nl.bylivingart.plantexpert/.MainActivity
