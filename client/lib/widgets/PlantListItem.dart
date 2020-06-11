@@ -32,10 +32,8 @@ class PlantListItem extends StatelessWidget {
             foregroundColor: Colors.orange.shade900,
             color: Colors.amber.shade100,
             icon: Icons.edit,
-            onTap: (){
-              plantImage.then((userPlantImage) =>
-                  Navigator.pushNamed(context, '/add-plant', arguments: { 'plant': userPlant, 'userPlantImage': userPlantImage})
-              );
+            onTap: () async {
+                Navigator.pushNamed(context, '/add-plant', arguments: { 'plant': userPlant, 'userPlantImage': await plantImage});
             },
           ),
           IconSlideAction(

@@ -37,7 +37,7 @@ class PlantDetail extends StatelessWidget {
         centerTitle: true,
       ),
       body: StatefulWrapper(
-        onInit: () { (getUserPlantImage(userPlant) as Future<CachedNetworkImage>).then((image) => userPlantImage = image); },
+        onInit: () async { userPlantImage = getUserPlantImage(userPlant); },
         child: DefaultTextStyle(
           style: TextStyle(
               fontFamily: 'Libre Baskerville',
@@ -89,7 +89,7 @@ class PlantDetail extends StatelessWidget {
                       child: Align(
                         alignment: Alignment.topRight,
                         child: RawMaterialButton(
-                          onPressed: () {
+                          onPressed: () async {
                             Navigator.pushReplacementNamed(context, '/add-plant', arguments: { 'plant': userPlant, 'userPlantImage': userPlantImage});
                           },
                           elevation: 2.0,
